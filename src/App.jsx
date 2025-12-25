@@ -9,6 +9,7 @@ import PanelManagementPage from './pages/PanelManagement';
 import UserDashboard from './pages/UserDashboard';
 import SubAccounts from './pages/SubAccounts';
 import MyIDs from './pages/MyIDs';
+import IDDetails from './pages/IDDetails';
 
 import ProtectedRoute from './components/ProtectedRoute';
 import SuperAdminRoute from './components/SuperAdminRoute';
@@ -47,7 +48,7 @@ function App() {
   const {user} = useAuth(true);
 
   return (
-    <div className='bg-gray-300'>
+    <div className='bg-gray-950'>
 
         <ToastContext.Provider value={toast}>
           <Router>
@@ -139,6 +140,11 @@ function App() {
               <Route path="/my-ids" element={
                 <UserRoute>
                   <MyIDs />
+                </UserRoute>
+              } />
+              <Route path="/id-details/:subaccid" element={
+                <UserRoute>
+                  <IDDetails />
                 </UserRoute>
               } />
               <Route path="/passbook" element={

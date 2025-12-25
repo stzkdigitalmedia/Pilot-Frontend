@@ -92,6 +92,40 @@ const PanelManagement = () => {
     }
   };
 
+  const handleDefaultIdToggle = async (panelId, currentStatus) => {
+    // Immediately update local state for instant UI feedback
+    setPanels(prevPanels => 
+      prevPanels.map(panel => {
+        if ((panel._id || panel.id) === panelId) {
+          return {
+            ...panel,
+            isDefault_IDCreate: !panel.isDefault_IDCreate
+          };
+        }
+        return panel;
+      })
+    );
+
+    try {
+      await apiHelper.patch(`/panel/update_DefaulCreatePanel_Status/${panelId}`);
+      showToast('Default ID Create status updated successfully', 'success');
+    } catch (error) {
+      // Revert the local state change if API call fails
+      setPanels(prevPanels => 
+        prevPanels.map(panel => {
+          if ((panel._id || panel.id) === panelId) {
+            return {
+              ...panel,
+              isDefault_IDCreate: !panel.isDefault_IDCreate
+            };
+          }
+          return panel;
+        })
+      );
+      showToast(error.message || 'Failed to update default ID create status', 'error');
+    }
+  };
+
   const handleStatusToggle = async (panelId, currentStatus) => {
     // Immediately update local state for instant UI feedback
     setPanels(prevPanels => 
@@ -279,6 +313,7 @@ const PanelManagement = () => {
                         <th className="text-left py-3 px-4 text-xs font-medium text-gray-500 uppercase tracking-wider">Status</th>
                         <th className="text-left py-3 px-4 text-xs font-medium text-gray-500 uppercase tracking-wider">Created</th>
                         <th className="text-left py-3 px-4 text-xs font-medium text-gray-500 uppercase tracking-wider">Actions</th>
+                        <th className="text-left py-3 px-4 text-xs font-medium text-gray-500 uppercase tracking-wider">Defoult Id Create</th>
                       </tr>
                     </thead>
                     <tbody className="divide-y divide-gray-100">
@@ -326,6 +361,17 @@ const PanelManagement = () => {
                                 <div className="relative w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-blue-300 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-blue-600"></div>
                               </label>
                             </div>
+                          </td>
+                          <td className="py-3 px-4">
+                            <label className="relative inline-flex items-center cursor-pointer">
+                              <input
+                                type="checkbox"
+                                checked={panel.isDefault_IDCreate || false}
+                                onChange={() => handleDefaultIdToggle(panel._id || panel.id, panel.isDefault_IDCreate)}
+                                className="sr-only peer"
+                              />
+                              <div className="relative w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-green-300 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-green-600"></div>
+                            </label>
                           </td>
                         </tr>
                       ))}

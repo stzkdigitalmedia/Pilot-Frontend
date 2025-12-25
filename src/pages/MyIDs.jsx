@@ -1,59 +1,47 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect } from "react";
 import { useAuth } from '../hooks/useAuth';
 import { apiHelper } from '../utils/apiHelper';
 import { useToastContext } from '../App';
-import PasswordInput from '../components/PasswordInput';
-import { Gamepad2, Copy, ArrowUp, ArrowDown, ChevronLeft, ChevronRight } from 'lucide-react';
-import { Link } from 'react-router-dom';
-import BottomNavigation from '../components/BottomNavigation';
-import LanguageSelector from '../components/LanguageSelector';
+import { X, Check } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
+import PasswordInput from '../components/PasswordInput';
+import Header from "../components/Header";
+import BottomNavigation from "../components/BottomNavigation";
 
-const MyIDs = () => {
-  const { user, logout } = useAuth(true);
-  const { t } = useTranslation();
-  const [subAccounts, setSubAccounts] = useState([]);
+const MyIDs = ({
+  games = [],
+  subAccounts = [],
+  setFormData,
+  formData,
+  setShowCreateId,
+}) => {
+  const [activeTab, setActiveTab] = useState("createId");
+  const [localGames, setLocalGames] = useState([]);
+  const [showCreateIdLocal, setShowCreateIdLocal] = useState(false);
+  const [loading, setLoading] = useState(false);
+  const [idCreated, setIdCreated] = useState(false);
+  const [localFormData, setLocalFormData] = useState({
+    gameId: '',
+    clientName: '',
+    password: '',
+    phone: ''
+  });
+  const [localSubAccounts, setLocalSubAccounts] = useState([]);
   const [subAccountsLoading, setSubAccountsLoading] = useState(false);
   const [selectedSubUser, setSelectedSubUser] = useState(null);
   const [showSubUserWithdraw, setShowSubUserWithdraw] = useState(false);
   const [showSubUserDeposit, setShowSubUserDeposit] = useState(false);
   const [showResetPassword, setShowResetPassword] = useState(false);
-  const [resetPasswordForm, setResetPasswordForm] = useState({ newPassword: '' });
-  const [resetPasswordLoading, setResetPasswordLoading] = useState(false);
-  const [subUserWithdrawForm, setSubUserWithdrawForm] = useState({ amount: '', selectedBankId: '' });
-  const [subUserDepositForm, setSubUserDepositForm] = useState({ amount: '' });
   const [subUserBalance, setSubUserBalance] = useState(0);
   const [subUserBalanceLoading, setSubUserBalanceLoading] = useState(false);
   const [transactionProcessing, setTransactionProcessing] = useState(false);
-  const [savedBanks, setSavedBanks] = useState([]);
-  const [userBalance, setUserBalance] = useState(0);
+  const [resetPasswordLoading, setResetPasswordLoading] = useState(false);
+  const [subUserWithdrawForm, setSubUserWithdrawForm] = useState({ amount: '', selectedBankId: '' });
+  const [subUserDepositForm, setSubUserDepositForm] = useState({ amount: '' });
+  const [resetPasswordForm, setResetPasswordForm] = useState({ newPassword: '' });
+  const { user } = useAuth();
   const toast = useToastContext();
-
-  const fetchSubAccounts = async () => {
-    setSubAccountsLoading(true);
-    try {
-      const response = await apiHelper.get('/subAccount/getSubAccounts?page=1&limit=50');
-      const accountsList = response?.subAccounts || response?.data || response || [];
-      setSubAccounts(accountsList);
-    } catch (error) {
-      console.error('Failed to fetch sub accounts:', error);
-      toast.error('Failed to fetch sub accounts: ' + error.message);
-    } finally {
-      setSubAccountsLoading(false);
-    }
-  };
-
-  const fetchUserBalance = async () => {
-    try {
-      const userId = user?._id;
-      if (!userId) return;
-      const balanceResponse = await apiHelper.get(`/transaction/get_MainUserBalance/${userId}`);
-      setUserBalance(balanceResponse?.data?.balance || 0);
-    } catch (error) {
-      console.error('Failed to fetch balance:', error);
-      setUserBalance(0);
-    }
-  };
+  const { t } = useTranslation();
 
   const createBalanceLog = async (userId) => {
     try {
@@ -72,11 +60,6 @@ const MyIDs = () => {
 
       if (latestLog?.status === 'Accept') {
         setSubUserBalance(latestLog?.CurrentBalance || 0);
-        const payload = {
-          amount: latestLog?.CurrentBalance,
-          subUserId: subAccountId
-        }
-        // await apiHelper.post('/transaction/update_sub_user_balance', payload);
         setSubUserBalanceLoading(false);
       } else {
         setTimeout(() => fetchSubUserBalance(subAccountId));
@@ -88,11 +71,96 @@ const MyIDs = () => {
     }
   };
 
+  const handleSubUserWithdraw = async (e) => {
+    e.preventDefault();
+    setTransactionProcessing(true);
+
+    try {
+      const payload = {
+        subUserId: selectedSubUser?.id || selectedSubUser?._id,
+        amount: parseFloat(subUserWithdrawForm.amount),
+        mode: 'Wallet',
+        role: 'SubUser'
+      };
+
+      await apiHelper.post('/transaction/withdrawAmountRequest_ForSubUser', payload);
+      toast.info('Withdrawal request submitted successfully please check history!');
+      setShowSubUserWithdraw(false);
+      setSubUserWithdrawForm({ amount: '', selectedBankId: '' });
+      setSelectedSubUser(null);
+    } catch (error) {
+      toast.error('Failed to submit withdrawal request: ' + error.message);
+    } finally {
+      setTransactionProcessing(false);
+    }
+  };
+
+  const checkTransactionStatus = async (subAccountId) => {
+    try {
+      const response = await apiHelper.get(`/transaction/latest-transaction/${subAccountId}`);
+      const transaction = response?.data || response;
+
+      if (transaction?.status === 'Accept') {
+        toast.success('Your transaction successful!');
+        setTransactionProcessing(false);
+        setShowSubUserDeposit(false);
+        setSubUserDepositForm({ amount: '' });
+        setSelectedSubUser(null);
+      } else {
+        setTimeout(() => checkTransactionStatus(subAccountId), 1000);
+      }
+    } catch (error) {
+      console.error('Failed to check transaction status:', error);
+      setTransactionProcessing(false);
+    }
+  };
+
+  const handleSubUserDeposit = async (e) => {
+    e.preventDefault();
+    setTransactionProcessing(true);
+
+    try {
+      const payload = {
+        subUserId: selectedSubUser?.id || selectedSubUser?._id,
+        amount: parseFloat(subUserDepositForm.amount),
+        mode: 'Wallet',
+        role: 'SubUser'
+      };
+
+      await apiHelper.post('/transaction/depositAmountRequest_ForSubUser', payload);
+      checkTransactionStatus(selectedSubUser?.id || selectedSubUser?._id);
+    } catch (error) {
+      toast.error('Failed to submit deposit request: ' + error.message);
+      setTransactionProcessing(false);
+    }
+  };
+
   const validatePassword = (password) => {
     const regex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/;
     const commonPasswords = ['Abcd@1234', 'Password@123', 'Admin@123', 'Test@1234', 'User@1234'];
     const hasSequentialPattern = /abcd|bcde|cdef|defg|efgh|fghi|ghij|hijk|ijkl|jklm|klmn|lmno|mnop|nopq|opqr|pqrs|qrst|rstu|stuv|tuvw|uvwx|vwxy|wxyz/i.test(password);
     return regex.test(password) && !commonPasswords.includes(password) && !hasSequentialPattern;
+  };
+
+  const checkPasswordResetStatus = async (clientName) => {
+    try {
+      const response = await apiHelper.get(`/password/get-latestPassword-change-by-clientName/${clientName}`);
+      const passwordChange = response?.data || response;
+
+      if (passwordChange?.status === 'Completed') {
+        toast.success('Password reset completed successfully!');
+        setResetPasswordLoading(false);
+        setShowResetPassword(false);
+        setResetPasswordForm({ newPassword: '' });
+        setSelectedSubUser(null);
+        fetchSubAccounts();
+      } else {
+        setTimeout(() => checkPasswordResetStatus(clientName), 2000);
+      }
+    } catch (error) {
+      console.error('Failed to check password reset status:', error);
+      setResetPasswordLoading(false);
+    }
   };
 
   const handleResetPassword = async (e) => {
@@ -124,386 +192,358 @@ const MyIDs = () => {
       setShowResetPassword(false);
       setResetPasswordForm({ newPassword: '' });
       setSelectedSubUser(null);
+      checkPasswordResetStatus(selectedSubUser?.clientName);
     } catch (error) {
       toast.error('Failed to reset password: ' + error.message);
       setResetPasswordLoading(false);
     }
   };
 
-  const handleSubUserDeposit = async (e) => {
-    e.preventDefault();
-    setTransactionProcessing(true);
-
+  const fetchSubAccounts = async () => {
+    setSubAccountsLoading(true);
     try {
-      const payload = {
-        subUserId: selectedSubUser?.id || selectedSubUser?._id,
-        amount: parseFloat(subUserDepositForm.amount),
-        mode: 'Wallet',
-        role: 'SubUser'
-      };
-
-      await apiHelper.post('/transaction/depositAmountRequest_ForSubUser', payload);
-      toast.success('Deposit request submitted successfully!');
-      setShowSubUserDeposit(false);
-      setSubUserDepositForm({ amount: '' });
-      setSelectedSubUser(null);
-      fetchUserBalance();
+      const response = await apiHelper.get('/subAccount/getSubAccounts?page=1&limit=50');
+      const accountsList = response?.subAccounts || response?.data || response || [];
+      setLocalSubAccounts(accountsList);
     } catch (error) {
-      toast.error('Failed to submit deposit request: ' + error.message);
+      console.error('Failed to fetch sub accounts:', error);
+      toast.error('Failed to fetch sub accounts: ' + error.message);
     } finally {
-      setTransactionProcessing(false);
+      setSubAccountsLoading(false);
     }
   };
 
-  const handleSubUserWithdraw = async (e) => {
+  const fetchGames = async () => {
+    try {
+      const [gamesResponse, panelsResponse] = await Promise.all([
+        apiHelper.get('/game/getAllGamesWithPagination?page=1&limit=50'),
+        apiHelper.get('/panel/getAllPanels?page=1&limit=10')
+      ]);
+
+      const gamesList = gamesResponse.games || gamesResponse.data || gamesResponse || [];
+      const panelsData = panelsResponse.data?.panels || panelsResponse.panels || panelsResponse.data || panelsResponse || [];
+
+      const activePanels = panelsData.filter(panel => panel?.isActive === true);
+      const activeGameNames = [...new Set(activePanels.map(panel => panel.panelName || panel.name))];
+      const availableGames = gamesList.filter(game =>
+        activeGameNames.includes(game.name) && (game.status || game.isActive)
+      );
+
+      setLocalGames(availableGames);
+    } catch (error) {
+      console.error('Failed to fetch games:', error);
+      setLocalGames([]);
+    }
+  };
+
+  const checkIdCreationStatus = async (subAccountId) => {
+    try {
+      const response = await apiHelper.get(`/subAccount/latest-sub-user/${subAccountId}`);
+      const transaction = response?.data?.status;
+
+      if (transaction === 'Accept') {
+        setIdCreated(true);
+        setTimeout(() => {
+          setLoading(false);
+          setShowCreateIdLocal(false);
+          setIdCreated(false);
+          setLocalFormData({
+            gameId: localFormData.gameId,
+            clientName: '',
+            password: '',
+            phone: ''
+          });
+          fetchSubAccounts();
+        }, 2000);
+        return;
+      } else {
+        setTimeout(() => checkIdCreationStatus(subAccountId), 2000);
+      }
+    } catch (error) {
+      console.error('Failed to check ID creation status:', error);
+      setLoading(false);
+    }
+  };
+
+  const handleCreateId = async (e) => {
     e.preventDefault();
-    setTransactionProcessing(true);
+
+    if (localFormData.clientName.length > 9) {
+      toast.error('Client name must be maximum 9 characters');
+      return;
+    }
+
+    if (localFormData.clientName.includes(' ')) {
+      toast.error('Client name cannot contain spaces');
+      return;
+    }
+
+    if (!/^[a-zA-Z0-9]+$/.test(localFormData.clientName)) {
+      toast.error('Client name can only contain letters and numbers');
+      return;
+    }
+
+    setLoading(true);
 
     try {
       const payload = {
-        subUserId: selectedSubUser?.id || selectedSubUser?._id,
-        amount: parseFloat(subUserWithdrawForm.amount),
-        mode: 'Wallet',
-        role: 'SubUser'
+        gameId: localFormData.gameId,
+        clientName: localFormData.clientName,
+        phone: user?.phone || ''
       };
 
-      await apiHelper.post('/transaction/withdrawAmountRequest_ForSubUser', payload);
-      toast.info('Withdrawal request submitted successfully please check history!');
-      setShowSubUserWithdraw(false);
-      setSubUserWithdrawForm({ amount: '', selectedBankId: '' });
-      setSelectedSubUser(null);
-      fetchUserBalance();
+      const response = await apiHelper.post('/subAccount/createSubAccount', payload);
+      const createdAccount = response?.data || response;
+      const subAccountId = createdAccount?.id || createdAccount?._id;
+
+      if (subAccountId) {
+        checkIdCreationStatus(subAccountId);
+      } else {
+        toast.success('ID created successfully!');
+        setLoading(false);
+        setShowCreateIdLocal(false);
+        setLocalFormData({
+          gameId: localFormData.gameId,
+          clientName: '',
+          password: '',
+          phone: ''
+        });
+        fetchSubAccounts();
+      }
     } catch (error) {
-      toast.error('Failed to submit withdrawal request: ' + error.message);
-    } finally {
-      setTransactionProcessing(false);
+      toast.error('Failed to create ID: ' + error.message);
+      setLoading(false);
     }
+  };
+
+  const handleInputChange = (e) => {
+    setLocalFormData({ ...localFormData, [e.target.name]: e.target.value });
   };
 
   useEffect(() => {
+    fetchGames();
     fetchSubAccounts();
-    fetchUserBalance();
   }, []);
 
-  return (
-    <div className="min-h-screen max-w-[900px] mx-auto bg-gray-50">
-      {/* Main Content */}
-      <div className="px-4 pb-20 pt-4 sm:px-6 lg:px-8 max-w-[900px] mx-auto">
-        {/* Header */}
-        <div className="mb-6">
-          <div className="flex items-center justify-between">
-            <div>
-              <h1 className="text-2xl font-bold text-gray-900">{t('myIds')} ({subAccounts.length})</h1>
-              <p className="text-gray-600 text-sm mt-1">{t('manageAccounts')}</p>
-            </div>
-            <LanguageSelector />
-          </div>
-        </div>
+  return (<>
+    <Header />
+    <div className="min-h-screen bg-[#0e0e0e] p-3 sm:p-5 max-w-[850px] mx-auto text-white">
 
-        {/* IDs Grid */}
-        {subAccountsLoading ? (
-          <div className="text-center py-8">
-            <div className="loading-spinner mx-auto mb-4" style={{ width: '32px', height: '32px' }}></div>
-            <p className="text-gray-600">{t('loading')}...</p>
-          </div>
-        ) : subAccounts.length === 0 ? (
-          <div className="text-center py-8 text-gray-500">
-            <p className="text-base sm:text-lg mb-2">No sub accounts found</p>
-            <p className="text-sm">Create your first sub account from the home page</p>
-          </div>
-        ) : (
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            {subAccounts.map((account, index) => {
-              const game = account.gameId?.name;
-              return (
-                <div key={account.id || account._id || index} className="bg-gradient-to-br from-gray-800 to-gray-900 rounded-2xl p-4 sm:p-6 text-white shadow-2xl">
-                  {/* Header */}
-                  <div className="flex items-center justify-between mb-4">
-                    <div className="flex items-center gap-2 sm:gap-3">
-                      <div className="w-8 h-8 sm:w-10 sm:h-10 rounded-lg flex items-center justify-center" style={{ backgroundColor: '#1477b0' }}>
-                        {game?.image ? (
-                          <img src={game.image} alt={game.name} className="w-6 h-6 sm:w-8 sm:h-8 rounded" />
-                        ) : (
-                          <Gamepad2 className="w-4 h-4 sm:w-5 sm:h-5 text-white" />
-                        )}
-                      </div>
-                      <div>
-                        <h3 className="font-bold text-sm sm:text-lg notranslate">{game || 'Game'}</h3>
-                      </div>
-                    </div>
-                    <div>
-                      <span
-                        className={`inline-flex items-center px-3 py-1 rounded-full text-xs font-medium ${
-                          account.status === "Accept"
-                            ? "bg-green-100 text-green-800"
-                            : account.status === "Panding"
-                            ? "bg-yellow-100 text-yellow-800"
-                            : account.status === "Reject"
-                            ? "bg-red-100 text-red-800"
-                            : "bg-gray-100 text-gray-800"
-                        }`}
-                      >
-                        {account.status === "Accept"
-                          ? t('active')
-                          : account.status === "Panding"
-                          ? t('pending')
-                          : account.status === "Reject"
-                          ? t('rejected')
-                          : t('pending')}
-                      </span>
-                    </div>
-                  </div>
+      {/* ================= TOP TABS ================= */}
+      <div className="flex bg-[#161616] rounded-xl overflow-hidden mb-4">
+        <button
+          onClick={() => setActiveTab("myIds")}
+          className={`flex-1 py-3 text-sm font-semibold transition ${activeTab === "myIds"
+            ? "bg-[#1f1f1f] border-b-2 border-blue-500"
+            : "text-gray-400"
+            }`}
+        >
+          MY IDs ({(localSubAccounts.length > 0 ? localSubAccounts : subAccounts).length})
+        </button>
 
-                  {/* Account Details */}
-                  <div className="space-y-2 sm:space-y-3 mb-4 sm:mb-6">
-                    <div className="flex items-center gap-2">
-                      <div className="w-3 h-3 sm:w-4 sm:h-4 bg-gray-600 rounded flex items-center justify-center">
-                        <span className="text-xs">👤</span>
-                      </div>
-                      <span className="text-xs sm:text-sm text-gray-300 notranslate">ID:</span>
-                      <span className="text-xs sm:text-sm font-mono truncate notranslate">{account?.clientName || 'N/A'}</span>
-                      <button
-                        onClick={() => {
-                          navigator.clipboard.writeText(account?.clientName || '');
-                          toast.success('ID copied to clipboard!');
-                        }}
-                        className="ml-auto p-1 hover:bg-gray-700 rounded"
-                      >
-                        <Copy className="w-3 h-3" />
-                      </button>
-                    </div>
-
-                    <div className="flex items-center gap-2">
-                      <div className="w-3 h-3 sm:w-4 sm:h-4 bg-gray-600 rounded flex items-center justify-center">
-                        <span className="text-xs">🔒</span>
-                      </div>
-                      <span className="text-xs sm:text-sm text-gray-300 notranslate">{t('password')}:</span>
-                      <span className="text-xs sm:text-sm font-mono truncate flex-1 notranslate">{account?.password || 'N/A'}</span>
-                      <button
-                        onClick={() => {
-                          navigator.clipboard.writeText(account?.password || '');
-                          toast.success('Password copied to clipboard!');
-                        }}
-                        className="p-1 hover:bg-gray-700 rounded"
-                        title="Copy Password"
-                      >
-                        <Copy className="w-3 h-3" />
-                      </button>
-                    </div>
-
-                    <div className="flex items-center gap-2">
-                      <div className="w-3 h-3 sm:w-4 sm:h-4 bg-gray-600 rounded flex items-center justify-center">
-                        <span className="text-xs">🌐</span>
-                      </div>
-                      <span className="text-xs sm:text-sm text-gray-300 notranslate">{t('platform')}:</span>
-                      <span className="text-xs sm:text-sm font-mono truncate">
-                        <a href={account?.gameId?.gameUrl} target='_blank'>{account?.gameId?.gameUrl || 'N/A'}</a>
-                      </span>
-                      <button
-                        onClick={() => {
-                          if (account?.gameId?.gameUrl) {
-                            window.open(account.gameId.gameUrl, '_blank');
-                          } else {
-                            toast.error('Platform URL not available');
-                          }
-                        }}
-                        className="ml-auto p-1 hover:bg-gray-700 rounded"
-                        title="Open Platform"
-                      >
-                        <span className="text-xs">🔗</span>
-                      </button>
-                    </div>
-                  </div>
-
-                  {/* Rejection Reason */}
-                  {account.status === "Reject" && account.remarks && (
-                    <div className="mb-4 p-3 bg-red-900/30 border border-red-700/50 rounded-lg">
-                      <div className="flex items-start gap-2">
-                        <div className="w-4 h-4 bg-red-600 rounded-full flex items-center justify-center flex-shrink-0 mt-0.5">
-                          <span className="text-xs text-white">!</span>
-                        </div>
-                        <div>
-                          <p className="text-xs font-medium text-red-300 mb-1">Rejection Reason:</p>
-                          <p className="text-xs text-red-200">{account.remarks}</p>
-                        </div>
-                      </div>
-                    </div>
-                  )}
-
-                  {/* Action Buttons */}
-                  <div className="flex gap-2 sm:gap-3 flex-wrap">
-                    <button
-                      onClick={() => {
-                        setSelectedSubUser(account);
-                        setShowSubUserDeposit(true);
-                      }}
-                      disabled={account.status !== "Accept"}
-                      className={`flex-1 py-2 px-2 sm:px-4 rounded-lg flex items-center justify-center gap-1 sm:gap-2 transition-colors ${
-                        account.status === "Accept"
-                          ? 'bg-red-600 hover:bg-red-700 cursor-pointer'
-                          : 'bg-gray-500 cursor-not-allowed opacity-50'
-                      }`}
-                    >
-                      <ArrowUp className="w-3 h-3 sm:w-4 sm:h-4" />
-                      <span className="text-xs sm:text-sm font-medium">{t('deposit')}</span>
-                    </button>
-                    <button
-                      onClick={async () => {
-                        setSelectedSubUser(account);
-                        await createBalanceLog(account?.id || account?._id);
-                        setShowSubUserWithdraw(true);
-                        fetchSubUserBalance(account?.id || account?._id);
-                      }}
-                      disabled={account.status !== "Accept"}
-                      className={`flex-1 py-2 px-2 sm:px-4 rounded-lg flex items-center justify-center gap-1 sm:gap-2 transition-colors ${
-                        account.status === "Accept"
-                          ? 'cursor-pointer'
-                          : 'cursor-not-allowed opacity-50'
-                      }`}
-                      style={{ backgroundColor: account.status === "Accept" ? '#1477b0' : '#6b7280' }}
-                    >
-                      <ArrowDown className="w-3 h-3 sm:w-4 sm:h-4" />
-                      <span className="text-xs sm:text-sm font-medium">{t('withdraw')}</span>
-                    </button>
-                    <button
-                      onClick={() => {
-                        setSelectedSubUser(account);
-                        setShowResetPassword(true);
-                      }}
-                      disabled={account.status !== "Accept"}
-                      className={`flex-1 py-2 px-2 sm:px-4 rounded-lg flex items-center justify-center gap-1 sm:gap-2 transition-colors ${
-                        account.status === "Accept"
-                          ? 'cursor-pointer'
-                          : 'cursor-not-allowed opacity-50'
-                      }`}
-                      style={{ backgroundColor: account.status === "Accept" ? '#1477b0' : '#6b7280' }}
-                      title="Reset Password"
-                    >
-                      <span className="text-xs sm:text-sm font-medium">{t('resetPassword')}</span>
-                    </button>
-                  </div>
-                </div>
-              );
-            })}
-          </div>
-        )}
+        <button
+          onClick={() => setActiveTab("createId")}
+          className={`flex-1 py-3 text-sm font-semibold transition ${activeTab === "createId"
+            ? "bg-[#1f1f1f] border-b-2 border-blue-500"
+            : "text-gray-400"
+            }`}
+        >
+          CREATE ID
+        </button>
       </div>
 
+      {/* ================= CREATE ID ================= */}
+      {activeTab === "createId" && (
+        <>
+          {/* CREATE ID LIST */}
+          <div className="space-y-3">
+            {(localGames.length > 0 ? localGames : games).map((game) => (
+              <div
+                key={game.id || game._id}
+                className="flex items-center justify-between
+                bg-[#1b1b1b] rounded-xl p-4
+                shadow-[0_4px_20px_rgba(0,0,0,0.6)]"
+              >
+                {/* LEFT */}
+                <div className="flex items-center gap-4">
+                  {/* LOGO */}
+                  <div className="w-12 h-12 rounded-full bg-black overflow-hidden flex items-center justify-center">
+                    {game.image ? (
+                      <img
+                        src={game.image}
+                        alt={game.name}
+                        className="w-full h-full object-contain"
+                      />
+                    ) : (
+                      <span className="text-xs">LOGO</span>
+                    )}
+                  </div>
 
+                  {/* DETAILS */}
+                  <div>
+                    <p className="font-semibold text-sm">
+                      {game.name}
+                    </p>
+                    <p className="text-xs text-gray-400">
+                      {game.gameUrl}
+                    </p>
 
-      {/* Modals - Same as UserDashboard */}
-      {/* Sub User Deposit Modal */}
-      {showSubUserDeposit && (
-        <div className="fixed inset-0 modal-overlay flex items-center justify-center p-4 z-50">
-          <div className="gaming-card p-4 sm:p-6 max-w-md w-full mx-4">
-            <div className="flex justify-between items-center mb-6">
-              <div>
-                <h2 className="text-xl font-semibold text-gray-900">{t('depositToSub')}</h2>
-                <p className="text-gray-600 text-sm mt-1">ID: {selectedSubUser?.clientName || 'N/A'}</p>
-                <div className="mt-2">
-                  <div className="flex items-center gap-2 bg-blue-50 px-3 py-2 rounded-xl shadow-sm">
-                    <span className="text-gray-700 font-medium text-sm">{t('availableBalance')}:</span>
-                    <span className="text-lg font-bold" style={{ color: '#1477b0' }}>
-                      ₹{userBalance}
-                    </span>
+                    {game.trending && (
+                      <div className="flex items-center gap-1 mt-1 text-xs text-blue-400">
+                        🏆 Trending
+                      </div>
+                    )}
                   </div>
                 </div>
-              </div>
-              <button onClick={() => setShowSubUserDeposit(false)} className="text-gray-400 hover:text-gray-600">
-                <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 24 24">
-                  <path d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/>
-                </svg>
-              </button>
-            </div>
 
-            <form onSubmit={handleSubUserDeposit} className="space-y-4">
-              <div className="form-group">
-                <label className="form-label">{t('amount')}</label>
-                <input
-                  type="number"
-                  placeholder={t('enterAmount')}
-                  value={subUserDepositForm.amount}
-                  onChange={(e) => setSubUserDepositForm({ ...subUserDepositForm, amount: e.target.value })}
-                  className="gaming-input"
-                  required
-                  min="1"
-                />
-              </div>
-
-              <div className="flex flex-col sm:flex-row gap-3 pt-4">
-                <button type="button" onClick={() => setShowSubUserDeposit(false)} className="w-full sm:flex-1 btn-secondary">
-                  {t('cancel')}
-                </button>
-                <button type="submit" disabled={transactionProcessing} className="w-full sm:flex-1 gaming-btn">
-                  {transactionProcessing ? t('processing') + '...' : t('deposit')}
+                {/* RIGHT */}
+                <button
+                  onClick={() => {
+                    setLocalFormData({ ...localFormData, gameId: game.id || game._id });
+                    setShowCreateIdLocal(true);
+                  }}
+                  className="px-5 py-2 rounded-full
+                  bg-blue-600 hover:bg-blue-700
+                  text-sm font-semibold transition"
+                >
+                  Create
                 </button>
               </div>
-            </form>
+            ))}
           </div>
-        </div>
+        </>
       )}
 
-      {/* Sub User Withdraw Modal */}
-      {showSubUserWithdraw && (
-        <div className="fixed inset-0 modal-overlay flex items-center justify-center p-4 z-50">
-          <div className="gaming-card p-4 sm:p-6 max-w-md w-full mx-4">
-            <div className="flex justify-between items-center mb-6">
-              <div>
-                <h2 className="text-xl font-semibold text-gray-900">{t('withdrawFromSub')}</h2>
-                <p className="text-gray-600 text-sm mt-1">ID: {selectedSubUser?.clientName || 'N/A'}</p>
-                <div className="mt-2">
-                  {subUserBalanceLoading ? (
-                    <div className="flex items-center gap-3 bg-green-50 px-3 py-2 rounded-xl shadow-sm">
-                      <div className="w-5 h-5 border-4 border-green-500 border-t-transparent rounded-full animate-spin"></div>
-                      <div className="flex flex-col">
-                        <span className="text-sm font-medium text-gray-700">{t('balance')}</span>
-                        <span className="text-sm text-gray-500 animate-pulse">{t('loading')}...</span>
+      {/* ================= MY IDS ================= */}
+      {activeTab === "myIds" && (
+        <>
+          {subAccountsLoading ? (
+            <div className="bg-[#1b1b1b] rounded-xl p-8 text-center text-gray-400">
+              Loading IDs...
+            </div>
+          ) : (localSubAccounts.length > 0 ? localSubAccounts : subAccounts).length === 0 ? (
+            <div className="bg-[#1b1b1b] rounded-xl p-8 text-center text-gray-400">
+              No IDs found
+            </div>
+          ) : (
+            <div className="space-y-3">
+              {(localSubAccounts.length > 0 ? localSubAccounts : subAccounts).map((acc) => (
+                <div
+                  key={acc.id || acc._id}
+                  className="c flex justify-between items-center align-middle rounded-xl p-4 cursor-pointer
+                  shadow-[0_4px_20px_rgba(0,0,0,0.6)]"
+                  onClick={() => {
+                    const subAccId = acc.id || acc._id;
+                    window.location.href = `/id-details/${subAccId}`;
+                  }}
+                >
+                  <div className="flex justify-between items-center">
+                    <div className="flex items-center gap-3">
+                      <div className="w-12 h-12 overflow-hidden rounded-full bg-black flex items-center justify-center">
+                        <img src={acc.gameId?.image} alt="" />
+                      </div>
+                      <div className="text-wrap">
+                        <p className="text-xs text-gray-300 text-wrap underline">
+                          {acc.gameId?.gameUrl}
+                        </p>
+                        <p className="text-xs text-gray-300">
+                          {acc?.clientName}
+                        </p>
                       </div>
                     </div>
-                  ) : (
-                    <div className="flex items-center gap-2 bg-green-50 px-3 py-2 rounded-xl shadow-sm">
-                      <span className="text-gray-700 font-medium text-sm">{t('balance')}:</span>
-                      <span className="text-lg font-bold text-green-600">
-                        ₹{Number(subUserBalance).toLocaleString("en-IN")}
-                      </span>
-                    </div>
-                  )}
+                  </div>
+                  <div className="flex gap-2">
+                    <button
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        setSelectedSubUser(acc);
+                        setShowSubUserDeposit(true);
+                      }}
+                      className="rounded-full w-8 h-8 text-xs bg-green-600 hover:bg-green-700"
+                    >
+                      D
+                    </button>
+                    <button
+                      onClick={async (e) => {
+                        e.stopPropagation();
+                        setSelectedSubUser(acc);
+                        await createBalanceLog(acc?.id || acc?._id);
+                        setShowSubUserWithdraw(true);
+                        fetchSubUserBalance(acc?.id || acc?._id);
+                      }}
+                      className="rounded-full w-8 h-8 text-xs bg-red-600 hover:bg-red-700"
+                    >
+                      W
+                    </button>
+                    <button
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        setSelectedSubUser(acc);
+                        setShowResetPassword(true);
+                      }}
+                      className="rounded-full w-8 h-8 text-xs bg-blue-600 hover:bg-blue-700"
+                    >
+                      P
+                    </button>
+                  </div>
                 </div>
+              ))}
+            </div>
+          )}
+        </>
+      )}
+
+      {/* Create ID Modal */}
+      {showCreateIdLocal && (
+        <div className="fixed inset-0 modal-overlay flex items-center justify-center p-4 z-[100]">
+          <div className="gaming-card p-4 sm:p-6 max-w-md w-full max-h-[90vh] overflow-y-auto mx-4">
+            <div className="flex justify-between items-center mb-6">
+              <div>
+                <h2 className="text-xl font-semibold text-gray-900">Create New ID</h2>
+                <p className="text-gray-600 text-sm mt-1">Game: {(localGames.length > 0 ? localGames : games).find(g => (g.id || g._id) === localFormData.gameId)?.name || 'Select a game'}</p>
               </div>
-              <button onClick={() => setShowSubUserWithdraw(false)} className="text-gray-400 hover:text-gray-600">
-                <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 24 24">
-                  <path d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/>
-                </svg>
+              <button onClick={() => setShowCreateIdLocal(false)} className="text-gray-400 hover:text-gray-600">
+                <X className="w-5 h-5" />
               </button>
             </div>
 
-            {subUserBalanceLoading ? (
+            {idCreated ? (
+              <div className="text-center py-8">
+                <div className="w-16 h-16 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                  <Check className="w-8 h-8 text-green-600" />
+                </div>
+                <p className="text-lg font-semibold text-green-600 mb-2">ID Created</p>
+                <p className="text-sm text-gray-600">ID Created Successfully</p>
+              </div>
+            ) : loading ? (
               <div className="text-center py-8">
                 <div className="loading-spinner mx-auto mb-4" style={{ width: '32px', height: '32px' }}></div>
-                <p className="text-lg font-semibold text-gray-900 mb-2">{t('loadingBalance')}</p>
-                <p className="text-sm text-gray-600">Please wait while we fetch the current balance</p>
+                <p className="text-lg font-semibold text-gray-900 mb-2">Creating ID</p>
+                <p className="text-sm text-gray-600">Please Wait</p>
               </div>
             ) : (
-              <form onSubmit={handleSubUserWithdraw} className="space-y-4">
+              <form onSubmit={handleCreateId} className="space-y-4">
                 <div className="form-group">
-                  <label className="form-label">{t('amount')}</label>
+                  <label className="form-label">Client Name</label>
                   <input
-                    type="number"
-                    placeholder={t('enterAmount')}
-                    value={subUserWithdrawForm.amount}
-                    onChange={(e) => setSubUserWithdrawForm({ ...subUserWithdrawForm, amount: e.target.value })}
+                    type="text"
+                    name="clientName"
+                    placeholder="Enter Client Name"
+                    value={localFormData.clientName}
+                    onChange={handleInputChange}
+                    maxLength={9}
                     className="gaming-input"
                     required
-                    min="1"
                   />
+                  <p className="text-xs text-gray-500 mt-1">Maximum 9 characters</p>
                 </div>
 
                 <div className="flex flex-col sm:flex-row gap-3 pt-4">
-                  <button type="button" onClick={() => setShowSubUserWithdraw(false)} className="w-full sm:flex-1 btn-secondary">
-                    {t('cancel')}
+                  <button type="submit" className="w-full sm:flex-1 gaming-btn">
+                    Create ID
                   </button>
-                  <button type="submit" disabled={transactionProcessing} className="w-full sm:flex-1 gaming-btn">
-                    {transactionProcessing ? t('processing') + '...' : t('withdraw')}
+                  <button type="button" onClick={() => setShowCreateIdLocal(false)} className="w-full sm:flex-1 btn-secondary">
+                    Cancel
                   </button>
                 </div>
               </form>
@@ -512,13 +552,127 @@ const MyIDs = () => {
         </div>
       )}
 
-      {/* Reset Password Modal */}
-      {showResetPassword && (
-        <div className="fixed inset-0 modal-overlay flex items-center justify-center p-4 z-50">
+      {/* Modals */}
+      {showSubUserWithdraw && (
+        <div className="fixed inset-0 modal-overlay flex items-center justify-center p-4 z-[100]">
           <div className="gaming-card p-4 sm:p-6 max-w-md w-full mx-4">
             <div className="flex justify-between items-center mb-6">
               <div>
-                <h2 className="text-xl font-semibold text-gray-900">{t('resetPassword')}</h2>
+                <h2 className="text-xl font-semibold text-gray-900">Withdraw From Sub</h2>
+                <p className="text-gray-600 text-sm mt-1">ID: {selectedSubUser?.clientName || 'N/A'}</p>
+                <div className="mt-2">
+                  {subUserBalanceLoading ? (
+                    <div className="flex items-center gap-3 bg-green-50 px-3 py-2 rounded-xl shadow-sm">
+                      <div className="w-5 h-5 border-4 border-green-500 border-t-transparent rounded-full animate-spin"></div>
+                      <div className="flex flex-col">
+                        <span className="text-sm font-medium text-gray-700">Balance</span>
+                        <span className="text-sm text-gray-500 animate-pulse">Loading...</span>
+                      </div>
+                    </div>
+                  ) : (
+                    <div className="flex items-center gap-2 bg-green-50 px-3 py-2 rounded-xl shadow-sm">
+                      <span className="text-gray-700 font-medium text-sm">Balance:</span>
+                      <span className="text-lg font-bold text-green-600">
+                        ₹{Number(subUserBalance).toLocaleString("en-IN")}
+                      </span>
+                    </div>
+                  )}
+                </div>
+              </div>
+              <button onClick={() => setShowSubUserWithdraw(false)} className="text-gray-400 hover:text-gray-600">
+                <X className="w-5 h-5" />
+              </button>
+            </div>
+
+            {subUserBalanceLoading ? (
+              <div className="text-center py-8">
+                <div className="loading-spinner mx-auto mb-4" style={{ width: '32px', height: '32px' }}></div>
+                <p className="text-lg font-semibold text-gray-900 mb-2">Loading Balance</p>
+                <p className="text-sm text-gray-600">Please wait while we fetch the current balance</p>
+              </div>
+            ) : (
+              <form onSubmit={handleSubUserWithdraw} className="space-y-4">
+                <div className="form-group">
+                  <label className="form-label">Amount (Minimum Amount)</label>
+                  <input
+                    type="number"
+                    placeholder="Enter Amount"
+                    value={subUserWithdrawForm.amount}
+                    onChange={(e) => setSubUserWithdrawForm({ ...subUserWithdrawForm, amount: e.target.value })}
+                    className="gaming-input"
+                    required
+                    min="100"
+                  />
+                </div>
+
+                <div className="flex flex-col sm:flex-row gap-3 pt-4">
+                  <button type="button" onClick={() => setShowSubUserWithdraw(false)} className="w-full sm:flex-1 btn-secondary">
+                    Cancel
+                  </button>
+                  <button type="submit" disabled={transactionProcessing} className="w-full sm:flex-1 gaming-btn">
+                    {transactionProcessing ? 'Processing' : 'Withdraw'}
+                  </button>
+                </div>
+              </form>
+            )}
+          </div>
+        </div>
+      )}
+
+      {showSubUserDeposit && (
+        <div className="fixed inset-0 modal-overlay flex items-center justify-center p-4 z-[100]">
+          <div className="gaming-card p-4 sm:p-6 max-w-md w-full mx-4">
+            <div className="flex justify-between items-center mb-6">
+              <div>
+                <h2 className="text-xl font-semibold text-gray-900">Deposit To Sub</h2>
+                <p className="text-gray-600 text-sm mt-1">ID: {selectedSubUser?.clientName || 'N/A'}</p>
+              </div>
+              <button onClick={() => setShowSubUserDeposit(false)} className="text-gray-400 hover:text-gray-600">
+                <X className="w-5 h-5" />
+              </button>
+            </div>
+
+            {transactionProcessing ? (
+              <div className="text-center py-8">
+                <div className="loading-spinner mx-auto mb-4" style={{ width: '32px', height: '32px' }}></div>
+                <p className="text-lg font-semibold text-gray-900 mb-2">Processing...</p>
+                <p className="text-sm text-gray-600">Please wait while we process your deposit</p>
+              </div>
+            ) : (
+              <form onSubmit={handleSubUserDeposit} className="space-y-4">
+                <div className="form-group">
+                  <label className="form-label">Amount (Minimum Amount)</label>
+                  <input
+                    type="number"
+                    placeholder="Enter Amount"
+                    value={subUserDepositForm.amount}
+                    onChange={(e) => setSubUserDepositForm({ ...subUserDepositForm, amount: e.target.value })}
+                    className="gaming-input"
+                    required
+                    min="100"
+                  />
+                </div>
+
+                <div className="flex flex-col sm:flex-row gap-3 pt-4">
+                  <button type="button" onClick={() => setShowSubUserDeposit(false)} className="w-full sm:flex-1 btn-secondary">
+                    Cancel
+                  </button>
+                  <button type="submit" className="w-full sm:flex-1 gaming-btn">
+                    Deposit
+                  </button>
+                </div>
+              </form>
+            )}
+          </div>
+        </div>
+      )}
+
+      {showResetPassword && (
+        <div className="fixed inset-0 modal-overlay flex items-center justify-center p-4 z-[100]">
+          <div className="gaming-card p-4 sm:p-6 max-w-md w-full mx-4">
+            <div className="flex justify-between items-center mb-6">
+              <div>
+                <h2 className="text-xl font-semibold text-gray-900">Reset Password</h2>
                 <p className="text-gray-600 text-sm mt-1">ID: {selectedSubUser?.clientName || 'N/A'}</p>
               </div>
               <button onClick={() => {
@@ -526,22 +680,20 @@ const MyIDs = () => {
                 setResetPasswordForm({ newPassword: '' });
                 setSelectedSubUser(null);
               }} className="text-gray-400 hover:text-gray-600">
-                <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 24 24">
-                  <path d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/>
-                </svg>
+                <X className="w-5 h-5" />
               </button>
             </div>
 
             {resetPasswordLoading ? (
               <div className="text-center py-8">
                 <div className="loading-spinner mx-auto mb-4" style={{ width: '32px', height: '32px' }}></div>
-                <p className="text-lg font-semibold text-gray-900 mb-2">{t('processing')}...</p>
+                <p className="text-lg font-semibold text-gray-900 mb-2">Processing...</p>
                 <p className="text-sm text-gray-600">Please wait while we process your password reset</p>
               </div>
             ) : (
               <form onSubmit={handleResetPassword} className="space-y-4">
                 <div className="form-group">
-                  <label className="form-label">{t('newPassword')}</label>
+                  <label className="form-label">New Password</label>
                   <PasswordInput
                     name="newPassword"
                     placeholder="Example@1256"
@@ -559,10 +711,10 @@ const MyIDs = () => {
                     setResetPasswordForm({ newPassword: '' });
                     setSelectedSubUser(null);
                   }} className="w-full sm:flex-1 btn-secondary">
-                    {t('cancel')}
+                    Cancel
                   </button>
                   <button type="submit" className="w-full sm:flex-1 gaming-btn">
-                    {t('resetPassword')}
+                    Reset Password
                   </button>
                 </div>
               </form>
@@ -570,8 +722,10 @@ const MyIDs = () => {
           </div>
         </div>
       )}
+
       <BottomNavigation activePage="ids" />
     </div>
+  </>
   );
 };
 

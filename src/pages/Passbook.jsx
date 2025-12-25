@@ -7,6 +7,7 @@ import BottomNavigation from '../components/BottomNavigation';
 import LanguageSelector from '../components/LanguageSelector';
 import { useTranslation } from 'react-i18next';
 import { BookOpen, Filter, Search, X, Eye } from 'lucide-react';
+import Header from '../components/Header';
 
 const Passbook = () => {
   const navigate = useNavigate();
@@ -27,6 +28,7 @@ const Passbook = () => {
   const [showScreenshot, setShowScreenshot] = useState(false);
   const [screenshotData, setScreenshotData] = useState(null);
   const [screenshotLoading, setScreenshotLoading] = useState(false);
+  const [expandedTransactions, setExpandedTransactions] = useState(null);
 
   useEffect(() => {
     if (user?._id) {
@@ -39,7 +41,7 @@ const Passbook = () => {
     try {
       const payload = {
         page: currentPage,
-        limit: 20,
+        limit: 50,
         ...currentFilters
       };
 
@@ -85,6 +87,35 @@ const Passbook = () => {
     setShowFilters(false);
   };
 
+  const getStatusPill = (status) => {
+    if (status === 'Accept') return 'bg-green-100 text-green-700';
+    if (status === 'Reject') return 'bg-red-100 text-red-600';
+    return 'bg-orange-100 text-orange-600';
+  };
+
+  const getIconConfig = (type) => {
+    if (type === 'Deposit') {
+      return {
+        bg: 'bg-green-50',
+        icon: 'text-green-600',
+        sign: '+',
+      };
+    }
+    return {
+      bg: 'bg-red-50',
+      icon: 'text-red-600',
+      sign: '-',
+    };
+  };
+
+  const toggleTransactionDetails = (transactionId) => {
+    if (expandedTransactions === transactionId) {
+      setExpandedTransactions(null);
+    } else {
+      setExpandedTransactions(transactionId);
+    }
+  };
+
   const fetchTransactionScreenshot = async (transactionId) => {
     setScreenshotLoading(true);
     try {
@@ -99,319 +130,346 @@ const Passbook = () => {
   };
 
   return (
-    <div className="min-h-screen bg-gray-50 pb-20">
-      <div className="max-w-[900px] mx-auto">
-        <div className="bg-gradient-to-r flex justify-between from-blue-600 to-blue-700 text-white px-6 py-3 rounded-b-3xl shadow-lg fixed top-0 left-0 right-0 z-10 max-w-[900px] mx-auto">
-          <div className="flex items-center w-full align-middle flex-wrap justify-between mb-2">
-            <div className='my-2'>
-              <div className="flex items-center gap-2 sm:gap-3">
-                <BookOpen size={20} className="sm:w-7 sm:h-7" />
-                <h1 className="text-lg sm:text-2xl font-bold">{t('history')}</h1>
-              </div>
-              <p className="text-xs sm:text-sm text-blue-100">{t('viewHistory')}</p>
-            </div>
-            <div className="flex items-center justify-between flex-wrap gap-2">
-              <button
-                onClick={() => setShowFilters(!showFilters)}
-                className="p-1 bg-white/20 flex rounded-lg hover:bg-white/30"
-              >
-                <Filter size={20} className='my-auto mx-2' /> {t('applyFilters')}
-              </button>
-            </div>
+    <>
+      <Header />
+      <div className="!min-h-screen">
+        <div className="max-w-[850px] bg-[#0e0e0e] min-h-screen mx-auto">
+          <div className="flex items-center justify-end pt-2.5 px-4 flex-wrap gap-2">
+            <button
+              onClick={() => setShowFilters(!showFilters)}
+              className="p-1 px-2 text-black bg-white flex rounded-lg hover:bg-gray-200"
+            >
+              <Filter size={20} className='my-auto text-black mr-2' /> {t('applyFilters')}
+            </button>
           </div>
-          <LanguageSelector />
-        </div>
+          <div>
+            {showFilters && (
+              <div className="fixed max-w-[850px] mx-auto inset-0 z-[9999]">
+                {/* BACKDROP */}
+                <div
+                  className="absolute inset-0 bg-black/50"
+                  onClick={() => setShowFilters(false)}
+                />
 
-        <div className="pt-32">
+                {/* BOTTOM SHEET */}
+                <div
+                  className="absolute bottom-0 left-0 right-0 bg-white rounded-t-3xl p-5 animate-slideUp"
+                >
+                  {/* DRAG HANDLE */}
+                  <div className="w-12 h-1.5 bg-gray-300 rounded-full mx-auto mb-4" />
 
-          {showFilters && (
-            <div className="bg-white m-4 p-4 rounded-xl shadow-lg">
-              <div className="flex justify-between items-center mb-4">
-                <h3 className="font-semibold text-gray-800">{t('applyFilters')}</h3>
-                <button onClick={() => setShowFilters(false)}>
-                  <X size={20} />
-                </button>
-              </div>
-
-              <div className="space-y-3">
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">{t('status')}</label>
-                  <select
-                    value={filters.status}
-                    onChange={(e) => handleFilterChange('status', e.target.value)}
-                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 outline-none"
-                  >
-                    <option value="">{t('allStatus')}</option>
-                    <option value="Initial">{t('initial')}</option>
-                    <option value="Pending">{t('pending')}</option>
-                    <option value="Accept">{t('accept')}</option>
-                    <option value="Reject">{t('reject')}</option>
-                  </select>
-                </div>
-
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">{t('type')}</label>
-                  <select
-                    value={filters.transactionType}
-                    onChange={(e) => handleFilterChange('transactionType', e.target.value)}
-                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 outline-none"
-                  >
-                    <option value="">{t('allTypes')}</option>
-                    <option value="Deposit">{t('deposit')}</option>
-                    <option value="Withdrawal">{t('withdraw')}</option>
-                  </select>
-                </div>
-
-                <div className="grid grid-cols-2 gap-3">
-                  <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-1">{t('amount')} (Min)</label>
-                    <input
-                      type="number"
-                      value={filters.minAmount}
-                      onChange={(e) => handleFilterChange('minAmount', e.target.value)}
-                      placeholder={t('amount')}
-                      className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 outline-none"
-                    />
+                  {/* HEADER */}
+                  <div className="flex items-center justify-between mb-4">
+                    <h3 className="text-base font-semibold text-gray-900">
+                      {t("applyFilters")}
+                    </h3>
+                    <button onClick={() => setShowFilters(false)}>
+                      <X className="w-5 h-5 text-gray-500" />
+                    </button>
                   </div>
-                  <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-1">{t('amount')} (Max)</label>
-                    <input
-                      type="number"
-                      value={filters.maxAmount}
-                      onChange={(e) => handleFilterChange('maxAmount', e.target.value)}
-                      placeholder={t('amount')}
-                      className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 outline-none"
-                    />
-                  </div>
-                </div>
 
-                <div className="flex gap-2 pt-2">
-                  <button
-                    onClick={applyFilters}
-                    className="flex-1 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 flex items-center justify-center gap-2"
-                  >
-                    <Search size={16} />
-                    {t('applyFilters')}
-                  </button>
-                  <button
-                    onClick={clearFilters}
-                    className="flex-1 px-4 py-2 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50"
-                  >
-                    {t('clearFilters')}
-                  </button>
-                </div>
-              </div>
-            </div>
-          )}
-
-          <div className="p-4 mt-3">
-            {loading ? (
-              <div className="text-center py-12">
-                <div className="w-12 h-12 border-4 border-blue-600 border-t-transparent rounded-full animate-spin mx-auto mb-4"></div>
-                <p className="text-gray-600">{t('loadingTransactions')}...</p>
-              </div>
-            ) : transactions.length === 0 ? (
-              <div className="bg-white rounded-2xl p-8 text-center shadow-sm">
-                <BookOpen size={48} className="mx-auto text-gray-300 mb-4" />
-                <p className="text-gray-500 text-lg">{t('noTransactions')}</p>
-              </div>
-            ) : (
-              <>
-                <div className="space-y-3">
-                  {transactions.map((transaction, index) => (
-                    <div key={transaction?._id || index} className="bg-white rounded-xl p-4 shadow-sm border border-gray-100">
-                      <div className="flex justify-between items-start mb-3">
-                        <div>
-                          <span className="text-xs text-gray-500">#{((page - 1) * 20) + index + 1}</span>
-                        </div>
-                        <div className="flex items-center gap-3">
-                          {transaction?.transactionType === 'Withdrawal' && transaction?.mode === 'PowerPay' && transaction?.status !== 'Reject' && (
-                            <button
-                              onClick={() => fetchTransactionScreenshot(transaction?._id)}
-                              className="p-2 text-blue-600 hover:bg-blue-50 rounded-lg transition-colors"
-                              title="View Screenshot"
-                            >
-                              <Eye className="w-4 h-4" />
-                            </button>
-                          )}
-                          <div className="text-right">
-                            <p className={`text-lg font-bold ${transaction?.transactionType === 'Deposit' ? 'text-green-600' : 'text-blue-600'
-                              }`}>
-                              ₹{transaction?.amount || 0}
-                            </p>
-                          </div>
-                        </div>
-                      </div>
-
-                      <div className="space-y-2 text-sm">
-                        <div className="flex justify-between">
-                          <span className="text-gray-500">{t('type')}:</span>
-                          <span className={`font-semibold px-2 py-1 rounded text-xs ${transaction?.transactionType === 'Deposit'
-                            ? 'bg-green-100 text-green-700'
-                            : 'bg-blue-100 text-blue-700'
-                            }`}>
-                            {transaction?.transactionType === 'Deposit' ? t('deposit') :
-                              transaction?.transactionType === 'Withdrawal' ? t('withdraw') :
-                                transaction?.transactionType || 'N/A'}
-                          </span>
-                        </div>
-                        <div className="flex justify-between">
-                          <span className="text-gray-500">{t('gameName')}:</span>
-                          <span className="font-medium text-gray-900">{transaction?.gameName || 'N/A'}</span>
-                        </div>
-                        <div className="flex justify-between">
-                          <span className="text-gray-500">{t('clientName')}:</span>
-                          <span className="font-medium text-gray-900">{transaction?.clientName || 'N/A'}</span>
-                        </div>
-                        <div className="flex justify-between">
-                          <span className="text-gray-500">{t('status')}:</span>
-                          <span className={`font-semibold ${transaction?.status === 'Accept' ? 'text-green-600' :
-                            transaction?.status === 'Reject' ? 'text-red-600' : 'text-yellow-600'
-                            }`}>
-                            {transaction?.status === 'Accept' ? t('accept') :
-                              transaction?.status === 'Reject' ? t('reject') :
-                                transaction?.status === 'Pending' ? t('pending') :
-                                  transaction?.status === 'Initial' ? t('initial') :
-                                    transaction?.status || t('pending')}
-                          </span>
-                        </div>
-                        <div className="flex justify-between">
-                          <span className="text-gray-500">{t('remark')}:</span>
-                          <span className="font-medium text-gray-900">{transaction?.remark || '-'}</span>
-                        </div>
-                        <div className="flex justify-between">
-                          <span className="text-gray-500">{t('transactionFrom')}:</span>
-                          <span className="font-medium text-gray-900">{transaction?.transactionFrom || 'N/A'}</span>
-                        </div>
-                        <div className="flex justify-between pt-2 border-t border-gray-100">
-                          <span className="text-gray-500">{t('createdAt')}:</span>
-                          <span className="text-gray-700 text-xs">
-                            {transaction?.createdAt ? new Date(transaction.createdAt).toLocaleString('en-IN') : 'N/A'}
-                          </span>
-                        </div>
-                        <div className="flex justify-between">
-                          <span className="text-gray-500">{t('updatedAt')}:</span>
-                          <span className="text-gray-700 text-xs">
-                            {transaction?.updatedAt ? new Date(transaction.updatedAt).toLocaleString('en-IN') : 'N/A'}
-                          </span>
-                        </div>
-                      </div>
+                  {/* FILTER FORM */}
+                  <div className="space-y-4">
+                    {/* STATUS */}
+                    <div>
+                      <label className="text-sm font-medium text-gray-700 mb-1 block">
+                        {t("status")}
+                      </label>
+                      <select
+                        value={filters.status}
+                        onChange={(e) =>
+                          handleFilterChange("status", e.target.value)
+                        }
+                        className="w-full px-4 py-3 border border-gray-200 rounded-xl outline-none"
+                      >
+                        <option value="">{t("allStatus")}</option>
+                        <option value="Initial">{t("initial")}</option>
+                        <option value="Pending">{t("pending")}</option>
+                        <option value="Accept">{t("accept")}</option>
+                        <option value="Reject">{t("reject")}</option>
+                      </select>
                     </div>
-                  ))}
-                </div>
 
-                {totalPages > 1 && (
-                  <div className="bg-white rounded-xl p-4 mt-4 shadow-sm">
-                    <div className="flex justify-between items-center">
-                      <button
-                        onClick={() => setPage(p => Math.max(1, p - 1))}
-                        disabled={page === 1 || loading}
-                        className="px-4 py-2 border border-gray-300 rounded-lg disabled:opacity-50 disabled:cursor-not-allowed hover:bg-gray-50"
+                    {/* TYPE */}
+                    <div>
+                      <label className="text-sm font-medium text-gray-700 mb-1 block">
+                        {t("type")}
+                      </label>
+                      <select
+                        value={filters.transactionType}
+                        onChange={(e) =>
+                          handleFilterChange("transactionType", e.target.value)
+                        }
+                        className="w-full px-4 py-3 border border-gray-200 rounded-xl outline-none"
                       >
-                        {t('previous')}
+                        <option value="">{t("allTypes")}</option>
+                        <option value="Deposit">{t("deposit")}</option>
+                        <option value="Withdrawal">{t("withdraw")}</option>
+                      </select>
+                    </div>
+
+                    {/* AMOUNT */}
+                    <div className="grid grid-cols-2 gap-3">
+                      <input
+                        type="number"
+                        placeholder={`${t("amount")} (Min)`}
+                        value={filters.minAmount}
+                        onChange={(e) =>
+                          handleFilterChange("minAmount", e.target.value)
+                        }
+                        className="px-4 py-3 border border-gray-200 rounded-xl outline-none"
+                      />
+                      <input
+                        type="number"
+                        placeholder={`${t("amount")} (Max)`}
+                        value={filters.maxAmount}
+                        onChange={(e) =>
+                          handleFilterChange("maxAmount", e.target.value)
+                        }
+                        className="px-4 py-3 border border-gray-200 rounded-xl outline-none"
+                      />
+                    </div>
+
+                    {/* ACTION BUTTONS */}
+                    <div className="flex gap-3 pt-2">
+                      <button
+                        onClick={applyFilters}
+                        className="flex-1 py-3 rounded-xl bg-gray-700 text-white font-medium"
+                      >
+                        {t("applyFilters")}
                       </button>
-
-                      <div className="flex gap-1">
-                        {Array.from({ length: Math.min(totalPages, 5) }, (_, i) => {
-                          let pageNum;
-                          if (totalPages <= 5) {
-                            pageNum = i + 1;
-                          } else if (page <= 3) {
-                            pageNum = i + 1;
-                          } else if (page >= totalPages - 2) {
-                            pageNum = totalPages - 4 + i;
-                          } else {
-                            pageNum = page - 2 + i;
-                          }
-
-                          return (
-                            <button
-                              key={pageNum}
-                              onClick={() => setPage(pageNum)}
-                              disabled={loading}
-                              className={`px-3 py-2 text-sm rounded-lg disabled:opacity-50 ${page === pageNum
-                                ? 'bg-blue-600 text-white'
-                                : 'border border-gray-300 hover:bg-gray-50'
-                                }`}
-                            >
-                              {pageNum}
-                            </button>
-                          );
-                        })}
-                      </div>
-
                       <button
-                        onClick={() => setPage(p => Math.min(totalPages, p + 1))}
-                        disabled={page === totalPages || loading}
-                        className="px-4 py-2 bg-blue-600 text-white rounded-lg disabled:opacity-50 disabled:cursor-not-allowed hover:bg-blue-700"
+                        onClick={clearFilters}
+                        className="flex-1 py-3 rounded-xl border border-gray-600 text-gray-600 font-medium"
                       >
-                        {t('next')}
+                        {t("clear")}
                       </button>
                     </div>
-                    <div className="text-center text-sm text-gray-600 mt-3">
-                      {t('page')} {page} of {totalPages}
-                    </div>
                   </div>
-                )}
-              </>
+                </div>
+              </div>
             )}
+
+
+            <div className="space-y-3 mt-3 px-2 sm:px-4">
+              {transactions.map((transaction, index) => {
+                const icon = getIconConfig(transaction.transactionType);
+
+                return (
+                  <div
+                    key={transaction?._id || index}
+                    className="bg-[#1b1b1b] rounded-2xl p-4 shadow-sm"
+                  >
+                    {/* TOP ROW - CLICKABLE */}
+                    <div 
+                      className="flex items-start gap-4 cursor-pointer"
+                      onClick={() => toggleTransactionDetails(transaction._id)}
+                    >
+                      {/* ICON */}
+                      <div
+                        className={`w-14 h-14 rounded-xl flex items-center justify-center ${icon.bg}`}
+                      >
+                        {transaction.transactionType === 'Deposit' ? (
+                          // <ArrowDown className={`w-7 h-7 ${icon.icon}`} />
+
+                          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                            <path d="M2 8.5H14.5" stroke="#0B930B" stroke-width="1.5" stroke-miterlimit="10" stroke-linecap="round" stroke-linejoin="round" />
+                            <path d="M6 16.5H8" stroke="#0B930B" stroke-width="1.5" stroke-miterlimit="10" stroke-linecap="round" stroke-linejoin="round" />
+                            <path d="M10.5 16.5H14.5" stroke="#0B930B" stroke-width="1.5" stroke-miterlimit="10" stroke-linecap="round" stroke-linejoin="round" />
+                            <path d="M22 14.03V16.11C22 19.62 21.11 20.5 17.56 20.5H6.44C2.89 20.5 2 19.62 2 16.11V7.89C2 4.38 2.89 3.5 6.44 3.5H14.5" stroke="#0B930B" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" />
+                            <path d="M20 3.5V9.5L22 7.5" stroke="#0B930B" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" />
+                            <path d="M20 9.5L18 7.5" stroke="#0B930B" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" />
+                          </svg>
+
+                        ) : (
+                          // <ArrowUp className={`w-7 h-7 ${icon.icon}`} />
+
+                          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                            <path d="M2 8.5H14.5" stroke="#FF1212" stroke-width="1.5" stroke-miterlimit="10" stroke-linecap="round" stroke-linejoin="round" />
+                            <path d="M6 16.5H8" stroke="#FF1212" stroke-width="1.5" stroke-miterlimit="10" stroke-linecap="round" stroke-linejoin="round" />
+                            <path d="M10.5 16.5H14.5" stroke="#FF1212" stroke-width="1.5" stroke-miterlimit="10" stroke-linecap="round" stroke-linejoin="round" />
+                            <path d="M22 14.03V16.11C22 19.62 21.11 20.5 17.56 20.5H6.44C2.89 20.5 2 19.62 2 16.11V7.89C2 4.38 2.89 3.5 6.44 3.5H14.5" stroke="#FF1212" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" />
+                            <path d="M20 9.5V3.5L22 5.5" stroke="#FF1212" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" />
+                            <path d="M20 3.5L18 5.5" stroke="#FF1212" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" />
+                          </svg>
+
+                        )}
+                      </div>
+
+                      {/* MAIN INFO */}
+                      <div className="flex-1">
+                        <p className="text-base font-semibold text-gray-300">
+                          {transaction.transactionType}
+                        </p>
+
+                        <p className="text-sm text-gray-400 mt-1">
+                          Tra_ID: #{transaction._id?.slice(-4)} •{' '}
+                          {transaction.createdAt
+                            ? new Date(transaction.createdAt).toLocaleTimeString('en-IN', {
+                              hour: '2-digit',
+                              minute: '2-digit',
+                            })
+                            : ''}
+                        </p>
+                      </div>
+
+                      {/* AMOUNT + STATUS */}
+                      <div className="text-right">
+                        <p
+                          className={`text-lg font-bold ${transaction.transactionType === 'Deposit'
+                            ? 'text-green-600'
+                            : 'text-red-600'
+                            }`}
+                        >
+                          {icon.sign}₹{transaction.amount}
+                        </p>
+
+                        <span
+                          className={`inline-block mt-1 px-3 py-1 rounded-full text-xs font-medium ${getStatusPill(
+                            transaction.status
+                          )}`}
+                        >
+                          {transaction.status === 'Accept'
+                            ? t('Accept')
+                            : transaction.status === 'Reject'
+                              ? t('rejected')
+                              : transaction.status === 'pending'
+                                ? t('pending')
+                                : transaction.status === 'Initial'
+                                  ? t('initial')
+                                  : transaction.status || t('pending')}
+                        </span>
+                      </div>
+                    </div>
+
+                    {/* EXTRA DETAILS (MANDATORY DATA) - EXPANDABLE */}
+                    {expandedTransactions === transaction._id && (
+                      <div className="mt-4 space-y-2 text-sm text-gray-300 border-t border-gray-300 pt-4">
+                        <div className="flex justify-between">
+                          <span className="text-gray-300">{t('gameName')}:</span>
+                          <span className="font-medium">{transaction.gameName || 'N/A'}</span>
+                        </div>
+
+                        <div className="flex justify-between">
+                          <span className="text-gray-300">{t('clientName')}:</span>
+                          <span className="font-medium">{transaction.clientName || 'N/A'}</span>
+                        </div>
+
+                        <div className="flex justify-between">
+                          <span className="text-gray-300">{t('remark')}:</span>
+                          <span className="font-medium">{transaction.remark || '-'}</span>
+                        </div>
+
+                        <div className="flex justify-between">
+                          <span className="text-gray-300">{t('transactionFrom')}:</span>
+                          <span className="font-medium">
+                            {transaction.transactionFrom || 'N/A'}
+                          </span>
+                        </div>
+
+                        <div className="flex justify-between text-xs pt-2 border-t border-gray-100">
+                          <span className="text-gray-300">{t('createdAt')}:</span>
+                          <span>
+                            {transaction.createdAt
+                              ? new Date(transaction.createdAt).toLocaleString('en-IN')
+                              : 'N/A'}
+                          </span>
+                        </div>
+
+                        <div className="flex justify-between text-xs">
+                          <span className="text-gray-300">{t('updatedAt')}:</span>
+                          <span>
+                            {transaction.updatedAt
+                              ? new Date(transaction.updatedAt).toLocaleString('en-IN')
+                              : 'N/A'}
+                          </span>
+                        </div>
+                      </div>
+                    )}
+
+                    {/* SCREENSHOT BUTTON (KEEP LOGIC) - ONLY SHOW WHEN EXPANDED */}
+                    {expandedTransactions === transaction._id &&
+                      transaction?.transactionType === 'Withdrawal' &&
+                      transaction?.mode === 'PowerPay' &&
+                      transaction?.status !== 'Reject' && (
+                        <button
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            fetchTransactionScreenshot(transaction?._id);
+                          }}
+                          className="mt-3 w-full flex items-center justify-center gap-2 py-2 rounded-xl border border-blue-500 text-blue-600 hover:bg-blue-50"
+                        >
+                          <Eye className="w-4 h-4" />
+                          View Screenshot
+                        </button>
+                      )
+                    }
+                  </div>
+                );
+              })}
+            </div>
+
+
+
           </div>
         </div>
-      </div>
 
-      {/* Screenshot Modal */}
-      {showScreenshot && (
-        <div className="fixed inset-0 modal-overlay flex items-center justify-center p-4 z-50">
-          <div className="bg-white rounded-xl max-w-2xl w-full max-h-[90vh] overflow-y-auto">
-            <div className="flex justify-between items-center p-4 border-b">
-              <h3 className="text-lg font-semibold text-gray-900">Transaction Screenshot</h3>
-              <button
-                onClick={() => {
-                  setShowScreenshot(false);
-                  setScreenshotData(null);
-                }}
-                className="text-gray-400 hover:text-gray-600"
-              >
-                <X className="w-5 h-5" />
-              </button>
-            </div>
-            <div className="p-4">
-              {screenshotLoading ? (
-                <div className="text-center py-8">
-                  <div className="w-8 h-8 border-4 border-blue-600 border-t-transparent rounded-full animate-spin mx-auto mb-4"></div>
-                  <p className="text-gray-600">Loading screenshot...</p>
+        {/* Screenshot Modal */}
+        {
+          showScreenshot && (
+            <div className="fixed inset-0 modal-overlay flex items-center justify-center p-4 z-50">
+              <div className="bg-white rounded-xl max-w-2xl w-full max-h-[90vh] overflow-y-auto">
+                <div className="flex justify-between items-center p-4 border-b">
+                  <h3 className="text-lg font-semibold text-gray-900">Transaction Screenshot</h3>
+                  <button
+                    onClick={() => {
+                      setShowScreenshot(false);
+                      setScreenshotData(null);
+                    }}
+                    className="text-gray-400 hover:text-gray-600"
+                  >
+                    <X className="w-5 h-5" />
+                  </button>
                 </div>
-              ) : screenshotData ? (
-                <div className="space-y-4">
-                  {screenshotData?.data?.data?.screenshotPeer ? (
-                    <img
-                      src={screenshotData?.data?.data.screenshotPeer}
-                      alt="Transaction Screenshot"
-                      className="w-full h-auto rounded-lg border"
-                    />
+                <div className="p-4">
+                  {screenshotLoading ? (
+                    <div className="text-center py-8">
+                      <div className="w-8 h-8 border-4 border-blue-600 border-t-transparent rounded-full animate-spin mx-auto mb-4"></div>
+                      <p className="text-gray-600">Loading screenshot...</p>
+                    </div>
+                  ) : screenshotData ? (
+                    <div className="space-y-4">
+                      {screenshotData?.data?.data?.screenshotPeer ? (
+                        <img
+                          src={screenshotData?.data?.data.screenshotPeer}
+                          alt="Transaction Screenshot"
+                          className="w-full h-auto rounded-lg border"
+                        />
+                      ) : (
+                        <div className="text-center py-8 text-gray-500">
+                          <p>No screenshot available for this transaction</p>
+                        </div>
+                      )}
+                      {screenshotData.message && (
+                        <div className="bg-gray-50 p-3 rounded-lg">
+                          <p className="text-sm text-gray-600">{screenshotData.message}</p>
+                        </div>
+                      )}
+                    </div>
                   ) : (
                     <div className="text-center py-8 text-gray-500">
-                      <p>No screenshot available for this transaction</p>
-                    </div>
-                  )}
-                  {screenshotData.message && (
-                    <div className="bg-gray-50 p-3 rounded-lg">
-                      <p className="text-sm text-gray-600">{screenshotData.message}</p>
+                      <p>Failed to load screenshot</p>
                     </div>
                   )}
                 </div>
-              ) : (
-                <div className="text-center py-8 text-gray-500">
-                  <p>Failed to load screenshot</p>
-                </div>
-              )}
+              </div>
             </div>
-          </div>
-        </div>
-      )}
+          )
+        }
 
-      <BottomNavigation activePage="passbook" />
-    </div>
+        <BottomNavigation activePage="passbook" />
+      </div >
+    </>
   );
 };
 

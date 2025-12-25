@@ -18,7 +18,7 @@ const UserProfile = () => {
   // Show loading if user data is not available
   if (!user) {
     return (
-      <div className="h-screen bg-gray-50 max-w-[900px] mx-auto flex items-center justify-center">
+      <div className="h-screen bg-gray-50 max-w-[850px] mx-auto flex items-center justify-center">
         <div className="text-center">
           <div className="loading-spinner mx-auto mb-4" style={{ width: '40px', height: '40px' }}></div>
           <p className="text-gray-600 text-lg">{t('loading')}...</p>
@@ -28,9 +28,9 @@ const UserProfile = () => {
   }
 
   return (
-    <div className="h-screen bg-gray-50 max-w-[900px] mx-auto">
+    <div className="h-screen bg-gray-50 max-w-[850px] mx-auto">
 
-      <div className="p-4 sm:p-6 lg:p-8 pt-16 lg:pt-8 max-w-[900px] mx-auto">
+      <div className="p-4 sm:p-6 lg:p-8 pt-16 lg:pt-8 max-w-[850px] mx-auto">
         {/* Profile Header */}
         <div className="gaming-card p-6 mb-6">
           <div className='flex justify-between items-centers align-middle'>

@@ -120,9 +120,9 @@ const LoginForm = () => {
   }, [countdown]);
 
   return (
-    <div className="min-h-screen flex flex-col max-w-[900px] mx-auto items-center justify-start p-4" style={{ backgroundImage: 'url(/bg.jpg)', backgroundSize: 'cover', backgroundPosition: 'center', backgroundRepeat: 'no-repeat' }}>
+    <div className="min-h-screen flex flex-col max-w-[850px] mx-auto items-center justify-start p-4" style={{ backgroundImage: 'url(/bg.jpg)', backgroundSize: 'cover', backgroundPosition: 'center', backgroundRepeat: 'no-repeat' }}>
       <div className="text-center mb-6 max-w-md w-full">
-        <img src="/logoforlogin.png" alt="Logo" className="w-[250px] md:w-[300px] h-auto mx-auto" />
+        <img src="/logoforlogin.png" alt="Logo" className="w-[140px] md:w-[190px] h-auto mx-auto" />
       </div>
 
       {!showForgotPassword && (

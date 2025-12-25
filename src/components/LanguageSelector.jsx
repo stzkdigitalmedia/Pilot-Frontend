@@ -52,8 +52,8 @@ const LanguageSelector = () => {
         onClick={() => setIsOpen(!isOpen)}
         className="flex flex-col items-center justify-center w-16 h-16 rounded-lg transition-colors"
       >
-        <Globe className="w-5 h-5 text-black mb-1" />
-        <span className="text-sm font-medium text-black uppercase">
+        <Globe className="w-4 h-4 sm:w-5 sm:h-5 text-white mb-0.5 sm:mb-1" />
+        <span className="text-[12px] sm:text-sm font-medium text-white uppercase">
           {getCurrentLanguage().code}
         </span>
       </button>

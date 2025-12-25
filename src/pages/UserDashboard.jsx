@@ -4,7 +4,7 @@ import { apiHelper } from '../utils/apiHelper';
 import { useToastContext } from '../App';
 import PasswordInput from '../components/PasswordInput';
 import PhoneInput from '../components/PhoneInput';
-import { Wallet, Plus, BarChart3, Gamepad2, X, Check, Trash2, ChevronLeft, ChevronRight, Copy, ArrowUp, ArrowDown } from 'lucide-react';
+import { Wallet, Plus, BarChart3, Gamepad2, X, Check, Trash2, ChevronLeft, ChevronRight, Copy, ArrowUp, ArrowDown, Link2, LinkIcon } from 'lucide-react';
 import { Link, useNavigate } from 'react-router-dom';
 import BottomNavigation from '../components/BottomNavigation';
 import LanguageSelector from '../components/LanguageSelector';
@@ -1008,109 +1008,98 @@ const UserDashboard = () => {
   }, [showUserDropdown]);
 
   return (
-    <div className="min-h-screen bg-gray-50 max-w-[900px] mx-auto">
+    <div className="min-h-screen bg-[#0e0e0e] max-w-[850px] mx-auto">
 
 
       {/* Main Content */}
-      <div className="px-4 pb-4 pt-4 sm:px-6 sm:pb-6 lg:px-8 lg:pb-8 max-w-[900px] mx-auto">
-        {/* Modern Wallet Section */}
-        <div className="mb-6">
+      <div className="max-w-[850px] mx-auto">
 
-          {/* User Profile */}
-          <div className="flex items-center justify-between mb-2">
-            <Link to="/profile" className="flex items-center gap-3 hover:opacity-80 transition-opacity">
-              <div className="w-10 h-10 rounded-full flex items-center justify-center cursor-pointer" style={{
-                background: "linear-gradient(to bottom, #1477b0, #264e69)",
-              }}>
-                <span className="text-white font-bold text-md">
-                  {user?.clientName?.charAt(0)?.toUpperCase() || 'U'}
-                </span>
-              </div>
-              <div>
-                <p className="text-gray-900 font-semibold text-md notranslate">{user?.clientName}</p>
-                <p className="text-gray-600 text-sm">{t('welcome')}</p>
-              </div>
-            </Link>
+        {/* Modern Wallet Section */}
+        <div
+          className="relative w-full pt-10 pb-8 flex justify-center items-center"
+          style={{
+            background: 'url(/bghero.svg)',
+            backgroundSize: '400px'
+          }}
+        >
+
+          <Link to="/profile" className=" absolute top-0 left-4">
+            <div className="w-7 h-7 sm:w-9 sm:h-9 border-1 border-white mt-3 bg-gray-800 rounded-full flex items-center justify-center cursor-pointer">
+              <span className="text-white font-semibold text-md sm:text-md">
+                {user?.clientName?.charAt(0)?.toUpperCase() || 'U'}
+              </span>
+            </div>
+
+          </Link>
+
+          <div className='absolute top-0 right-0'>
             <LanguageSelector />
           </div>
 
-          {/* Wallet Balance Card */}
-          <div className="relative rounded-3xl p-4 sm:p-6 mb-6 shadow-2xl overflow-hidden" style={{ backgroundImage: 'url(/bghero.png)', backgroundSize: 'cover', backgroundPosition: 'center' }}>
+          {/* CENTER WRAPPER */}
+          <div className="relative flex items-center">
+
+            {/* LEFT – DEPOSIT */}
             <div
-              className="absolute inset-0 rounded-3xl"
-              style={{
-                background: "linear-gradient(to bottom, #1477b0, #264e69)",
+              onClick={() => {
+                setTransactionForm({ ...transactionForm, transactionType: 'Deposit' });
+                setShowCreateTransaction(true);
               }}
-            ></div>
+              className="w-[80px] h-[100px] mr-2 bg-[#1a1a1a] rounded-l-2xl
+      flex flex-col items-center justify-center gap-2
+      cursor-pointer shadow-2xl"
+            >
+              <span className="text-white text-sm">Deposit</span>
+              <img src='/arrowup.svg' className="h-7 leading-none" />
+            </div>
 
-            <div className="relative z-10">
-              <div className="flex items-center justify-between mb-4 sm:mb-6">
-                <div>
-                  <p className="text-white/80 text-sm font-medium mb-1">{t('availableBalance')}</p>
-                  {balanceLoading ? (
-                    <div className="flex items-center gap-2">
-                      <div className="loading-spinner" style={{ width: '20px', height: '20px' }}></div>
-                      <span className="text-2xl sm:text-4xl text-white">Loading...</span>
-                    </div>
-                  ) : (
-                    <div className="flex items-center gap-2 sm:gap-3">
-                      <Wallet className="w-6 h-6 sm:w-8 sm:h-8 text-white" />
-                      <span className="text-2xl sm:text-4xl font-bold text-white">₹{userBalance.toLocaleString()}</span>
-                    </div>
-                  )}
-                </div>
-                <img src="/logoforlogin.png" alt="Logo" className="h-12 sm:h-14 w-auto" />
-              </div>
+            {/* CENTER – MAIN WALLET */}
+            <div
+              className="w-[150px] h-[160px] bg-[#141414] rounded-3xl
+      flex flex-col items-center justify-center
+      mx-[-14px] z-10 shadow-2xl shadow-black"
+            >
+              <img
+                src="/logoforlogin.png"
+                alt="Logo"
+                className="h-14 mb-4"
+              />
 
-              {/* Action Buttons */}
-              <div className="grid grid-cols-3 gap-2 sm:gap-4">
-                <button
-                  onClick={() => {
-                    setTransactionForm({ ...transactionForm, transactionType: 'Deposit' });
-                    setShowCreateTransaction(true);
-                  }}
-                  className="bg-white/20 backdrop-blur-sm hover:bg-white/30 transition-all duration-200 rounded-xl sm:rounded-2xl p-3 sm:p-4 flex flex-col items-center gap-1 sm:gap-2"
-                >
-                  <div className="w-8 h-8 sm:w-12 sm:h-12 bg-green-500 rounded-full flex items-center justify-center">
-                    <ArrowUp className="w-4 h-4 sm:w-6 sm:h-6 text-white" />
-                  </div>
-                  <span className="text-white font-semibold text-xs sm:text-sm">{t('deposit')}</span>
-                </button>
+              <p className="text-white/70 text-xs tracking-widest mb-1">
+                WALLET BALANCE
+              </p>
 
-                <button
-                  onClick={() => {
-                    setTransactionForm({ ...transactionForm, transactionType: 'Withdraw' });
-                    setShowCreateTransaction(true);
-                    fetchBanks();
-                  }}
-                  className="bg-white/20 backdrop-blur-sm hover:bg-white/30 transition-all duration-200 rounded-xl sm:rounded-2xl p-3 sm:p-4 flex flex-col items-center gap-1 sm:gap-2"
-                >
-                  <div className="w-8 h-8 sm:w-12 sm:h-12 bg-red-500 rounded-full flex items-center justify-center">
-                    <ArrowDown className="w-4 h-4 sm:w-6 sm:h-6 text-white" />
-                  </div>
-                  <span className="text-white font-semibold text-xs sm:text-sm">{t('withdraw')}</span>
-                </button>
-
-                <button
-                  onClick={() => navigate('/passbook')}
-                  className="bg-white/20 backdrop-blur-sm hover:bg-white/30 transition-all duration-200 rounded-xl sm:rounded-2xl p-3 sm:p-4 flex flex-col items-center gap-1 sm:gap-2"
-                >
-                  <div className="w-8 h-8 sm:w-12 sm:h-12 bg-blue-500 rounded-full flex items-center justify-center">
-                    <BarChart3 className="w-4 h-4 sm:w-6 sm:h-6 text-white" />
-                  </div>
-                  <span className="text-white font-semibold text-xs sm:text-sm">{t('history')}</span>
-                </button>
+              <div className="flex items-center gap-2 text-white text-xl font-semibold">
+                <img src="/coinsicon.png" className='w-5' alt="" />
+                <span>{userBalance.toLocaleString()}</span>
               </div>
             </div>
+
+            {/* RIGHT – WITHDRAW */}
+            <div
+              onClick={() => {
+                setTransactionForm({ ...transactionForm, transactionType: 'Withdraw' });
+                setShowCreateTransaction(true);
+                fetchBanks();
+              }}
+              className="w-[80px] h-[100px] ml-2 bg-[#1a1a1a] rounded-r-2xl
+      flex flex-col items-center justify-center gap-2
+      cursor-pointer shadow-2xl"
+            >
+              <span className="text-white text-sm">Withdraw</span>
+              <img src='/arrowdown.svg' className="h-7 leading-none" />
+            </div>
+
           </div>
         </div>
 
+
         {/* Games Section */}
-        <div className="gaming-card p-4 sm:p-6 mb-[22px]">
+        {/* <div className="gaming-card p-4 sm:p-6 m-1 rounded-lg">
           <div className="flex justify-between items-center mb-4 sm:mb-5">
             <div>
               <h2 className="text-lg sm:text-xl font-semibold text-gray-900">{t('availableExchange')}</h2>
-              <p className="text-gray-600 text-sm mt-1">{t('selectGame')}</p>
+              <p className="text-gray-900 text-sm mt-1">{t('selectGame')}</p>
             </div>
           </div>
 
@@ -1134,294 +1123,285 @@ const UserDashboard = () => {
               ))}
             </div>
           )}
-        </div>
+        </div> */}
+
+        {/* <div className="m-1 rounded-2xl p-4 sm:p-6 bg-gradient-to-br from-[#1a2a44] to-[#0f1b2d] border border-white/10 shadow-[0_20px_50px_rgba(0,0,0,0.6)] backdrop-blur-xl mt-[22px]">
+
+          <div className="mb-5">
+            <h2 className="text-xl font-semibold text-white">
+              {t('availableExchange')}
+            </h2>
+            <p className="text-sm text-blue-200 mt-1">
+              {t('selectGame')}
+            </p>
+          </div>
+
+          {games.length === 0 ? (
+            <div className="text-center py-8 text-blue-200">
+              No games available
+            </div>
+          ) : (
+            <div className="flex flex-wrap">
+              {games.map((game) => (
+                <div
+                  key={game.id || game._id}
+                  onClick={() => {
+                    setFormData({ ...formData, gameId: game.id || game._id });
+                    setShowCreateId(true);
+                  }}
+                  className="w-28 h-16 mx-2 cursor-pointern shadow-lg hover:scale-[1.03] transition">
+
+                  {game.image ? (
+                    <img
+                      src={game.image}
+                      alt={game.name}
+                      className="w-full h-full rounded-lg"
+                    />
+                  ) : (
+                    <span className="text-xl">{game.name}</span>
+                  )}
+                </div>
+              ))}
+            </div>
+          )}
+        </div> */}
+
 
 
         {/* Sub Accounts Slider */}
-        <div className="gaming-card p-4 sm:p-6 mb-[22px]">
-          <div className="flex justify-between items-center mb-4 sm:mb-6">
+        <div className="m-1 rounded-2xl mt-[22px] mx-2 p-4 sm:p-6 bg-[#1b1b1b] border border-white/10 shadow-[0_20px_50px_rgba(0,0,0,0.6)] backdrop-blur-xl">
+
+          <div className="flex justify-between items-center mb-6">
             <div>
-              <h2 className="text-lg sm:text-xl font-semibold text-gray-900">{t('myIds')} ({subAccounts.length})</h2>
-              <p className="text-gray-600 text-sm mt-1">{t('manageAccounts')}</p>
+              <h2 className="text-xl font-semibold text-white">
+                {t('myIds')} ({subAccounts.length})
+              </h2>
+              <p className="text-sm text-blue-200">
+                {t('manageAccounts')}
+              </p>
             </div>
+
             {subAccounts.length > 1 && (
-              <div className="flex items-center gap-2">
-                <button
-                  onClick={() => {
-                    const step = window.innerWidth >= 640 ? 2 : 1;
-                    setCurrentSlide(Math.max(0, currentSlide - step));
-                  }}
-                  disabled={currentSlide === 0}
-                  className="p-2 rounded-lg bg-gray-100 hover:bg-gray-200 disabled:opacity-50 disabled:cursor-not-allowed transition-all"
-                >
-                  <ChevronLeft className="w-4 h-4 sm:w-5 sm:h-5 text-gray-600" />
-                </button>
-                <button
-                  onClick={() => {
-                    const step = window.innerWidth >= 640 ? 2 : 1;
-                    const maxSlide =
-                      window.innerWidth >= 640
-                        ? Math.max(0, subAccounts.length - 2)
-                        : subAccounts.length - 1;
-                    setCurrentSlide(Math.min(maxSlide, currentSlide + step));
-                  }}
-                  disabled={
-                    window.innerWidth >= 640
-                      ? currentSlide >= Math.max(0, subAccounts.length - 2)
-                      : currentSlide >= subAccounts.length - 1
-                  }
-                  className="p-2 rounded-lg bg-gray-100 hover:bg-gray-200 disabled:opacity-50 disabled:cursor-not-allowed transition-all"
-                >
-                  <ChevronRight className="w-4 h-4 sm:w-5 sm:h-5 text-gray-600" />
-                </button>
+              <div className="flex flex-wrap justify-end gap-2">
+                <Link to={'/my-ids'}>
+                  <button className='px-2 h-9 rounded-lg bg-white font-semibold hover:bg-white/80'>
+                    Get New Id
+                  </button>
+                </Link>
+                <div className='flex gap-6 sm:gap-2'>
+                  <button
+                    onClick={() => {
+                      const step = window.innerWidth >= 640 ? 2 : 1;
+                      setCurrentSlide(Math.max(0, currentSlide - step));
+                    }}
+                    className="w-9 h-9 rounded-lg bg-white/10 text-white hover:bg-white/20"
+                  >
+                    <ChevronLeft className='mx-auto' />
+                  </button>
+                  <button
+                    onClick={() => {
+                      const step = window.innerWidth >= 640 ? 2 : 1;
+                      const maxSlide =
+                        window.innerWidth >= 640
+                          ? Math.max(0, subAccounts.length - 2)
+                          : subAccounts.length - 1;
+                      setCurrentSlide(Math.min(maxSlide, currentSlide + step));
+                    }}
+                    className="w-9 h-9 rounded-lg bg-white/10 text-white hover:bg-white/20"
+                  >
+                    <ChevronRight className='mx-auto' />
+                  </button>
+                </div>
               </div>
             )}
           </div>
+          <div className="relative overflow-hidden">
+            <div
+              className="flex transition-transform duration-300 ease-in-out"
+              style={{
+                transform: `translateX(-${currentSlide * (100 / (window.innerWidth >= 640 ? 2 : 1))}%)`,
+              }}
+            >
+              {subAccounts.map((account, index) => {
+                const game = account.gameId?.name;
+                return (
+                  <div
+                    key={account.id || account._id || index}
+                    className="flex-shrink-0 px-2"
+                    style={{ width: window.innerWidth >= 640 ? '50%' : '100%' }}
+                  >
+                    {/* <div className="rounded-2xl p-5 bg-gradient-to-br from-[#101c2f] to-[#0b1324] border border-white/10 text-white"> */}
+                    <div className="rounded-2xl p-5 bg-[#3f3f3f] text-white">
 
-          {subAccountsLoading ? (
-            <div className="text-center py-8">
-              <div className="loading-spinner mx-auto mb-4" style={{ width: '32px', height: '32px' }}></div>
-              <p className="text-gray-600">Loading sub accounts...</p>
-            </div>
-          ) : subAccounts.length === 0 ? (
-            <div className="text-center py-8 text-gray-500">
-              <p className="text-base sm:text-lg mb-2">No sub accounts found</p>
-              <p className="text-sm">Create your first sub account using games below</p>
-            </div>
-          ) : (
-            <div className="relative overflow-hidden">
-              <div
-                className="flex transition-transform duration-300 ease-in-out"
-                style={{
-                  transform: `translateX(-${currentSlide * (100 / (window.innerWidth >= 640 ? 2 : 1))}%)`,
-                }}
-                onTouchStart={(e) => setTouchStart(e.targetTouches[0].clientX)}
-                onTouchMove={(e) => setTouchEnd(e.targetTouches[0].clientX)}
-                onTouchEnd={() => {
-                  if (!touchStart || !touchEnd) return;
-                  const distance = touchStart - touchEnd;
-                  const isLeftSwipe = distance > 50;
-                  const isRightSwipe = distance < -50;
-
-                  if (isLeftSwipe) {
-                    const step = window.innerWidth >= 640 ? 2 : 1;
-                    const maxSlide =
-                      window.innerWidth >= 640
-                        ? Math.max(0, subAccounts.length - 2)
-                        : subAccounts.length - 1;
-                    setCurrentSlide(Math.min(maxSlide, currentSlide + step));
-                  }
-
-                  if (isRightSwipe) {
-                    const step = window.innerWidth >= 640 ? 2 : 1;
-                    setCurrentSlide(Math.max(0, currentSlide - step));
-                  }
-                }}
-              >
-                {subAccounts.map((account, index) => {
-                  const game = account.gameId?.name;
-                  return (
-                    <div
-                      key={account.id || account._id || index}
-                      className="flex-shrink-0 px-2"
-                      style={{ width: window.innerWidth >= 640 ? '50%' : '100%' }}
-                    >
-                      <div className="bg-gradient-to-br from-gray-800 to-gray-900 rounded-2xl p-4 sm:p-6 text-white shadow-2xl relative">
-                        {/* Header */}
-                        <div className="flex items-center justify-between mb-4">
-                          <div className="flex items-center gap-2 sm:gap-3">
-                            <div
-                              className="w-8 h-8 sm:w-10 sm:h-10 rounded-lg flex items-center justify-center"
-                              style={{ backgroundColor: '#1477b0' }}
-                            >
-                              {game?.image ? (
-                                <img
-                                  src={game.image}
-                                  alt={game.name}
-                                  className="w-6 h-6 sm:w-8 sm:h-8 rounded"
-                                />
-                              ) : (
-                                <Gamepad2 className="w-4 h-4 sm:w-5 sm:h-5 text-white" />
-                              )}
-                            </div>
-                            <div>
-                              <h3 className="font-bold text-sm sm:text-lg notranslate">{game || 'Game'}</h3>
-                            </div>
+                      {/* Header */}
+                      <div className="flex items-center justify-between mb-4">
+                        <div className="flex items-center gap-2 sm:gap-3">
+                          <div className="w-12 h-12 overflow-hidden rounded-full bg-black flex items-center justify-center">
+                            {/* {game?.image ? ( */}
+                            {console.log(game)}
+                            <img src={account.gameId?.image} alt={account.gameId?.name} className="w-6 h-6 sm:w-full m-auto sm:h-8 rounded" />
+                            {/* ) : (
+                              <Gamepad2 className="w-4 h-4 sm:w-5 sm:h-5 text-white" />
+                            )} */}
                           </div>
                           <div>
-                            <span
-                              className={`inline-flex items-center px-3 py-1 rounded-full text-xs font-medium ${account.status === 'Accept'
-                                ? 'bg-green-100 text-green-800'
-                                : account.status === 'Panding'
-                                  ? 'bg-yellow-100 text-yellow-800'
-                                  : account.status === 'Reject'
-                                    ? 'bg-red-100 text-red-800'
-                                    : 'bg-gray-100 text-gray-800'
-                                }`}
-                            >
-                              {account.status === 'Accept'
-                                ? t('active')
-                                : account.status === 'Panding'
-                                  ? t('pending')
-                                  : account.status === 'Reject'
-                                    ? t('rejected')
-                                    : t('pending')}
-                            </span>
+                            <h3 className="font-bold text-sm sm:text-lg notranslate">{game || 'Game'}</h3>
                           </div>
                         </div>
+                        <div>
+                          <span
+                            className={`inline-flex items-center px-3 py-1 rounded-full text-xs font-medium ${account.status === "Accept"
+                              ? "bg-green-100 text-green-800"
+                              : account.status === "Panding"
+                                ? "bg-yellow-100 text-yellow-800"
+                                : account.status === "Reject"
+                                  ? "bg-red-100 text-red-800"
+                                  : "bg-gray-100 text-gray-800"
+                              }`}
+                          >
+                            {account.status === "Accept"
+                              ? t('active')
+                              : account.status === "Panding"
+                                ? t('pending')
+                                : account.status === "Reject"
+                                  ? t('rejected')
+                                  : t('pending')}
+                          </span>
+                        </div>
+                      </div>
 
-                        {/* Account Details */}
-                        <div className="space-y-2 sm:space-y-3 mb-4 sm:mb-6">
-                          <div className="flex items-center gap-2">
-                            <div className="w-3 h-3 sm:w-4 sm:h-4 bg-gray-600 rounded flex items-center justify-center">
-                              <span className="text-xs">👤</span>
-                            </div>
-                            <span className="text-xs sm:text-sm text-gray-300 notranslate">ID:</span>
-                            <span className="text-xs sm:text-sm font-mono truncate notranslate">
-                              {account?.clientName || 'N/A'}
-                            </span>
-                            <button
-                              onClick={(e) => {
-                                e.stopPropagation();
-                                navigator.clipboard.writeText(account?.clientName || '');
-                                toast.success('ID copied to clipboard!');
-                              }}
-                              onTouchStart={(e) => e.stopPropagation()}
-                              onTouchMove={(e) => e.stopPropagation()}
-                              onTouchEnd={(e) => e.stopPropagation()}
-                              className="ml-auto p-1 hover:bg-gray-700 rounded"
-                            >
-                              <Copy className="w-3 h-3" />
-                            </button>
+                      {/* Account Details */}
+                      <div className="space-y-2 sm:space-y-3 mb-4 sm:mb-6">
+                        <div className="flex items-center gap-2">
+                          <div className="w-3 h-3 sm:w-4 sm:h-4 bg-gray-600 rounded flex items-center justify-center">
+                            <span className="text-xs">👤</span>
                           </div>
-
-                          <div className="flex items-center gap-2">
-                            <div className="w-3 h-3 sm:w-4 sm:h-4 bg-gray-600 rounded flex items-center justify-center">
-                              <span className="text-xs">🔒</span>
-                            </div>
-                            <span className="text-xs sm:text-sm text-gray-300 notranslate">{t('password')}:</span>
-                            <span className="text-xs sm:text-sm font-mono truncate flex-1 notranslate">
-                              {account?.password || 'N/A'}
-                            </span>
-                            <button
-                              onClick={(e) => {
-                                e.stopPropagation();
-                                navigator.clipboard.writeText(account?.password || '');
-                                toast.success('Password copied to clipboard!');
-                              }}
-                              onTouchStart={(e) => e.stopPropagation()}
-                              onTouchMove={(e) => e.stopPropagation()}
-                              onTouchEnd={(e) => e.stopPropagation()}
-                              className="p-1 hover:bg-gray-700 rounded"
-                            >
-                              <Copy className="w-3 h-3" />
-                            </button>
-                          </div>
-
-                          <div className="flex items-center gap-2">
-                            <div className="w-3 h-3 sm:w-4 sm:h-4 bg-gray-600 rounded flex items-center justify-center">
-                              <span className="text-xs">🌐</span>
-                            </div>
-                            <span className="text-xs sm:text-sm text-gray-300 notranslate">{t('platform')}:</span>
-                            <span className="text-xs sm:text-sm font-mono truncate">
-                              <a href={account?.gameId?.gameUrl} target="_blank">
-                                {account?.gameId?.gameUrl || 'N/A'}
-                              </a>
-                            </span>
-                            <button
-                              onClick={(e) => {
-                                e.stopPropagation();
-                                if (account?.gameId?.gameUrl) {
-                                  window.open(account.gameId.gameUrl, '_blank');
-                                } else {
-                                  toast.error('Platform URL not available');
-                                }
-                              }}
-                              onTouchStart={(e) => e.stopPropagation()}
-                              onTouchMove={(e) => e.stopPropagation()}
-                              onTouchEnd={(e) => e.stopPropagation()}
-                              className="ml-auto p-1 hover:bg-gray-700 rounded"
-                              title="Open Platform"
-                            >
-                              <span className="text-xs">🔗</span>
-                            </button>
-                          </div>
+                          <span className="text-xs sm:text-sm notranslate">ID:</span>
+                          <span className="text-xs sm:text-sm font-mono truncate notranslate">{account?.clientName || 'N/A'}</span>
+                          <button
+                            onClick={() => {
+                              navigator.clipboard.writeText(account?.clientName || '');
+                              toast.success('ID copied to clipboard!');
+                            }}
+                            className="ml-auto p-1 hover:bg-gray-800 rounded"
+                          >
+                            <Copy className="w-3 h-3" />
+                          </button>
                         </div>
 
-                        {/* Action Buttons */}
-                        <div className="flex gap-2 sm:gap-3 flex-wrap">
+                        <div className="flex items-center gap-2">
+                          <div className="w-3 h-3 sm:w-4 sm:h-4 bg-gray-600 rounded flex items-center justify-center">
+                            <span className="text-xs">🔒</span>
+                          </div>
+                          <span className="text-xs sm:text-sm notranslate">{t('password')}:</span>
+                          <span className="text-xs sm:text-sm font-mono truncate flex-1 notranslate">{account?.password || 'N/A'}</span>
                           <button
-                            onClick={(e) => {
-                              e.stopPropagation();
-                              setSelectedSubUser(account);
-                              setShowSubUserDeposit(true);
+                            onClick={() => {
+                              navigator.clipboard.writeText(account?.password || '');
+                              toast.success('Password copied to clipboard!');
                             }}
-                            onTouchStart={(e) => e.stopPropagation()}
-                            onTouchMove={(e) => e.stopPropagation()}
-                            onTouchEnd={(e) => e.stopPropagation()}
-                            disabled={account.status !== 'Accept'}
-                            className={`flex-1 py-2 px-2 sm:px-4 rounded-lg flex items-center justify-center gap-1 sm:gap-2 transition-colors ${account.status === 'Accept'
-                              ? 'bg-red-600 hover:bg-red-700 cursor-pointer'
-                              : 'bg-gray-500 cursor-not-allowed opacity-50'
-                              }`}
+                            className="p-1 hover:bg-gray-800 rounded"
+                            title="Copy Password"
                           >
-                            <ArrowUp className="w-3 h-3 sm:w-4 sm:h-4" />
-                            <span className="text-xs sm:text-sm font-medium">{t('deposit')}</span>
+                            <Copy className="w-3 h-3" />
                           </button>
+                        </div>
 
+                        <div className="flex items-center gap-2">
+                          <div className="w-3 h-3 sm:w-4 sm:h-4 bg-gray-600 rounded flex items-center justify-center">
+                            <span className="text-xs">🌐</span>
+                          </div>
+                          <span className="text-xs sm:text-sm notranslate">{t('platform')}:</span>
+                          <span className="text-xs sm:text-sm font-mono truncate">
+                            <a href={account?.gameId?.gameUrl} target='_blank'>{account?.gameId?.gameUrl || 'N/A'}</a>
+                          </span>
                           <button
-                            onClick={async (e) => {
-                              e.stopPropagation();
-                              setSelectedSubUser(account);
-                              await createBalanceLog(account?.id || account?._id);
-                              setShowSubUserWithdraw(true);
-                              fetchBanks();
-                              fetchSubUserBalance(account?.id || account?._id);
+                            onClick={() => {
+                              if (account?.gameId?.gameUrl) {
+                                window.open(account.gameId.gameUrl, '_blank');
+                              } else {
+                                toast.error('Platform URL not available');
+                              }
                             }}
-                            onTouchStart={(e) => e.stopPropagation()}
-                            onTouchMove={(e) => e.stopPropagation()}
-                            onTouchEnd={(e) => e.stopPropagation()}
-                            disabled={account.status !== 'Accept'}
-                            className={`flex-1 py-2 px-2 sm:px-4 rounded-lg flex items-center justify-center gap-1 sm:gap-2 transition-colors ${account.status === 'Accept'
-                              ? 'cursor-pointer'
-                              : 'cursor-not-allowed opacity-50'
-                              }`}
-                            style={{
-                              backgroundColor: account.status === 'Accept' ? '#1477b0' : '#6b7280',
-                            }}
+                            className="ml-auto p-1 hover:bg-gray-800 rounded"
+                            title="Open Platform"
                           >
-                            <ArrowDown className="w-3 h-3 sm:w-4 sm:h-4" />
-                            <span className="text-xs sm:text-sm font-medium">{t('withdraw')}</span>
-                          </button>
-
-                          <button
-                            onClick={(e) => {
-                              e.stopPropagation();
-                              setSelectedSubUser(account);
-                              setShowResetPassword(true);
-                            }}
-                            onTouchStart={(e) => e.stopPropagation()}
-                            onTouchMove={(e) => e.stopPropagation()}
-                            onTouchEnd={(e) => e.stopPropagation()}
-                            className={`flex-1 py-2 px-2 sm:px-4 rounded-lg flex items-center justify-center gap-1 sm:gap-2 transition-colors ${account.status === 'Accept'
-                              ? 'cursor-pointer'
-                              : 'cursor-not-allowed opacity-50'
-                              }`}
-                            style={{
-                              backgroundColor: account.status === 'Accept' ? '#1477b0' : '#6b7280',
-                            }}
-                          >
-                            {t('resetPassword')}
+                            <LinkIcon className="w-3 h-3" />
                           </button>
                         </div>
                       </div>
+
+                      {/* Rejection Reason */}
+                      {account.status === "Reject" && account.remarks && (
+                        <div className="mb-4 p-3 bg-red-900/30 border border-red-700/50 rounded-lg">
+                          <div className="flex items-start gap-2">
+                            <div className="w-4 h-4 bg-red-600 rounded-full flex items-center justify-center flex-shrink-0 mt-0.5">
+                              <span className="text-xs text-white">!</span>
+                            </div>
+                            <div>
+                              <p className="text-xs font-medium text-red-300 mb-1">Rejection Reason:</p>
+                              <p className="text-xs text-red-200">{account.remarks}</p>
+                            </div>
+                          </div>
+                        </div>
+                      )}
+
+                      {/* Action Buttons */}
+                      <div className="flex gap-2 sm:gap-3 flex-wrap">
+                        <button
+                          onClick={() => {
+                            setSelectedSubUser(account);
+                            setShowSubUserDeposit(true);
+                          }}
+                          disabled={account.status !== "Accept"}
+                          className={`flex-1 py-2 px-2 sm:px-4 rounded-lg flex items-center justify-center gap-1 sm:gap-2 transition-colors ${account.status === "Accept"
+                            ? 'bg-green-600 hover:bg-green-700 cursor-pointer'
+                            : 'bg-gray-500 cursor-not-allowed opacity-50'
+                            }`}
+                        >
+                          <ArrowUp className="w-3 h-3 sm:w-4 sm:h-4" />
+                          <span className="text-xs sm:text-sm font-medium">{t('deposit')}</span>
+                        </button>
+                        <button
+                          onClick={async () => {
+                            setSelectedSubUser(account);
+                            await createBalanceLog(account?.id || account?._id);
+                            setShowSubUserWithdraw(true);
+                            fetchSubUserBalance(account?.id || account?._id);
+                          }}
+                          disabled={account.status !== "Accept"}
+                          className={`flex-1 py-2 px-2 sm:px-4 rounded-lg flex items-center justify-center gap-1 sm:gap-2 transition-colors ${account.status === "Accept"
+                            ? 'bg-red-600 hover:bg-red-700 cursor-pointer'
+                            : 'bg-gray-500 cursor-not-allowed opacity-50'
+                            }`}
+                        >
+                          <ArrowDown className="w-3 h-3 sm:w-4 sm:h-4" />
+                          <span className="text-xs sm:text-sm font-medium">{t('withdraw')}</span>
+                        </button>
+                        <button
+                          onClick={() => {
+                            setSelectedSubUser(account);
+                            setShowResetPassword(true);
+                          }}
+                          disabled={account.status !== "Accept"}
+                          className={`flex-1 py-2 px-2 sm:px-4 rounded-lg flex items-center justify-center gap-1 sm:gap-2 transition-colors ${account.status === "Accept"
+                            ? 'cursor-pointer'
+                            : 'cursor-not-allowed opacity-50'
+                            }`}
+                          style={{ backgroundColor: account.status === "Accept" ? '#1477b0' : '#6b7280' }}
+                          title="Reset Password"
+                        >
+                          <span className="text-xs sm:text-sm font-medium">{t('resetPassword')}</span>
+                        </button>
+                      </div>
                     </div>
-                  );
-                })}
-              </div>
+                  </div>
+                );
+              })}
             </div>
-          )}
+          </div>
         </div>
+
 
 
         {/* Create ID Modal */}

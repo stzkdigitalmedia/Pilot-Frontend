@@ -58,9 +58,9 @@ const AdminLogin = () => {
   };
 
   return (
-    <div className="min-h-screen flex flex-col items-center justify-start px-4 pb-10 max-w-[900px] mx-auto" style={{ backgroundImage: 'url(/bg.jpg)', backgroundSize: 'cover', backgroundPosition: 'center', backgroundRepeat: 'no-repeat' }}>
+    <div className="min-h-screen flex flex-col items-center justify-start px-4 pb-10 max-w-[850px] mx-auto" style={{ backgroundImage: 'url(/bg.jpg)', backgroundSize: 'cover', backgroundPosition: 'center', backgroundRepeat: 'no-repeat' }}>
       <div className="text-center mb-6 max-w-md w-full">
-        <img src="/logoforlogin.png" alt="Logo" className="w-full h-auto" />
+        <img src="/logoforlogin.png" alt="Logo" className="w-[140px] sm:w-[190px] mx-auto h-auto" />
       </div>
       
       <div className="bg-white rounded-2xl shadow-2xl overflow-hidden max-w-md w-full">
