@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { apiHelper } from '../utils/apiHelper';
 import { useToastContext } from '../App';
-import { ArrowLeft, ExternalLink, Copy } from 'lucide-react';
+import { ArrowLeft, ExternalLink, Copy, X } from 'lucide-react';
 import Header from '../components/Header';
 
 const IDDetails = () => {
@@ -12,6 +12,10 @@ const IDDetails = () => {
 
   const [idDetails, setIdDetails] = useState(null);
   const [loading, setLoading] = useState(true);
+  const [deleteLoading, setDeleteLoading] = useState(false);
+  const [accountToDelete, setAccountToDelete] = useState(null);
+  const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
+
 
   const fetchIDDetails = async () => {
     try {
@@ -26,13 +30,60 @@ const IDDetails = () => {
     }
   };
 
+  const handleDeleteSubAccount = (account) => {
+    setAccountToDelete(account);
+    setShowDeleteConfirm(true);
+  };
+
+  const confirmDelete = async () => {
+    setDeleteLoading(true);
+
+    try {
+      const subAccountId = accountToDelete?.id || accountToDelete?._id;
+
+      // Create balance log
+      await apiHelper.post('/balance/createBalanceLog', { userId: subAccountId });
+
+      // Keep checking until CurrentBalance is available
+      const checkBalance = async () => {
+        const response = await apiHelper.get(`/balance/getBalanceLogBySubUserId/${subAccountId}`);
+        const currentBalance = response?.data?.CurrentBalance;
+
+        if (currentBalance === undefined) {
+          setTimeout(checkBalance, 1000);
+          return;
+        }
+
+        if (currentBalance >= 1) {
+          toast.error('Please withdraw the balance first before deleting the account');
+          setDeleteLoading(false);
+          setShowDeleteConfirm(false);
+          return;
+        }
+
+        // Delete account
+        await apiHelper.delete(`/subAccount/deleteSubAccount/${subAccountId}`);
+        toast.success(`${accountToDelete?.clientName} has been deleted...`);
+        fetchSubAccounts();
+        setDeleteLoading(false);
+        setShowDeleteConfirm(false);
+      };
+
+      checkBalance();
+    } catch (error) {
+      toast.error('Failed to delete account: ' + error.message);
+      setDeleteLoading(false);
+      setShowDeleteConfirm(false);
+    }
+  };
+
   useEffect(() => {
     if (subaccid) fetchIDDetails();
   }, [subaccid]);
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-[#0e0e0e] p-4 max-w-[900px] mx-auto text-white">
+      <div className="min-h-screen bg-[#0e0e0e] p-4 max-w-[769px] mx-auto text-white">
         <div className="text-center py-20 text-gray-400">
           Loading ID details...
         </div>
@@ -42,7 +93,7 @@ const IDDetails = () => {
 
   if (!idDetails) {
     return (
-      <div className="min-h-screen bg-[#0e0e0e] p-4 max-w-[900px] mx-auto text-white">
+      <div className="min-h-screen bg-[#0e0e0e] p-4 max-w-[769px] mx-auto text-white">
         <div className="text-center py-20 text-gray-400">
           ID details not found
         </div>
@@ -52,7 +103,7 @@ const IDDetails = () => {
 
   return (<>
     <Header />
-    <div className="min-h-screen bg-[#0e0e0e] p-4 max-w-[900px] mx-auto text-white">
+    <div className="min-h-screen bg-[#0e0e0e] p-4 max-w-[769px] mx-auto text-white">
 
 
       {/* ================= HEADER ================= */}
@@ -92,7 +143,10 @@ const IDDetails = () => {
                 <h2 className="text-md font-semibold uppercase">
                   {idDetails.gameId?.name}
                 </h2>
-                <p className="text-sm text-gray-400">
+                <p className="text-sm text-[#0988dc] cursor-pointer"
+                  onClick={() =>
+                    window.open(idDetails.gameId?.gameUrl, '_blank')
+                  }>
                   {idDetails.gameId?.gameUrl}
                 </p>
               </div>
@@ -104,7 +158,7 @@ const IDDetails = () => {
                 onClick={() =>
                   window.open(idDetails.gameId?.gameUrl, '_blank')
                 }
-                className="hover:text-blue-400"
+                className="hover:text-blue-400 cursor-pointer"
               >
                 <ExternalLink size={20} />
               </button>
@@ -147,12 +201,14 @@ const IDDetails = () => {
             </button>
           </div>
 
-          {/* NOTE */}
-          {idDetails.note && (
-            <p className="mt-4 text-sm text-white">
-              {idDetails.note}
-            </p>
-          )}
+
+        </div>
+
+        {/* Delete Id */}
+        <div className='px-4 pb-4'>
+          <button onClick={() => handleDeleteSubAccount(idDetails)} title="Delete Account" className='bg-red-600 hover:bg-red-600 px-2 py-1 w-full rounded-lg'>
+            Delete My Id
+          </button>
         </div>
 
         {/* FOOTER */}
@@ -161,6 +217,53 @@ const IDDetails = () => {
           {new Date(idDetails.createdAt).toLocaleString()}
         </div>
       </div>
+
+
+      {/* Delete Confirmation Modal */}
+      {showDeleteConfirm && (
+        <div className="fixed inset-0 modal-overlay flex items-center justify-center p-4 z-[100]">
+          <div className="gaming-card p-4 sm:p-6 max-w-md w-full mx-4">
+            <div className="flex justify-between items-center mb-6">
+              <div>
+                <h2 className="text-xl font-semibold text-gray-900">Delete Account</h2>
+                <p className="text-gray-600 text-sm mt-1">ID: {accountToDelete?.clientName || 'N/A'}</p>
+              </div>
+              {!deleteLoading && (
+                <button onClick={() => setShowDeleteConfirm(false)} className="text-gray-400 hover:text-gray-600">
+                  <X className="w-5 h-5" />
+                </button>
+              )}
+            </div>
+
+            {deleteLoading ? (
+              <div className="text-center py-8">
+                <div className="loading-spinner mx-auto mb-4" style={{ width: '32px', height: '32px' }}></div>
+                <p className="text-lg font-semibold text-gray-900 mb-2">Deleting Account...</p>
+                <p className="text-sm text-gray-600">Please wait while we process your request</p>
+              </div>
+            ) : (
+              <div className="space-y-4">
+                <p className="text-gray-700">Are you sure want to delete your ID?</p>
+
+                <div className="flex flex-col sm:flex-row gap-3 pt-4">
+                  <button
+                    onClick={() => setShowDeleteConfirm(false)}
+                    className="w-full sm:flex-1 btn-secondary"
+                  >
+                    Cancel
+                  </button>
+                  <button
+                    onClick={confirmDelete}
+                    className="w-full sm:flex-1 bg-red-600 text-white py-2 px-4 rounded-lg hover:bg-red-700 transition-colors"
+                  >
+                    Delete
+                  </button>
+                </div>
+              </div>
+            )}
+          </div>
+        </div>
+      )}
     </div>
   </>
   );

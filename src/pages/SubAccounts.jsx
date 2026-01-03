@@ -101,11 +101,11 @@ const SubAccounts = () => {
   return (
     <div className="flex h-screen bg-gray-50">
       <UserSidebar />
-      
+
       <div className="flex-1 overflow-auto lg:ml-0">
-        <UserHeader 
-          title="My IDs" 
-          subtitle="Manage your created sub accounts" 
+        <UserHeader
+          title="My IDs"
+          subtitle="Manage your created sub accounts"
         />
         <div className="p-4 sm:p-6 lg:p-8 pt-16 lg:pt-8">
           <div className="gaming-card p-4 sm:p-6">
@@ -207,7 +207,7 @@ const SubAccounts = () => {
                     ))}
                   </tbody>
                 </table>
-                
+
                 {/* Pagination */}
                 {totalPages > 1 && (
                   <div className="flex items-center justify-between mt-6 pt-4 border-t border-gray-200">
@@ -223,7 +223,7 @@ const SubAccounts = () => {
                         <ChevronLeft className="w-4 h-4 mr-1" />
                         Previous
                       </button>
-                      
+
                       <div className="flex items-center gap-1">
                         {[...Array(totalPages)].map((_, i) => {
                           const page = i + 1;
@@ -232,11 +232,10 @@ const SubAccounts = () => {
                               <button
                                 key={page}
                                 onClick={() => fetchSubAccounts(page)}
-                                className={`px-3 py-2 text-sm font-medium rounded-md ${
-                                  currentPage === page
-                                    ? 'bg-green-600 text-white'
-                                    : 'text-gray-500 bg-white border border-gray-300 hover:bg-gray-50'
-                                }`}
+                                className={`px-3 py-2 text-sm font-medium rounded-md ${currentPage === page
+                                  ? 'bg-green-600 text-white'
+                                  : 'text-gray-500 bg-white border border-gray-300 hover:bg-gray-50'
+                                  }`}
                               >
                                 {page}
                               </button>
@@ -247,7 +246,7 @@ const SubAccounts = () => {
                           return null;
                         })}
                       </div>
-                      
+
                       <button
                         onClick={() => fetchSubAccounts(currentPage + 1)}
                         disabled={currentPage === totalPages}
@@ -343,15 +342,15 @@ const SubAccounts = () => {
                   </div>
 
                   <div className="flex gap-3 pt-4">
-                    <button type="button" onClick={() => setEditingAccount(null)} className="flex-1 btn-secondary">
-                      Cancel
-                    </button>
                     <button type="submit" disabled={loading} className="flex-1 gaming-btn flex items-center justify-center">
                       {loading ? (
                         <><span className="loading-spinner mr-2"></span>Updating...</>
                       ) : (
                         <><Check className="w-4 h-4 mr-2" />Update Account</>
                       )}
+                    </button>
+                    <button type="button" onClick={() => setEditingAccount(null)} className="flex-1 btn-secondary">
+                      Cancel
                     </button>
                   </div>
                 </form>
@@ -378,11 +377,11 @@ const SubAccounts = () => {
                 </div>
 
                 <div className="flex gap-3">
-                  <button onClick={() => setAccountToDelete(null)} className="flex-1 btn-secondary">
-                    Cancel
-                  </button>
                   <button onClick={handleDeleteAccount} className="flex-1 bg-red-600 text-white px-4 py-2 rounded hover:bg-red-700 flex items-center justify-center">
                     <Trash2 className="w-4 h-4 mr-2" />Delete Account
+                  </button>
+                  <button onClick={() => setAccountToDelete(null)} className="flex-1 btn-secondary">
+                    Cancel
                   </button>
                 </div>
               </div>

@@ -33,6 +33,7 @@ const TelegramOTP = () => {
       'balance-logs': '/balance-logs',
       'transaction-history': '/transaction-history',
       'transaction-logs': '/transaction-logs',
+      'tier-management': '/tier-management',
       'telegram-otp': '/telegram-otp',
       'settings': '/settings'
     };
@@ -62,13 +63,13 @@ const TelegramOTP = () => {
   return (
     <div className="min-h-screen bg-gray-50 flex">
       <Sidebar activeTab="telegram-otp" setActiveTab={handleNavigation} onLogout={handleLogout} />
-      
+
       <div className="flex-1 lg:ml-64">
-        <AdminHeader 
-          title="Telegram OTP" 
-          subtitle="Submit otp for Telegram verification" 
+        <AdminHeader
+          title="Telegram OTP"
+          subtitle="Submit otp for Telegram verification"
         />
-        
+
         <div className="p-6">
           <div className="max-w-md mx-auto">
             <div className="gaming-card p-6">

@@ -58,7 +58,7 @@ const AdminLogin = () => {
   };
 
   return (
-    <div className="min-h-screen flex flex-col items-center justify-start px-4 pb-10 max-w-[850px] mx-auto" style={{ backgroundImage: 'url(/bg.jpg)', backgroundSize: 'cover', backgroundPosition: 'center', backgroundRepeat: 'no-repeat' }}>
+    <div className="min-h-screen flex flex-col items-center justify-start px-4 pb-10 max-w-[769px] mx-auto bg-[#0e0e0e]">
       <div className="text-center mb-6 max-w-md w-full">
         <img src="/logoforlogin.png" alt="Logo" className="w-[140px] sm:w-[190px] mx-auto h-auto" />
       </div>
@@ -81,7 +81,7 @@ const AdminLogin = () => {
                 placeholder="Enter login type"
                 value={formData.loginType}
                 onChange={handleChange}
-                className="w-full px-3 md:px-4 py-2 md:py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all"
+                className="w-full px-3 md:px-4 py-2 md:py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#1b1b1b] transition-all"
                 required
               />
             </div>
@@ -97,7 +97,7 @@ const AdminLogin = () => {
                   placeholder="Enter admin password"
                   value={formData.password}
                   onChange={handleChange}
-                  className="w-full px-3 md:px-4 py-2 md:py-3 pr-10 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all"
+                  className="w-full px-3 md:px-4 py-2 md:py-3 pr-10 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#1b1b1b] transition-all"
                   required
                 />
                 <button
@@ -113,7 +113,7 @@ const AdminLogin = () => {
             <button
               type="submit"
               disabled={loading}
-              className="w-full bg-blue-600 text-white py-2 md:py-3 px-4 rounded-lg hover:bg-blue-700 focus:ring-4 focus:ring-blue-200 transition-all font-medium disabled:opacity-50 disabled:cursor-not-allowed"
+              className="w-full bg-[#1b1b1b] text-white py-2 md:py-3 px-4 rounded-lg focus:ring-4 focus:ring-blue-200 transition-all font-medium disabled:opacity-50 disabled:cursor-not-allowed"
             >
               {loading ? 'Signing in...' : 'Sign In as Admin'}
             </button>
@@ -122,7 +122,7 @@ const AdminLogin = () => {
           <div className="mt-6 text-center">
             <Link 
               to="/login" 
-              className="text-blue-600 hover:text-blue-800 text-sm font-medium"
+              className="text-[#1b1b1b] text-sm font-medium"
             >
               ← Back to User Login
             </Link>

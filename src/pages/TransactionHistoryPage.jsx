@@ -8,7 +8,7 @@ import TransactionHistory from '../components/TransactionHistory';
 const TransactionHistoryPage = () => {
   const { logout, user } = useAuth();
   const navigate = useNavigate();
-  
+
   const handleLogout = async () => {
     try {
       await logout();
@@ -51,6 +51,9 @@ const TransactionHistoryPage = () => {
       case 'transaction-logs':
         navigate('/transaction-logs');
         break;
+      case 'tier-management':
+        navigate('/tier-management');
+        break;
       case 'telegram-otp':
         navigate('/telegram-otp');
         break;
@@ -68,13 +71,13 @@ const TransactionHistoryPage = () => {
   return (
     <div className="min-h-screen bg-gray-50 flex">
       <Sidebar activeTab="transaction-history" setActiveTab={handleNavigation} onLogout={handleLogout} />
-      
+
       <div className="flex-1 lg:ml-64">
-        <AdminHeader 
-          title="Transaction History" 
-          subtitle="View and filter all user transactions" 
+        <AdminHeader
+          title="Transaction History"
+          subtitle="View and filter all user transactions"
         />
-        
+
         <TransactionHistory />
       </div>
     </div>

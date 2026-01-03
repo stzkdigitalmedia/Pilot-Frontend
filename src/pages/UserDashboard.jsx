@@ -76,6 +76,11 @@ const UserDashboard = () => {
     maxAmount: ''
   });
 
+  const [accountToDelete, setAccountToDelete] = useState(null);
+  const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
+  const [deleteLoading, setDeleteLoading] = useState(false);
+
+
   const [currentSlide, setCurrentSlide] = useState(0);
   const [touchStart, setTouchStart] = useState(0);
   const [touchEnd, setTouchEnd] = useState(0);
@@ -863,6 +868,8 @@ const UserDashboard = () => {
         mode: 'PowerPay'
       };
 
+       payload.branchUserName = 'Drd247D';
+
       // Add bank details for withdraw transactions
       if (transactionForm?.transactionType === 'Withdraw') {
         if (selectedBankId === '') {
@@ -974,6 +981,54 @@ const UserDashboard = () => {
     }
   };
 
+  const handleDeleteSubAccount = (account) => {
+    setAccountToDelete(account);
+    setShowDeleteConfirm(true);
+  };
+
+  const confirmDelete = async () => {
+    setDeleteLoading(true);
+
+    try {
+      const subAccountId = accountToDelete?.id || accountToDelete?._id;
+      console.log(accountToDelete, '44444444---------14111111111111')
+
+      // Create balance log
+      await apiHelper.post('/balance/createBalanceLog', { userId: subAccountId });
+
+      // Keep checking until CurrentBalance is available
+      const checkBalance = async () => {
+        const response = await apiHelper.get(`/balance/getBalanceLogBySubUserId/${subAccountId}`);
+        const currentBalance = response?.data?.CurrentBalance;
+
+        if (currentBalance === undefined) {
+          setTimeout(checkBalance, 1000);
+          return;
+        }
+
+        if (currentBalance >= 1) {
+          toast.error('Please withdraw the balance first before deleting the account');
+          setDeleteLoading(false);
+          setShowDeleteConfirm(false);
+          return;
+        }
+
+        // Delete account
+        await apiHelper.delete(`/subAccount/deleteSubAccount/${subAccountId}`);
+        toast.success(`${accountToDelete?.clientName} has been deleted...`);
+        fetchSubAccounts();
+        setDeleteLoading(false);
+        setShowDeleteConfirm(false);
+      };
+
+      checkBalance();
+    } catch (error) {
+      toast.error('Failed to delete account: ' + error.message);
+      setDeleteLoading(false);
+      setShowDeleteConfirm(false);
+    }
+  };
+
   useEffect(() => {
     fetchGames();
     fetchSubAccounts();
@@ -1008,11 +1063,11 @@ const UserDashboard = () => {
   }, [showUserDropdown]);
 
   return (
-    <div className="min-h-screen bg-[#0e0e0e] max-w-[850px] mx-auto">
+    <div className="min-h-screen bg-[#0e0e0e] max-w-[769px] mx-auto">
 
 
       {/* Main Content */}
-      <div className="max-w-[850px] mx-auto">
+      <div className="max-w-[769px] mx-auto">
 
         {/* Modern Wallet Section */}
         <div
@@ -1184,7 +1239,7 @@ const UserDashboard = () => {
             {subAccounts.length > 1 && (
               <div className="flex flex-wrap justify-end gap-2">
                 <Link to={'/my-ids'}>
-                  <button className='px-2 h-9 rounded-lg bg-white font-semibold hover:bg-white/80'>
+                  <button className='px-2 h-9 rounded-lg bg-[#005993] text-white   font-semibold'>
                     Get New Id
                   </button>
                 </Link>
@@ -1248,7 +1303,7 @@ const UserDashboard = () => {
                             <h3 className="font-bold text-sm sm:text-lg notranslate">{game || 'Game'}</h3>
                           </div>
                         </div>
-                        <div>
+                        <div className='flex gap-2'>
                           <span
                             className={`inline-flex items-center px-3 py-1 rounded-full text-xs font-medium ${account.status === "Accept"
                               ? "bg-green-100 text-green-800"
@@ -1267,6 +1322,13 @@ const UserDashboard = () => {
                                   ? t('rejected')
                                   : t('pending')}
                           </span>
+                          <button
+                            onClick={() => handleDeleteSubAccount(account)}
+                            className="p-1 -mr-0.5 text-red-600 bg-red-50 rounded-lg transition-colors"
+                            title="Delete Account"
+                          >
+                            <Trash2 className="w-4 h-4" />
+                          </button>
                         </div>
                       </div>
 
@@ -1898,11 +1960,11 @@ const UserDashboard = () => {
                 </div>
 
                 <div className="flex flex-col sm:flex-row gap-3 pt-4">
-                  <button type="button" onClick={() => setShowAddBankModal(false)} className="w-full sm:flex-1 btn-secondary">
-                    Cancel
-                  </button>
                   <button type="submit" className="w-full sm:flex-1 gaming-btn">
                     {t('saveBank')}
+                  </button>
+                  <button type="button" onClick={() => setShowAddBankModal(false)} className="w-full sm:flex-1 btn-secondary">
+                    Cancel
                   </button>
                 </div>
               </form>
@@ -2024,18 +2086,18 @@ const UserDashboard = () => {
                   </button> */}
 
                   <div className="flex flex-col sm:flex-row gap-3 pt-4">
-                    <button type="button" onClick={() => {
-                      setShowSubUserWithdraw(false);
-                      fetchUserBalance();
-                    }} className="w-full sm:flex-1 btn-secondary">
-                      {t('cancel')}
-                    </button>
                     <button type="submit" disabled={transactionProcessing} className="w-full sm:flex-1 gaming-btn">
                       {transactionProcessing ? (
                         <>{t('processing')}</>
                       ) : (
                         <>{t('withdraw')}</>
                       )}
+                    </button>
+                    <button type="button" onClick={() => {
+                      setShowSubUserWithdraw(false);
+                      fetchUserBalance();
+                    }} className="w-full sm:flex-1 btn-secondary">
+                      {t('cancel')}
                     </button>
                   </div>
                 </form>
@@ -2092,14 +2154,14 @@ const UserDashboard = () => {
                   </div>
 
                   <div className="flex flex-col sm:flex-row gap-3 pt-4">
+                    <button type="submit" className="w-full sm:flex-1 gaming-btn">
+                      {t('deposit')}
+                    </button>
                     <button type="button" onClick={() => {
                       setShowSubUserDeposit(false);
                       fetchUserBalance();
                     }} className="w-full sm:flex-1 btn-secondary">
                       {t('cancel')}
-                    </button>
-                    <button type="submit" className="w-full sm:flex-1 gaming-btn">
-                      {t('deposit')}
                     </button>
                   </div>
                 </form>
@@ -2148,15 +2210,15 @@ const UserDashboard = () => {
                   </div>
 
                   <div className="flex flex-col sm:flex-row gap-3 pt-4">
+                    <button type="submit" className="w-full sm:flex-1 gaming-btn">
+                      {t('resetPassword')}
+                    </button>
                     <button type="button" onClick={() => {
                       setShowResetPassword(false);
                       setResetPasswordForm({ newPassword: '' });
                       setSelectedSubUser(null);
                     }} className="w-full sm:flex-1 btn-secondary">
                       {t('cancel')}
-                    </button>
-                    <button type="submit" className="w-full sm:flex-1 gaming-btn">
-                      {t('resetPassword')}
                     </button>
                   </div>
                 </form>
@@ -2165,6 +2227,52 @@ const UserDashboard = () => {
           </div>
         )}
       </div>
+
+      {/* Delete Confirmation Modal */}
+      {showDeleteConfirm && (
+        <div className="fixed inset-0 modal-overlay flex items-center justify-center p-4 z-[100]">
+          <div className="gaming-card p-4 sm:p-6 max-w-md w-full mx-4">
+            <div className="flex justify-between items-center mb-6">
+              <div>
+                <h2 className="text-xl font-semibold text-gray-900">Delete Account</h2>
+                <p className="text-gray-600 text-sm mt-1">ID: {accountToDelete?.clientName || 'N/A'}</p>
+              </div>
+              {!deleteLoading && (
+                <button onClick={() => setShowDeleteConfirm(false)} className="text-gray-400 hover:text-gray-600">
+                  <X className="w-5 h-5" />
+                </button>
+              )}
+            </div>
+
+            {deleteLoading ? (
+              <div className="text-center py-8">
+                <div className="loading-spinner mx-auto mb-4" style={{ width: '32px', height: '32px' }}></div>
+                <p className="text-lg font-semibold text-gray-900 mb-2">Deleting Account...</p>
+                <p className="text-sm text-gray-600">Please wait while we process your request</p>
+              </div>
+            ) : (
+              <div className="space-y-4">
+                <p className="text-gray-700">Are you sure want to delete your ID?</p>
+
+                <div className="flex flex-col sm:flex-row gap-3 pt-4">
+                  <button
+                    onClick={() => setShowDeleteConfirm(false)}
+                    className="w-full sm:flex-1 btn-secondary"
+                  >
+                    Cancel
+                  </button>
+                  <button
+                    onClick={confirmDelete}
+                    className="w-full sm:flex-1 bg-red-600 text-white py-2 px-4 rounded-lg hover:bg-red-700 transition-colors"
+                  >
+                    Delete
+                  </button>
+                </div>
+              </div>
+            )}
+          </div>
+        </div>
+      )}
 
 
       {/* Bottom padding to prevent content overlap */}

@@ -15,7 +15,7 @@ const DepositTransactions = () => {
   const navigate = useNavigate();
   const { logout } = useAuth();
   const toast = useToastContext();
-  
+
   const [transactions, setTransactions] = useState([]);
   const [loading, setLoading] = useState(false);
   const [showDatePicker, setShowDatePicker] = useState(false);
@@ -63,21 +63,22 @@ const DepositTransactions = () => {
     try {
       const start = startDate || new Date();
       const end = endDate || new Date();
-      
+
       const formatDate = (date) => {
         const day = String(date.getDate()).padStart(2, '0');
         const month = String(date.getMonth() + 1).padStart(2, '0');
         const year = date.getFullYear();
         return `${day}-${month}-${year}`;
       };
-      
+
       const payload = {
         startDate: formatDate(start),
         endDate: formatDate(end),
         status: 'Accept',
-        transactionType: 'Deposit'
+        transactionType: 'Deposit',
+        platefrom: "PilotPay"
       };
-      
+
       const response = await axios.post('https://powerdreams.org/api/online/transaction/getDeposit_WithdrawalTransaction_RRPay', payload);
       const transactionData = response?.data?.data?.requests_Data || [];
       setTransactions(Array.isArray(transactionData) ? transactionData : []);
@@ -115,13 +116,13 @@ const DepositTransactions = () => {
   return (
     <div className="min-h-screen bg-gray-50 flex">
       <Sidebar activeTab="" setActiveTab={handleNavigation} onLogout={handleLogout} />
-      
+
       <div className="flex-1 lg:ml-64">
-        <AdminHeader 
+        <AdminHeader
           title="Deposit Transactions"
           subtitle="All deposit transactions"
         />
-        
+
         <div className="p-4 sm:p-6 lg:p-8">
           <div className="mb-6 flex justify-between items-center">
             <button
@@ -131,7 +132,7 @@ const DepositTransactions = () => {
               <ArrowLeft size={16} />
               Back to Dashboard
             </button>
-            
+
             <div className="flex items-center gap-2">
               <div className="relative">
                 <button
@@ -139,7 +140,7 @@ const DepositTransactions = () => {
                   className="flex items-center gap-2 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700"
                 >
                   <Calendar size={16} />
-                  {dateRange[0].startDate.toDateString() === dateRange[0].endDate.toDateString() 
+                  {dateRange[0].startDate.toDateString() === dateRange[0].endDate.toDateString()
                     ? dateRange[0].startDate.toDateString()
                     : `${dateRange[0].startDate.toDateString()} - ${dateRange[0].endDate.toDateString()}`
                   }
@@ -156,17 +157,18 @@ const DepositTransactions = () => {
                     />
                     <div className="p-3 border-t flex justify-end gap-2">
                       <button
-                        onClick={() => setShowDatePicker(false)}
-                        className="px-3 py-1 text-sm text-gray-600 hover:text-gray-800"
-                      >
-                        Cancel
-                      </button>
-                      <button
                         onClick={applyDateFilter}
                         className="px-4 py-1 text-sm bg-blue-600 text-white rounded hover:bg-blue-700"
                       >
                         Apply
                       </button>
+                      <button
+                        onClick={() => setShowDatePicker(false)}
+                        className="px-3 py-1 text-sm text-gray-600 hover:text-gray-800"
+                      >
+                        Cancel
+                      </button>
+
                     </div>
                   </div>
                 )}
@@ -193,7 +195,7 @@ const DepositTransactions = () => {
 
             {loading ? (
               <div className="text-center py-8">
-                <div className="loading-spinner mx-auto mb-4" style={{width: '32px', height: '32px'}}></div>
+                <div className="loading-spinner mx-auto mb-4" style={{ width: '32px', height: '32px' }}></div>
                 <p className="text-gray-600">Loading transactions...</p>
               </div>
             ) : transactions.length === 0 ? (

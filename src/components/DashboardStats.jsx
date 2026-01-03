@@ -18,6 +18,9 @@ const DashboardStats = () => {
   const [dashSummary, setDashSummary] = useState(null);
   const [externalStats, setExternalStats] = useState(null);
   const [profitLoss, setProfitLoss] = useState({ amount: 0, status: 'Profit' });
+  const [deleteIdsCount, setDeleteIdsCount] = useState(0);
+  const [todayDepositCount, setTodayDepositCount] = useState(0);
+  const [todayWithdrawalCount, setTodayWithdrawalCount] = useState(0);
   const [loading, setLoading] = useState(false);
   const [showDatePicker, setShowDatePicker] = useState(false);
   const [dateRange, setDateRange] = useState([
@@ -57,12 +60,34 @@ const DashboardStats = () => {
 
       const payload = {
         startDate: formatDate(start),
-        endDate: formatDate(end)
+        endDate: formatDate(end),
+        platefrom: "PilotPay"
+      };
+      const Mirrpayload = {
+        startDate: formatDate(start),
+        endDate: formatDate(end),
+        platefrom: "PilotPay"
       };
 
       const externalResponse = await axios.post('https://powerdreams.org/api/online/transaction/getDashboardStats_RRPay', payload);
       setExternalStats(externalResponse?.data?.data || externalResponse?.data || externalResponse);
-      
+
+      // Fetch delete IDs count
+      const deleteIdsPayload = {
+        startDate: start.toISOString().split('T')[0],
+        endDate: end.toISOString().split('T')[0]
+      };
+      const deleteIdsResponse = await apiHelper.post('/deletelog/getCount_of_DeleteId', deleteIdsPayload);
+      setDeleteIdsCount(deleteIdsResponse?.data || 0);
+
+      // Fetch today deposit requests count
+      const todayDepositResponse = await axios.post('https://powerdreams.org/api/online/request/getTodayPowerPayDepositUserCount', Mirrpayload);
+      setTodayDepositCount(todayDepositResponse?.data?.data?.uniqueUserCount || 0);
+
+      // Fetch today withdrawal requests count
+      const todayWithdrawalResponse = await axios.post('https://powerdreams.org/api/online/request/getTodayPowerPay_Withdraw_UserCount', Mirrpayload);
+      setTodayWithdrawalCount(todayWithdrawalResponse?.data?.data?.uniqueUserCount || 0);
+
       // Fetch profit & loss
       const profitLossResponse = await apiHelper.get('/transaction/profit_and_loss_for_SuperAdmin');
       const profitData = profitLossResponse?.data || profitLossResponse;
@@ -175,7 +200,7 @@ const DashboardStats = () => {
       </div>
 
       {/* Dashboard Summary */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-4 mb-6">
         {loading ? (
           <div className="col-span-full text-center py-8">
             <div className="loading-spinner mx-auto mb-2" style={{ width: '24px', height: '24px' }}></div>
@@ -212,6 +237,15 @@ const DashboardStats = () => {
             >
               <h3 className="text-sm font-medium text-gray-500">FTD Pending User</h3>
               <p className="text-2xl font-bold text-orange-600">{dashSummary?.userRegistrationsNoTransactionCount || 0}</p>
+            </div>
+            <div
+              className="gaming-card p-4 cursor-pointer hover:shadow-lg transition-shadow"
+              onClick={() => navigate('/delete-logs')}
+            >
+              <h3 className="text-sm font-medium text-gray-500">Delete Ids</h3>
+              <p className={`text-xl font-bold text-red-600`}>
+                {deleteIdsCount}
+              </p>
             </div>
 
           </>
@@ -284,25 +318,33 @@ const DashboardStats = () => {
         </div>
       )}
 
-
+      {/* Overall User Data */}
       <div className="mb-6">
         <h2 className="text-xl font-semibold text-gray-900 mb-4">Overall User Data</h2>
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-4">
           <>
             {/* <h2 className="text-xl font-semibold text-gray-900 mb-4 w-full">Status Wise Breakdown</h2> */}
-            <div className="gaming-card p-4 pb-8 cursor-pointer hover:shadow-lg transition-shadow">
+            <div className="gaming-card p-4 pb-4 cursor-pointer hover:shadow-lg transition-shadow">
               <h3 className="text-sm font-medium text-gray-500">Users</h3>
               <p className="text-xl font-bold text-green-600">{usersCount}</p>
             </div>
-            <div className="gaming-card p-4 pb-8 cursor-pointer hover:shadow-lg transition-shadow">
+            <div className="gaming-card p-4 pb-4 cursor-pointer hover:shadow-lg transition-shadow">
               <h3 className="text-sm font-medium text-gray-500">Total Wallet Balance</h3>
               <p className="text-xl font-bold text-green-600">₹{totalBalance.toLocaleString()}</p>
             </div>
-            <div className="gaming-card p-4 pb-8 cursor-pointer hover:shadow-lg transition-shadow">
+            <div className="gaming-card p-4 pb-4 cursor-pointer hover:shadow-lg transition-shadow">
               <h3 className="text-sm font-medium text-gray-500">Profit & Loss</h3>
               <p className={`text-xl font-bold ${profitLoss.status === 'Profit' ? 'text-green-600' : 'text-red-600'}`}>
                 ₹{profitLoss.amount.toLocaleString()}
               </p>
+            </div>
+            <div className="gaming-card p-4 pb-4 cursor-pointer hover:shadow-lg transition-shadow" onClick={() => navigate('/today-deposit-requests')}>
+              <h3 className="text-sm font-medium text-gray-500">Today Deposit Requests</h3>
+              <p className="text-xl font-bold text-green-600">{todayDepositCount}</p>
+            </div>
+            <div className="gaming-card p-4 pb-4 cursor-pointer hover:shadow-lg transition-shadow" onClick={() => navigate('/today-withdrawal-requests')}>
+              <h3 className="text-sm font-medium text-gray-500">Today Withdrawal Requests</h3>
+              <p className="text-xl font-bold text-red-600">{todayWithdrawalCount}</p>
             </div>
           </>
         </div>

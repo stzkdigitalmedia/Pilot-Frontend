@@ -15,7 +15,7 @@ const Passbook = () => {
   const toast = useToastContext();
   const { t } = useTranslation();
   const [transactions, setTransactions] = useState([]);
-  const [loading, setLoading] = useState(false);
+  const [loading, setLoading] = useState(true);
   const [page, setPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
   const [showFilters, setShowFilters] = useState(false);
@@ -41,7 +41,7 @@ const Passbook = () => {
     try {
       const payload = {
         page: currentPage,
-        limit: 50,
+        limit: 100,
         ...currentFilters
       };
 
@@ -133,7 +133,7 @@ const Passbook = () => {
     <>
       <Header />
       <div className="!min-h-screen">
-        <div className="max-w-[850px] bg-[#0e0e0e] min-h-screen mx-auto">
+        <div className="max-w-[769px] bg-[#0e0e0e] min-h-screen mx-auto">
           <div className="flex items-center justify-end pt-2.5 px-4 flex-wrap gap-2">
             <button
               onClick={() => setShowFilters(!showFilters)}
@@ -144,7 +144,7 @@ const Passbook = () => {
           </div>
           <div>
             {showFilters && (
-              <div className="fixed max-w-[850px] mx-auto inset-0 z-[9999]">
+              <div className="fixed max-w-[769px] mx-auto inset-0 z-[9999]">
                 {/* BACKDROP */}
                 <div
                   className="absolute inset-0 bg-black/50"
@@ -252,7 +252,17 @@ const Passbook = () => {
 
 
             <div className="space-y-3 mt-3 px-2 sm:px-4">
-              {transactions.map((transaction, index) => {
+              {loading ? (
+                <div className="text-center py-8">
+                  <div className="w-8 h-8 border-4 border-blue-600 border-t-transparent rounded-full animate-spin mx-auto mb-4"></div>
+                  <p className="text-gray-400">Loading transactions...</p>
+                </div>
+              ) : transactions.length === 0 ? (
+                <div className="text-center py-8 text-gray-400">
+                  <p>No transactions found</p>
+                </div>
+              ) : (
+                transactions.map((transaction, index) => {
                 const icon = getIconConfig(transaction.transactionType);
 
                 return (
@@ -406,7 +416,8 @@ const Passbook = () => {
                     }
                   </div>
                 );
-              })}
+              })
+              )}
             </div>
 
 

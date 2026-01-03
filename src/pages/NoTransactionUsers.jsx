@@ -14,7 +14,7 @@ const NoTransactionUsers = () => {
   const navigate = useNavigate();
   const { logout } = useAuth();
   const toast = useToastContext();
-  
+
   const [users, setUsers] = useState([]);
   const [loading, setLoading] = useState(false);
   const [showDatePicker, setShowDatePicker] = useState(false);
@@ -62,10 +62,10 @@ const NoTransactionUsers = () => {
     try {
       const start = startDate || new Date();
       const end = endDate || new Date();
-      
+
       const startUTC = new Date(Date.UTC(start.getFullYear(), start.getMonth(), start.getDate())).toISOString();
       const endUTC = new Date(Date.UTC(end.getFullYear(), end.getMonth(), end.getDate() + 1)).toISOString();
-      
+
       const response = await apiHelper.get(`/transaction/getUsers_of_NoTransaction_forDashboard?startDate=${startUTC}&endDate=${endUTC}`);
       const userData = response?.users || response?.data || response;
       setUsers(Array.isArray(userData) ? userData : []);
@@ -97,29 +97,29 @@ const NoTransactionUsers = () => {
   };
 
   useEffect(() => {
-  // First time load
-  fetchNoTransactionUsers();
-
-  // Auto refresh every 30 seconds
-  const interval = setInterval(() => {
+    // First time load
     fetchNoTransactionUsers();
-  }, 30000); // 30 sec
 
-  // Cleanup when component unmounts
-  return () => clearInterval(interval);
-}, []);
+    // Auto refresh every 30 seconds
+    const interval = setInterval(() => {
+      fetchNoTransactionUsers();
+    }, 30000); // 30 sec
+
+    // Cleanup when component unmounts
+    return () => clearInterval(interval);
+  }, []);
 
 
   return (
     <div className="min-h-screen bg-gray-50 flex">
       <Sidebar activeTab="" setActiveTab={handleNavigation} onLogout={handleLogout} />
-      
+
       <div className="flex-1 lg:ml-64">
-        <AdminHeader 
+        <AdminHeader
           title="FTD Pending User"
           subtitle="Users with no transactions"
         />
-        
+
         <div className="p-4 sm:p-6 lg:p-8">
           <div className="mb-6 flex justify-between items-center">
             <button
@@ -129,7 +129,7 @@ const NoTransactionUsers = () => {
               <ArrowLeft size={16} />
               Back to Dashboard
             </button>
-            
+
             <div className="flex items-center gap-2">
               <div className="relative">
                 <button
@@ -137,7 +137,7 @@ const NoTransactionUsers = () => {
                   className="flex items-center gap-2 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700"
                 >
                   <Calendar size={16} />
-                  {dateRange[0].startDate.toDateString() === dateRange[0].endDate.toDateString() 
+                  {dateRange[0].startDate.toDateString() === dateRange[0].endDate.toDateString()
                     ? dateRange[0].startDate.toDateString()
                     : `${dateRange[0].startDate.toDateString()} - ${dateRange[0].endDate.toDateString()}`
                   }
@@ -154,16 +154,16 @@ const NoTransactionUsers = () => {
                     />
                     <div className="p-3 border-t flex justify-end gap-2">
                       <button
-                        onClick={() => setShowDatePicker(false)}
-                        className="px-3 py-1 text-sm text-gray-600 hover:text-gray-800"
-                      >
-                        Cancel
-                      </button>
-                      <button
                         onClick={applyDateFilter}
                         className="px-4 py-1 text-sm bg-blue-600 text-white rounded hover:bg-blue-700"
                       >
                         Apply
+                      </button>
+                      <button
+                        onClick={() => setShowDatePicker(false)}
+                        className="px-3 py-1 text-sm text-gray-600 hover:text-gray-800"
+                      >
+                        Cancel
                       </button>
                     </div>
                   </div>
@@ -191,7 +191,7 @@ const NoTransactionUsers = () => {
 
             {loading ? (
               <div className="text-center py-8">
-                <div className="loading-spinner mx-auto mb-4" style={{width: '32px', height: '32px'}}></div>
+                <div className="loading-spinner mx-auto mb-4" style={{ width: '32px', height: '32px' }}></div>
                 <p className="text-gray-600">Loading users...</p>
               </div>
             ) : users.length === 0 ? (

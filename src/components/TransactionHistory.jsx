@@ -334,7 +334,7 @@ const TransactionHistory = () => {
                     </td>
                     <td className="py-4 px-4">
                       <span className={`badge ${transaction?.status === 'Accept' ? 'badge-green' :
-                          transaction?.status === 'Reject' ? 'badge-red' : 'badge-blue'
+                        transaction?.status === 'Reject' ? 'badge-red' : 'badge-blue'
                         }`}>
                         {transaction?.status || 'Pending'}
                       </span>
@@ -409,8 +409,8 @@ const TransactionHistory = () => {
                       onClick={() => setPage(pageNum)}
                       disabled={loading}
                       className={`px-3 py-2 text-sm rounded-lg disabled:opacity-50 disabled:cursor-not-allowed ${page === pageNum
-                          ? 'bg-blue-600 text-white'
-                          : 'border border-gray-300 hover:bg-gray-50'
+                        ? 'bg-blue-600 text-white'
+                        : 'border border-gray-300 hover:bg-gray-50'
                         }`}
                     >
                       {pageNum}
@@ -501,18 +501,18 @@ const TransactionHistory = () => {
 
               <div className="flex gap-3 pt-4">
                 <button
-                  type="button"
-                  onClick={() => setShowStatusModal(false)}
-                  className="flex-1 px-4 py-2 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50"
-                >
-                  Cancel
-                </button>
-                <button
                   type="submit"
                   disabled={updating}
                   className="flex-1 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 disabled:opacity-50"
                 >
                   {updating ? 'Updating...' : 'Update Status'}
+                </button>
+                <button
+                  type="button"
+                  onClick={() => setShowStatusModal(false)}
+                  className="flex-1 px-4 py-2 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50"
+                >
+                  Cancel
                 </button>
               </div>
             </form>

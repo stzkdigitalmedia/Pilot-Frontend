@@ -66,20 +66,21 @@ const StatusDetails = () => {
     try {
       const start = startDate || new Date();
       const end = endDate || new Date();
-      
+
       const formatDate = (date) => {
         const day = String(date.getDate()).padStart(2, '0');
         const month = String(date.getMonth() + 1).padStart(2, '0');
         const year = date.getFullYear();
         return `${day}-${month}-${year}`;
       };
-      
+
       const payload = {
         startDate: formatDate(start),
         endDate: formatDate(end),
-        status: status
+        status: status,
+        platefrom: "PilotPay"
       };
-      
+
       const response = await axios.post('https://powerdreams.org/api/online/transaction/get_Transaction__Status_Breakdown_RRPay', payload);
       const userData = response?.data?.data?.requests_Data || [];
       setUsers(Array.isArray(userData) ? userData : []);
@@ -181,16 +182,16 @@ const StatusDetails = () => {
                     />
                     <div className="p-3 border-t flex justify-end gap-2">
                       <button
-                        onClick={() => setShowDatePicker(false)}
-                        className="px-3 py-1 text-sm text-gray-600 hover:text-gray-800"
-                      >
-                        Cancel
-                      </button>
-                      <button
                         onClick={applyDateFilter}
                         className="px-4 py-1 text-sm bg-blue-600 text-white rounded hover:bg-blue-700"
                       >
                         Apply
+                      </button>
+                      <button
+                        onClick={() => setShowDatePicker(false)}
+                        className="px-3 py-1 text-sm text-gray-600 hover:text-gray-800"
+                      >
+                        Cancel
                       </button>
                     </div>
                   </div>

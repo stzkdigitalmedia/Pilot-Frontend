@@ -118,7 +118,7 @@ const Header = () => {
 
     return (
         <>
-            <header className="max-w-[850px] mx-auto bg-[#3f3f3f] h-[56px] flex items-center px-3 shadow-md">
+            <header className="max-w-[769px] mx-auto bg-[#3f3f3f] h-[56px] flex items-center px-3 shadow-md">
                 {/* LEFT */}
                 <div className="flex items-center gap-3">
                     <Link to="/">
@@ -138,7 +138,7 @@ const Header = () => {
                             setShowCreateTransaction(true);
                             fetchUserBalance();
                         }}
-                        className="bg-white text-black text-sm font-semibold px-4 py-1.5 rounded-md hover:bg-gray-200 transition"
+                        className="bg-[#005993] text-white text-sm font-semibold px-4 py-1.5 rounded-md transition"
                     >
                         Deposit
                     </button>

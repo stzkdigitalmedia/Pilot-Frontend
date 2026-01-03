@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { LayoutDashboard, Gamepad2, Settings, LogOut, Menu, X, Shield, FileText, History, MessageSquare } from 'lucide-react';
+import { LayoutDashboard, Gamepad2, Settings, LogOut, Menu, X, Shield, FileText, History, MessageSquare, Layers } from 'lucide-react';
 
 const Sidebar = ({ activeTab, setActiveTab, onLogout }) => {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
@@ -11,6 +11,7 @@ const Sidebar = ({ activeTab, setActiveTab, onLogout }) => {
       { id: 'balance-logs', label: 'Balance Logs', icon: FileText },
       { id: 'transaction-history', label: 'Transaction History', icon: History },
       { id: 'transaction-logs', label: 'Transaction Logs', icon: FileText },
+      // { id: 'tier-management', label: 'Tier Management', icon: Layers },
       { id: 'telegram-otp', label: 'Telegram OTP', icon: MessageSquare },
     { id: 'settings', label: 'Settings', icon: Settings },
   ];
@@ -38,8 +39,8 @@ const Sidebar = ({ activeTab, setActiveTab, onLogout }) => {
         isMobileMenuOpen ? 'translate-x-0' : '-translate-x-full lg:translate-x-0'
       }`}>
       <div className="p-4">
-        <div className="flex justify-center">
-          <img src="/logo.png" alt="RRRPay" className="object-contain" />
+        <div className="flex justify-center bg-black max-w-[225px] h-[90px]">
+          <img src="/logoforlogin.png" alt="RRRPay" className="h-[70px] my-auto" />
         </div>
       </div>
       

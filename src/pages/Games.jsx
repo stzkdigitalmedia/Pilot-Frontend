@@ -36,6 +36,9 @@ const Games = () => {
       case 'transaction-logs':
         navigate('/transaction-logs');
         break;
+      case 'tier-management':
+        navigate('/tier-management');
+        break;
       case 'telegram-otp':
         navigate('/telegram-otp');
         break;
@@ -50,13 +53,13 @@ const Games = () => {
   return (
     <div className="min-h-screen bg-gray-50 flex">
       <Sidebar activeTab="games" setActiveTab={handleNavigation} onLogout={handleLogout} />
-      
+
       <div className="flex-1 lg:ml-64">
-        <AdminHeader 
-          title="Games Management" 
-          subtitle="Manage platform games and content" 
+        <AdminHeader
+          title="Games Management"
+          subtitle="Manage platform games and content"
         />
-        
+
         <div className="p-4 sm:p-6 lg:p-8">
           <GamesPanel />
         </div>

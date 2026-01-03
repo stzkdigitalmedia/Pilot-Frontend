@@ -1,6 +1,6 @@
 const WhatsAppButton = () => {
   return (
-    <div className="fixed bottom-20 right-[15px] md:ml-0 lg:right-3/12 z-50">
+    <div className="fixed bottom-20 right-[15px] md:ml-0 lg:right-3/12 z-50 sm:mr-14">
       <button
         onClick={() => window.open('https://wa.link/drdiamond247', '_blank')}
         className="bg-green-500 hover:bg-green-600 text-white p-3 rounded-full shadow-lg transition-all duration-300 hover:scale-110"

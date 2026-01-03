@@ -51,6 +51,9 @@ const ManualBalanceLogsPage = () => {
       case 'transaction-logs':
         navigate('/transaction-logs');
         break;
+        case 'tier-management':
+        navigate('/tier-management');
+        break;
       case 'telegram-otp':
         navigate('/telegram-otp');
         break;

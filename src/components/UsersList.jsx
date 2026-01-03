@@ -41,6 +41,15 @@ const UsersList = ({ onUserDeleted, onUsersCountChange, onBalanceSumChange }) =>
   const [showScreenshot, setShowScreenshot] = useState(false);
   const [screenshotData, setScreenshotData] = useState(null);
   const [screenshotLoading, setScreenshotLoading] = useState(false);
+  const [showDeleteLogs, setShowDeleteLogs] = useState(false);
+  const [deleteLogsUser, setDeleteLogsUser] = useState(null);
+  const [deleteLogs, setDeleteLogs] = useState([]);
+  const [deleteLogsLoading, setDeleteLogsLoading] = useState(false);
+  // const [showAssignTier, setShowAssignTier] = useState(false);
+  // const [assignTierUser, setAssignTierUser] = useState(null);
+  // const [tiers, setTiers] = useState([]);
+  // const [selectedTierId, setSelectedTierId] = useState('');
+  // const [assignTierLoading, setAssignTierLoading] = useState(false);
 
   const toast = useToastContext();
 
@@ -374,10 +383,82 @@ const UsersList = ({ onUserDeleted, onUsersCountChange, onBalanceSumChange }) =>
     }
   };
 
+  const fetchDeleteLogs = async (user) => {
+    setDeleteLogsUser(user);
+    setDeleteLogsLoading(true);
+    setShowDeleteLogs(true);
+    document.body.classList.add('modal-open');
+    try {
+      const response = await apiHelper.post('/deletelog/getDeleteLogByClientName', {
+        clientName: user?.clientName
+      });
+      setDeleteLogs(response?.data || []);
+    } catch (error) {
+      toast.error('Failed to fetch delete logs: ' + error.message);
+      setDeleteLogs([]);
+    } finally {
+      setDeleteLogsLoading(false);
+    }
+  };
+
+  // const fetchTiers = async () => {
+  //   try {
+  //     const response = await apiHelper.get('/tier/getAllTiers_WithoutPagination');
+  //     setTiers(response?.data?.tiers || []);
+  //   } catch (error) {
+  //     console.error('Failed to fetch tiers:', error);
+  //   }
+  // };
+
+  // const assignTierToUser = async () => {
+  //   if (!selectedTierId || !assignTierUser) {
+  //     toast.error('Please select a tier');
+  //     return;
+  //   }
+    
+  //   setAssignTierLoading(true);
+  //   try {
+  //     const payload = {
+  //       teirId: selectedTierId,
+  //       userId: assignTierUser.id || assignTierUser._id
+  //     };
+  //     await apiHelper.post('/tier/assignTierTo_SingleUser', payload);
+  //     toast.success('Tier assigned successfully!');
+  //     closeAssignTierModal();
+  //     fetchUsers(page, searchTerm);
+  //   } catch (error) {
+  //     toast.error('Failed to assign tier: ' + error.message);
+  //   } finally {
+  //     setAssignTierLoading(false);
+  //   }
+  // };
+
+  // const openAssignTierModal = (user) => {
+  //   setAssignTierUser(user);
+  //   setSelectedTierId('');
+  //   setShowAssignTier(true);
+  //   fetchTiers();
+  //   document.body.classList.add('modal-open');
+  // };
+
+  // const closeAssignTierModal = () => {
+  //   setShowAssignTier(false);
+  //   setAssignTierUser(null);
+  //   setSelectedTierId('');
+  //   document.body.classList.remove('modal-open');
+  // };
+
+  const closeDeleteLogsModal = () => {
+    setShowDeleteLogs(false);
+    setDeleteLogsUser(null);
+    setDeleteLogs([]);
+    document.body.classList.remove('modal-open');
+  };
+
   const toggleUserStatus = async (user) => {
     try {
       await apiHelper.patch(`/user/activeInactiveUserStatus/${user?.id || user?._id}`);
-      toast.success('User status updated successfully!');
+      toast.success('User status updated successfully');
       fetchUsers(page, searchTerm);
     } catch (error) {
       toast.error('Failed to update user status: ' + error.message);
@@ -452,13 +533,14 @@ const UsersList = ({ onUserDeleted, onUsersCountChange, onBalanceSumChange }) =>
               <th className="text-left py-3 px-2 sm:px-4 text-xs font-medium text-gray-500 uppercase tracking-wider hidden lg:table-cell">Status</th>
               <th className="text-left py-3 px-2 sm:px-4 text-xs font-medium text-gray-500 uppercase tracking-wider">History</th>
               <th className="text-left py-3 px-2 sm:px-4 text-xs font-medium text-gray-500 uppercase tracking-wider">Profit & Loss</th>
+              <th className="text-left py-3 px-2 sm:px-4 text-xs font-medium text-gray-500 uppercase tracking-wider">Delete Id</th>
               <th className="text-left py-3 px-2 sm:px-4 text-xs font-medium text-gray-500 uppercase tracking-wider">Actions</th>
             </tr>
           </thead>
           <tbody>
             {loading ? (
               <tr>
-                <td colSpan="9" className="text-center" style={{height: '320px'}}>
+                <td colSpan="10" className="text-center" style={{height: '320px'}}>
                   <div className="flex flex-col items-center justify-center h-full">
                     <div className="loading-spinner mb-2" style={{width: '20px', height: '20px'}}></div>
                     <p className="text-gray-600 text-sm">Loading...</p> 
@@ -467,7 +549,7 @@ const UsersList = ({ onUserDeleted, onUsersCountChange, onBalanceSumChange }) =>
               </tr>
             ) : users.length === 0 ? (
               <tr>
-                <td colSpan="9" className="text-center text-gray-500" style={{height: '320px'}}>
+                <td colSpan="10" className="text-center text-gray-500" style={{height: '320px'}}>
                   <div className="flex flex-col items-center justify-center h-full">
                     <p className="text-lg mb-2">No users found</p>
                     <p className="text-sm">Add some users to get started</p>
@@ -543,6 +625,24 @@ const UsersList = ({ onUserDeleted, onUsersCountChange, onBalanceSumChange }) =>
                           <span className="sm:hidden">P&L</span>
                         </button>
                       </td>
+                      <td className="py-4 px-2 sm:px-4">
+                        <button 
+                          onClick={() => fetchDeleteLogs(user)}
+                          className="text-red-600 hover:text-red-800 text-xs sm:text-sm font-medium flex items-center gap-1"
+                        >
+                          <span className="hidden sm:inline">Delete Logs</span>
+                          <span className="sm:hidden">Logs</span>
+                        </button>
+                      </td>
+                      {/* <td className="py-4 px-2 sm:px-4">
+                        <button 
+                          onClick={() => openAssignTierModal(user)}
+                          className="text-purple-600 hover:text-purple-800 text-xs sm:text-sm font-medium flex items-center gap-1"
+                        >
+                          <span className="hidden sm:inline">Assign Tier</span>
+                          <span className="sm:hidden">Tier</span>
+                        </button>
+                      </td> */}
                       <td className="py-4 px-2 sm:px-4">
                         <div className="flex items-center gap-1 sm:gap-2">
                           <button 
@@ -1062,6 +1162,68 @@ const UsersList = ({ onUserDeleted, onUsersCountChange, onBalanceSumChange }) =>
         </div>
       )}
 
+      {/* Delete Logs Modal */}
+      {showDeleteLogs && (
+        <div className="fixed inset-0 modal-overlay flex items-center justify-center p-4 z-50">
+          <div className="gaming-card p-4 sm:p-6 max-w-4xl w-full max-h-[90vh] overflow-y-auto mx-4">
+            <div className="flex justify-between items-center mb-6">
+              <div>
+                <h2 className="text-lg sm:text-xl font-semibold text-gray-900">Delete Logs</h2>
+                <p className="text-gray-600 text-sm mt-1">Delete logs for {deleteLogsUser?.clientName}</p>
+              </div>
+              <button onClick={closeDeleteLogsModal} className="text-gray-400 hover:text-gray-600">
+                <X size={20} />
+              </button>
+            </div>
+            
+            {deleteLogsLoading ? (
+              <div className="text-center py-8">
+                <div className="loading-spinner mx-auto mb-4" style={{width: '32px', height: '32px'}}></div>
+                <p className="text-gray-600">Loading delete logs...</p>
+              </div>
+            ) : deleteLogs.length === 0 ? (
+              <div className="text-center py-8 text-gray-500">
+                <p className="text-lg mb-2">No delete logs found</p>
+                <p className="text-sm">This user has no delete history</p>
+              </div>
+            ) : (
+              <div className="overflow-x-auto">
+                <table className="w-full">
+                  <thead className="table-header">
+                    <tr>
+                      <th className="text-left py-3 px-4 text-xs font-medium text-gray-500 uppercase tracking-wider">#</th>
+                      <th className="text-left py-3 px-4 text-xs font-medium text-gray-500 uppercase tracking-wider">Client Name</th>
+                      <th className="text-left py-3 px-4 text-xs font-medium text-gray-500 uppercase tracking-wider">Action</th>
+                      <th className="text-left py-3 px-4 text-xs font-medium text-gray-500 uppercase tracking-wider">Created At</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {deleteLogs.map((log, index) => (
+                      <tr key={log._id || index} className="border-b border-gray-100">
+                        <td className="py-4 px-4">
+                          <p className="text-sm font-medium text-gray-900">{index + 1}</p>
+                        </td>
+                        <td className="py-4 px-4">
+                          <p className="text-sm text-gray-900">{log.clientName || 'N/A'}</p>
+                        </td>
+                        <td className="py-4 px-4">
+                          <p className="text-sm text-gray-900">{log.action || 'N/A'}</p>
+                        </td>
+                        <td className="py-4 px-4">
+                          <p className="text-sm text-gray-900">
+                            {log.createdAt ? new Date(log.createdAt).toLocaleString('en-IN', { hour12: true }) : 'N/A'}
+                          </p>
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+            )}
+          </div>
+        </div>
+      )}
+
       {/* Screenshot Modal */}
       {showScreenshot && (
         <div className="fixed inset-0 modal-overlay flex items-center justify-center p-4 z-50">
@@ -1112,6 +1274,54 @@ const UsersList = ({ onUserDeleted, onUsersCountChange, onBalanceSumChange }) =>
           </div>
         </div>
       )}
+
+      {/* Assign Tier Modal */}
+      {/* {showAssignTier && (
+        <div className="fixed inset-0 modal-overlay flex items-center justify-center p-4 z-50">
+          <div className="gaming-card p-4 sm:p-6 max-w-md w-full mx-4">
+            <div className="flex justify-between items-center mb-6">
+              <div>
+                <h2 className="text-lg sm:text-xl font-semibold text-gray-900">Assign Tier</h2>
+                <p className="text-gray-600 text-sm mt-1">Assign tier to {assignTierUser?.clientName}</p>
+              </div>
+              <button onClick={closeAssignTierModal} className="text-gray-400 hover:text-gray-600">
+                <X size={20} />
+              </button>
+            </div>
+            
+            <div className="mb-6">
+              <label className="block text-sm font-medium text-gray-700 mb-2">
+                Select Tier
+              </label>
+              <select
+                value={selectedTierId}
+                onChange={(e) => setSelectedTierId(e.target.value)}
+                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none"
+              >
+                <option value="">Select a tier</option>
+                {tiers.map((tier) => (
+                  <option key={tier._id} value={tier._id}>
+                    {tier.teirName} - ₹{parseInt(tier.teir_transaction_amount).toLocaleString()}
+                  </option>
+                ))}
+              </select>
+            </div>
+            
+            <div className="flex gap-3">
+              <button onClick={closeAssignTierModal} className="flex-1 btn-secondary">
+                Cancel
+              </button>
+              <button 
+                onClick={assignTierToUser} 
+                disabled={assignTierLoading}
+                className="flex-1 bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700 flex items-center justify-center disabled:opacity-50"
+              >
+                {assignTierLoading ? 'Assigning...' : 'Assign Tier'}
+              </button>
+            </div>
+          </div>
+        </div>
+      )} */}
     </div>
   );
 };

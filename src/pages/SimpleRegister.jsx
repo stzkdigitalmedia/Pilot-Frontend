@@ -211,7 +211,7 @@ const SimpleRegister = () => {
   }
 
   return (
-    <div className="min-h-screen flex flex-col items-center justify-start px-4 pb-10 max-w-[850px] mx-auto" style={{ backgroundImage: 'url(/bg.jpg)', backgroundSize: 'cover', backgroundPosition: 'center', backgroundRepeat: 'no-zero' }}>
+    <div className="min-h-screen flex flex-col items-center justify-start px-4 pb-10 max-w-[769px] mx-auto bg-[#0e0e0e]">
       <div className="text-center mb-6 max-w-md w-full">
         <img src="/logoforlogin.png" alt="Logo" className="w-[120px] mt-2 sm:mt-0 sm:w-[170px] mx-auto h-auto" />
       </div>
@@ -230,7 +230,7 @@ const SimpleRegister = () => {
                 value={formData.clientName}
                 onChange={handleChange}
                 maxLength={9}
-                className="w-full px-3 md:px-4 py-2 md:py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-green-500 transition-all"
+                className="w-full px-3 md:px-4 py-2 md:py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#1b1b1b] transition-all"
                 required
               />
               <p className="text-xs text-gray-500 mt-1">Maximum 9 characters, only letters and numbers allowed</p>
@@ -247,7 +247,7 @@ const SimpleRegister = () => {
                   placeholder="Example@1256"
                   value={formData.password}
                   onChange={handleChange}
-                  className="w-full px-3 md:px-4 py-2 md:py-3 pr-10 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-green-500 transition-all"
+                  className="w-full px-3 md:px-4 py-2 md:py-3 pr-10 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#1b1b1b] transition-all"
                   required
                 />
                 <button
@@ -269,13 +269,13 @@ const SimpleRegister = () => {
                 value={formData.phone} 
                 onChange={(value) => setFormData({...formData, phone: value})} 
                 placeholder="Enter mobile number"
-                className="w-full px-3 md:px-4 py-2 md:py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-green-500 transition-all"
+                className="w-full px-3 md:px-4 py-2 md:py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#1b1b1b] transition-all"
               />
               <button
                 type="button"
                 onClick={handleSendOtp}
                 disabled={!formData.clientName.trim() || !formData.password.trim() || !formData.phone || formData.phone.length !== 10 || sendingOtp || countdown > 0}
-                className="w-full mt-2 px-4 py-2 md:py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed transition-all text-sm font-medium"
+                className="w-full mt-2 px-4 py-2 md:py-3 bg-[#1b1b1b] text-white rounded-lg disabled:opacity-50 disabled:cursor-not-allowed transition-all text-sm font-medium"
               >
                 {sendingOtp ? 'Sending...' : countdown > 0 ? `Resend (${countdown}s)` : otpSent ? 'Resend OTP' : 'Send OTP'}
               </button>
@@ -293,7 +293,7 @@ const SimpleRegister = () => {
                   value={formData.otp}
                   onChange={handleChange}
                   maxLength={6}
-                  className="w-full px-3 md:px-4 py-2 md:py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-green-500 transition-all"
+                  className="w-full px-3 md:px-4 py-2 md:py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#1b1b1b] transition-all"
                   required
                 />
               </div>
@@ -310,7 +310,7 @@ const SimpleRegister = () => {
                 onChange={handleChange}
                 readOnly={isReferralReadonly}
                 // className={`w-full px-3 md:px-4 py-2 md:py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-green-500 transition-all ${isReferralReadonly ? '*/bg-gray-200 cursor-not-allowed' : ''}`}
-                className={`w-full px-3 md:px-4 py-2 md:py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-green-500 transition-all bg-gray-200 cursor-not-allowed`}
+                className={`w-full px-3 md:px-4 py-2 md:py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#1b1b1b] transition-all bg-gray-200 cursor-not-allowed`}
                 required
               />
             </div>
@@ -318,8 +318,7 @@ const SimpleRegister = () => {
             <button
               type="submit"
               disabled={loading}
-              className="w-full text-white py-2 md:py-3 px-4 rounded-lg font-semibold focus:ring-2 focus:ring-offset-2 disabled:opacity-50 disabled:cursor-not-allowed transition-all flex items-center justify-center" style={{ backgroundColor: '#1477b0' }}
-            >
+              className="w-full bg-[#1b1b1b] text-white py-2 md:py-3 px-4 rounded-lg font-semibold focus:ring-2 focus:ring-offset-2 disabled:opacity-50 disabled:cursor-not-allowed transition-all flex items-center justify-center">
               {loading ? (
                 <><span className="w-4 h-4 md:w-5 md:h-5 border-2 border-white border-t-transparent rounded-full animate-spin mr-2"></span>Creating Account...</>
               ) : (
@@ -329,7 +328,7 @@ const SimpleRegister = () => {
           </form>
 
           <div className="mt-4 md:mt-6 text-center space-y-2">
-            <Link to="/login" className="w-full text-white py-2 md:py-3 px-4 rounded-lg font-semibold transition-all flex items-center justify-center" style={{ backgroundColor: '#1477b0' }} onMouseEnter={(e) => e.target.style.backgroundColor = '#0f5a8a'} onMouseLeave={(e) => e.target.style.backgroundColor = '#1477b0'}>
+            <Link to="/login" className="w-full bg-[#1b1b1b] text-white py-2 md:py-3 px-4 rounded-lg font-semibold transition-all flex items-center justify-center">
               Login
             </Link>
             <p className="text-gray-500 text-xs md:text-sm">

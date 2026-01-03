@@ -7,7 +7,7 @@ import TransactionLogs from '../components/TransactionLogs';
 const TransactionLogsPage = () => {
   const { logout, user } = useAuth();
   const navigate = useNavigate();
-  
+
   const handleLogout = async () => {
     try {
       await logout();
@@ -38,6 +38,9 @@ const TransactionLogsPage = () => {
       case 'transaction-logs':
         navigate('/transaction-logs');
         break;
+      case 'tier-management':
+        navigate('/tier-management');
+        break;
       case 'telegram-otp':
         navigate('/telegram-otp');
         break;
@@ -52,13 +55,13 @@ const TransactionLogsPage = () => {
   return (
     <div className="min-h-screen bg-gray-50 flex">
       <Sidebar activeTab="transaction-logs" setActiveTab={handleNavigation} onLogout={handleLogout} />
-      
+
       <div className="flex-1 lg:ml-64">
-        <AdminHeader 
-          title="Transaction Logs" 
-          subtitle="View all transaction status change logs" 
+        <AdminHeader
+          title="Transaction Logs"
+          subtitle="View all transaction status change logs"
         />
-        
+
         <TransactionLogs />
       </div>
     </div>

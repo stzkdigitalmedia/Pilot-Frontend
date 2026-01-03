@@ -120,7 +120,7 @@ const LoginForm = () => {
   }, [countdown]);
 
   return (
-    <div className="min-h-screen flex flex-col max-w-[850px] mx-auto items-center justify-start p-4" style={{ backgroundImage: 'url(/bg.jpg)', backgroundSize: 'cover', backgroundPosition: 'center', backgroundRepeat: 'no-repeat' }}>
+    <div className="min-h-screen bg-[#0e0e0e] flex flex-col max-w-[769px] mx-auto items-center justify-start p-4">
       <div className="text-center mb-6 max-w-md w-full">
         <img src="/logoforlogin.png" alt="Logo" className="w-[140px] md:w-[190px] h-auto mx-auto" />
       </div>
@@ -177,9 +177,7 @@ const LoginForm = () => {
                 <button
                   type="submit"
                   disabled={loading}
-                  className="w-full text-white py-2 md:py-3 px-4 rounded-lg font-semibold focus:ring-2 focus:ring-offset-2 disabled:opacity-50 disabled:cursor-not-allowed transition-all flex items-center justify-center"
-                  style={{ backgroundColor: '#1477b0' }}
-                >
+                  className="w-full bg-[#1b1b1b] text-white py-2 md:py-3 px-4 rounded-lg font-semibold focus:ring-2 focus:ring-offset-2 disabled:opacity-50 disabled:cursor-not-allowed transition-all flex items-center justify-center">
                   {loading ? (
                     <>
                       <span className="w-4 h-4 md:w-5 md:h-5 border-2 border-white border-t-transparent rounded-full animate-spin mr-2"></span>
@@ -195,13 +193,13 @@ const LoginForm = () => {
 
             {!showForgotPassword && (
               <div className="mt-4 md:mt-6 text-center space-y-2">
-                <Link to="/register" className="w-full text-white py-2 md:py-3 px-4 rounded-lg font-semibold transition-all flex items-center justify-center" style={{ backgroundColor: '#1477b0' }} onMouseEnter={(e) => e.target.style.backgroundColor = '#0f5a8a'} onMouseLeave={(e) => e.target.style.backgroundColor = '#1477b0'}>
+                <Link to="/register" className="w-full text-white py-2 md:py-3 px-4 rounded-lg font-semibold transition-all flex items-center justify-center bg-[#1b1b1b]">
                   Register
                 </Link>
                 <button
                   type="button"
                   onClick={() => setShowForgotPassword(true)}
-                  className="text-blue-600 hover:text-blue-800 text-sm font-medium"
+                  className="text-[#1b1b1b] text-sm font-medium"
                 >
                   Forgot Password?
                 </button>
@@ -237,7 +235,7 @@ const LoginForm = () => {
                     type="button"
                     onClick={handleSendForgotOtp}
                     disabled={!forgotPasswordData.phone || forgotPasswordData.phone.length !== 10 || sendingOtp || countdown > 0}
-                    className="w-full mt-2 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed transition-all text-sm font-medium"
+                    className="w-full mt-2 px-4 py-2 bg-[#1b1b1b] text-white rounded-lg disabled:opacity-50 disabled:cursor-not-allowed transition-all text-sm font-medium"
                   >
                     {sendingOtp ? 'Sending...' : countdown > 0 ? `Resend (${countdown}s)` : otpSent ? 'Resend OTP' : 'Send OTP'}
                   </button>
@@ -255,7 +253,7 @@ const LoginForm = () => {
                         value={forgotPasswordData.otp}
                         onChange={(e) => setForgotPasswordData({ ...forgotPasswordData, otp: e.target.value })}
                         maxLength={6}
-                        className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"
+                        className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#1b1b1b]"
                         required
                       />
                     </div>
@@ -269,7 +267,7 @@ const LoginForm = () => {
                           placeholder="Enter new password"
                           value={forgotPasswordData.newPassword}
                           onChange={(e) => setForgotPasswordData({ ...forgotPasswordData, newPassword: e.target.value })}
-                          className="w-full px-3 py-2 pr-10 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"
+                          className="w-full px-3 py-2 pr-10 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#1b1b1b]"
                           required
                         />
                         <button
@@ -301,7 +299,7 @@ const LoginForm = () => {
                   <button
                     type="submit"
                     disabled={resetLoading}
-                    className="flex-1 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 disabled:opacity-50"
+                    className="flex-1 px-4 py-2 bg-[#1b1b1b] text-white rounded-lg disabled:opacity-50"
                   >
                     {resetLoading ? 'Resetting...' : 'Reset Password'}
                   </button>

@@ -327,14 +327,14 @@ const MyIDs = ({
 
   return (<>
     <Header />
-    <div className="min-h-screen bg-[#0e0e0e] p-3 sm:p-5 max-w-[850px] mx-auto text-white">
+    <div className="min-h-screen bg-[#0e0e0e] p-3 sm:p-5 max-w-[769px] mx-auto text-white">
 
       {/* ================= TOP TABS ================= */}
       <div className="flex bg-[#161616] rounded-xl overflow-hidden mb-4">
         <button
           onClick={() => setActiveTab("myIds")}
           className={`flex-1 py-3 text-sm font-semibold transition ${activeTab === "myIds"
-            ? "bg-[#1f1f1f] border-b-2 border-blue-500"
+            ? "bg-[#1f1f1f] border-b-2 border-[#005993]"
             : "text-gray-400"
             }`}
         >
@@ -344,7 +344,7 @@ const MyIDs = ({
         <button
           onClick={() => setActiveTab("createId")}
           className={`flex-1 py-3 text-sm font-semibold transition ${activeTab === "createId"
-            ? "bg-[#1f1f1f] border-b-2 border-blue-500"
+            ? "bg-[#1f1f1f] border-b-2 border-[#005993]"
             : "text-gray-400"
             }`}
         >
@@ -403,7 +403,7 @@ const MyIDs = ({
                     setShowCreateIdLocal(true);
                   }}
                   className="px-5 py-2 rounded-full
-                  bg-blue-600 hover:bg-blue-700
+                  bg-[#005993]
                   text-sm font-semibold transition"
                 >
                   Create
@@ -430,7 +430,7 @@ const MyIDs = ({
               {(localSubAccounts.length > 0 ? localSubAccounts : subAccounts).map((acc) => (
                 <div
                   key={acc.id || acc._id}
-                  className="c flex justify-between items-center align-middle rounded-xl p-4 cursor-pointer
+                  className="flex justify-between flex-wrap items-center align-middle rounded-xl p-4 cursor-pointer
                   shadow-[0_4px_20px_rgba(0,0,0,0.6)]"
                   onClick={() => {
                     const subAccId = acc.id || acc._id;
@@ -481,7 +481,7 @@ const MyIDs = ({
                         setSelectedSubUser(acc);
                         setShowResetPassword(true);
                       }}
-                      className="rounded-full w-8 h-8 text-xs bg-blue-600 hover:bg-blue-700"
+                      className="rounded-full w-8 h-8 text-xs bg-[#005993] hover:bg-[#0b5689]"
                     >
                       P
                     </button>
@@ -606,12 +606,13 @@ const MyIDs = ({
                 </div>
 
                 <div className="flex flex-col sm:flex-row gap-3 pt-4">
-                  <button type="button" onClick={() => setShowSubUserWithdraw(false)} className="w-full sm:flex-1 btn-secondary">
-                    Cancel
-                  </button>
                   <button type="submit" disabled={transactionProcessing} className="w-full sm:flex-1 gaming-btn">
                     {transactionProcessing ? 'Processing' : 'Withdraw'}
                   </button>
+                  <button type="button" onClick={() => setShowSubUserWithdraw(false)} className="w-full sm:flex-1 btn-secondary">
+                    Cancel
+                  </button>
+
                 </div>
               </form>
             )}
@@ -654,11 +655,11 @@ const MyIDs = ({
                 </div>
 
                 <div className="flex flex-col sm:flex-row gap-3 pt-4">
-                  <button type="button" onClick={() => setShowSubUserDeposit(false)} className="w-full sm:flex-1 btn-secondary">
-                    Cancel
-                  </button>
                   <button type="submit" className="w-full sm:flex-1 gaming-btn">
                     Deposit
+                  </button>
+                  <button type="button" onClick={() => setShowSubUserDeposit(false)} className="w-full sm:flex-1 btn-secondary">
+                    Cancel
                   </button>
                 </div>
               </form>
@@ -706,15 +707,15 @@ const MyIDs = ({
                 </div>
 
                 <div className="flex flex-col sm:flex-row gap-3 pt-4">
+                  <button type="submit" className="w-full sm:flex-1 gaming-btn">
+                    Reset Password
+                  </button>
                   <button type="button" onClick={() => {
                     setShowResetPassword(false);
                     setResetPasswordForm({ newPassword: '' });
                     setSelectedSubUser(null);
                   }} className="w-full sm:flex-1 btn-secondary">
                     Cancel
-                  </button>
-                  <button type="submit" className="w-full sm:flex-1 gaming-btn">
-                    Reset Password
                   </button>
                 </div>
               </form>
