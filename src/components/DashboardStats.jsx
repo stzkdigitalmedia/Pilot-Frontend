@@ -233,12 +233,19 @@ const DashboardStats = () => {
             </div>
             <div
               className="gaming-card p-4 cursor-pointer hover:shadow-lg transition-shadow"
+            // onClick={() => navigate('/no-transaction-users')}
+            >
+              <h3 className="text-sm font-medium text-gray-500">FTD Complete User</h3>
+              <p className="text-2xl font-bold text-orange-600">{dashSummary?.userRegistrationsCount - dashSummary?.userRegistrationsNoTransactionCount || 0}</p>
+            </div>
+            <div
+              className="gaming-card p-4 cursor-pointer hover:shadow-lg transition-shadow"
               onClick={() => navigate('/no-transaction-users')}
             >
               <h3 className="text-sm font-medium text-gray-500">FTD Pending User</h3>
               <p className="text-2xl font-bold text-orange-600">{dashSummary?.userRegistrationsNoTransactionCount || 0}</p>
             </div>
-            <div
+            {/* <div
               className="gaming-card p-4 cursor-pointer hover:shadow-lg transition-shadow"
               onClick={() => navigate('/delete-logs')}
             >
@@ -246,7 +253,7 @@ const DashboardStats = () => {
               <p className={`text-xl font-bold text-red-600`}>
                 {deleteIdsCount}
               </p>
-            </div>
+            </div> */}
 
           </>
         ) : null}
