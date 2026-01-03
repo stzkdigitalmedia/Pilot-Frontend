@@ -231,6 +231,7 @@ const DashboardStats = () => {
               <h3 className="text-sm font-medium text-gray-500">New User Registrations</h3>
               <p className="text-2xl font-bold text-blue-600">{dashSummary?.userRegistrationsCount || 0}</p>
             </div>
+            
             <div
               className="gaming-card p-4 cursor-pointer hover:shadow-lg transition-shadow"
             // onClick={() => navigate('/no-transaction-users')}
