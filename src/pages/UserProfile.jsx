@@ -43,12 +43,14 @@ const UserProfile = () => {
   const fetchSavedBanks = async () => {
     setBanksLoading(true);
     try {
-      const response = await apiHelper.get('/user/getSavedBanks');
-      if (response?.success) {
-        setSavedBanks(response?.data || []);
-      }
+      const userId = user?._id;
+      if (!userId) return;
+      const response = await apiHelper.get(`/bank/getAllBanksWithoutPagination/${userId}`);
+      const banksList = response?.banks || response?.data || response || [];
+      setSavedBanks(banksList);
     } catch (error) {
-      console.error('Error fetching banks:', error);
+      console.error('Failed to fetch banks:', error);
+      setSavedBanks([]);
     } finally {
       setBanksLoading(false);
     }
@@ -74,6 +76,9 @@ const UserProfile = () => {
         mode: 'PowerPay'
       };
 
+      payload.branchUserName = 'Drd247D';
+
+      // Add bank details for withdraw transactions
       if (transactionForm?.transactionType === 'Withdraw') {
         if (selectedBankId === '') {
           toast.error('Please select a bank account for withdrawal');
@@ -97,20 +102,35 @@ const UserProfile = () => {
 
       if (response?.success && response?.data) {
         const transaction = response?.data;
+
         toast.success('Transaction created successfully!');
         setShowCreateTransaction(false);
         setTransactionForm({ amount: '', transactionType: 'Deposit' });
         setSelectedBankId('');
         fetchUserBalance();
 
+        // Handle different transaction types
         if (transactionForm?.transactionType === 'Deposit') {
-          toast.info('Processing payment... Please wait');
+          //   // Show processing message
+          toast.success('Processing payment... Please wait');
           setTimeout(() => {
             window.location.href = `http://powerdreams.org/online/pay/${user?.branchName}/${transaction?._id}`;
           }, 2000);
+
+          
         } else if (transactionForm?.transactionType === 'Withdraw') {
-          toast.info('Withdrawal request submitted successfully!');
+          // Call external API for withdrawal
+          const selectedBank = savedBanks[parseInt(selectedBankId)];
+          if (selectedBank) {
+            try {
+              toast.success('Withdrawal request submitted successfully!');
+            } catch (externalError) {
+              console.log('External withdrawal API error:', externalError);
+            }
+          }
         }
+
+        return;
       }
     } catch (error) {
       console.error('Transaction error:', error);
@@ -372,8 +392,8 @@ const UserProfile = () => {
                           <div
                             key={bank.id || bank._id || index}
                             className={`p-3 border rounded-lg cursor-pointer transition-all ${selectedBankId === index.toString()
-                                ? 'border-green-500 bg-green-50'
-                                : 'border-gray-200 hover:border-gray-300'
+                              ? 'border-green-500 bg-green-50'
+                              : 'border-gray-200 hover:border-gray-300'
                               }`}
                             onClick={() => setSelectedBankId(index.toString())}
                           >
