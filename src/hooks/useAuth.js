@@ -76,23 +76,17 @@ export const useAuth = () => {
     const expires = new Date();
     expires.setTime(expires.getTime() + (days * 24 * 60 * 60 * 1000));
     const cookieString = `${name}=${value};expires=${expires.toUTCString()};path=/`;
-    // console.log('setCookie - Setting cookie:', cookieString);
     document.cookie = cookieString;
-    // console.log('setCookie - Cookie set, current cookies:', document.cookie);
   };
 
   const getCookie = (name) => {
     const value = `; ${document?.cookie || ''}`;
     const parts = value?.split(`; ${name}=`);
-    // console.log('getCookie - All cookies:', document.cookie);
-    // console.log('getCookie - Looking for:', name, 'Found:', parts.length === 2 ? parts.pop().split(';').shift() : null);
     if (parts?.length === 2) return parts?.pop()?.split(';')?.shift();
     return null;
   };
 
   const login = (userData) => {
-    // console.log('useAuth - Login called with:', { userData });
-    // Check if user data is valid
     if (!userData) {
       window.location.href = '/login';
       return;
@@ -105,7 +99,6 @@ export const useAuth = () => {
     if (userData?.role) {
       localStorage.setItem('userRole', userData.role);
     }
-    // console.log('useAuth - Login state updated');
   };
 
   const logout = async () => {

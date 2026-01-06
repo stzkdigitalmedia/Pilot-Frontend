@@ -16,15 +16,13 @@ const UserGames = () => {
       const response = await apiHelper.get('/panel/getAllPanels?page=1&limit=10');
       const panelsData = response.data?.panels || response.panels || response.data || response || [];
       
-      // console.log('Panels Data:', panelsData); // Debug log
+
       
       // Filter only active panels
       const activePanels = panelsData.filter(panel => {
-        // console.log('Panel:', panel?.panelName, 'isActive:', panel?.isActive); // Debug log
         return panel?.isActive === true;
       });
       
-      // console.log('Active Panels:', activePanels); // Debug log
       
       // Group by panel name (which is same as game name)
       const gameGroups = activePanels.reduce((groups, panel) => {

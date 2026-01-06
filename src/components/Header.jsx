@@ -21,7 +21,6 @@ const Header = () => {
     const fetchUserBalance = async () => {
         try {
             if (!user?._id) {
-                console.log('User not available yet');
                 return;
             }
             const response = await apiHelper.get(`/transaction/get_MainUserBalance/${user._id}`);

@@ -98,9 +98,7 @@ const UserDashboard = () => {
       const userId = user?._id;
       if (!userId) return;
       const response = await apiHelper.get(`/bank/getAllBanksWithoutPagination/${userId}`);
-      // console.log('Banks API response:', response);
       const banksList = response?.banks || response?.data || response || [];
-      // console.log('Banks list:', banksList);
       setSavedBanks(banksList);
     } catch (error) {
       console.error('Failed to fetch banks:', error);
@@ -169,7 +167,6 @@ const UserDashboard = () => {
     setSubUserBalanceLoading(true);
     try {
       const response = await apiHelper.get(`/balance/getBalanceLogBySubUserId/${subAccountId}`);
-      // console.log(response, 'sub user balance response');
       const logData = response?.data || response || [];
       const latestLog = Array.isArray(logData) ? logData[0] : logData;
 
@@ -179,7 +176,6 @@ const UserDashboard = () => {
           amount: latestLog?.CurrentBalance,
           subUserId: subAccountId
         }
-        // const response = await apiHelper.post('/transaction/update_sub_user_balance', payload)
         setSubUserBalanceLoading(false);
       } else {
         // Keep loading if status is pending
@@ -416,7 +412,6 @@ const UserDashboard = () => {
     try {
       const response = await apiHelper.get('/subAccount/getSubAccounts?page=1&limit=50');
       const accountsList = response?.subAccounts || response?.data || response || [];
-      // console.log('Fetched sub accounts:', accountsList);
       setSubAccounts(accountsList);
     } catch (error) {
       console.error('Failed to fetch sub accounts:', error);
@@ -433,7 +428,6 @@ const UserDashboard = () => {
 
   const checkIdCreationStatus = async (subAccountId) => {
     try {
-      // console.log(subAccountId, 'subAccountId')
       const response = await apiHelper.get(`/subAccount/latest-sub-user/${subAccountId}`);
       const transaction = response?.data?.status;
 
@@ -562,7 +556,6 @@ const UserDashboard = () => {
               `/transaction/get_single_transactions/${transaction?._id}`
             );
 
-            // console.log(statusResponse)
             if (statusResponse?.data) {
               const currentStatus = statusResponse?.data?.status;
 
@@ -580,7 +573,6 @@ const UserDashboard = () => {
                 status: updatedStatus,
               });
 
-              // console.log('Transaction updated:', transaction?._id, updatedStatus);
               setUpdatedTransactions(transaction?._id);
 
               // ✅ Step 3: Handle toast + balance refresh
@@ -594,144 +586,6 @@ const UserDashboard = () => {
           }
         }
       }
-
-
-      // for (const transaction of transactions) {
-      //   if (transaction?.status === 'Pending' || transaction?.status === 'Initial') {
-      //     try {
-      //       const statusResponse = await fetch(`https://powerdreams.org/api/online/request/checkTransactionStatus/${transaction?._id}`);
-      //       if (statusResponse.ok) {
-      //         const statusData = await statusResponse.json();
-      //         if (statusData?.success && statusData?.data?.status) {
-
-      //           if (statusData?.data?.status == 'Accept' || statusData?.data?.status == 'Reject') {
-      //             await apiHelper.patch(`/transaction/updateTransaction/${transaction?._id}`, {
-      //               status: statusData?.data?.status
-      //             });
-      //             // await apiHelper.patch(`/transaction/updateTransaction/${transaction?._id}`, {
-      //             //   status: 'Pending'
-      //             // });
-      //           }
-      //           // console.log('runing.....')
-      //           setUpdatedTransactions(transaction?._id);
-      //           if (statusData?.data?.status == 'Accept') {
-      //             toast.success('Transaction completed successfully!');
-      //             fetchUserBalance();
-      //           } else if (statusData?.data?.status == 'Reject') {
-      //             toast.success('Transaction Rejected');
-      //             fetchUserBalance();
-      //           }
-      //         }
-      //       }
-      //     } catch (statusError) {
-      //       console.log('Status check error for transaction:', transaction?._id, statusError);
-      //     }
-      //   }
-      // }
-
-      // for (const transaction of transactions) {
-      //   if (transaction?.status === 'Pending' || transaction?.status === 'Initial') {
-      //     try {
-      //       const statusResponse = await fetch(
-      //         `https://powerdreams.org/api/online/request/checkTransactionStatus/${transaction?._id}`
-      //       );
-
-      //       if (statusResponse.ok) {
-      //         const statusData = await statusResponse.json();
-      //         const newStatus = statusData?.data?.status;
-
-      //         if (statusData?.success && newStatus) {
-      //           // ✅ Update transaction on every status change (Initial / Pending / Accept / Reject)
-      //           await apiHelper.patch(`/transaction/update_Transaction_Request_Data_of_Request/${transaction?._id}`, {
-      //             status: newStatus,
-      //           });
-
-      //           // ✅ Now handle final statuses
-      //           if (newStatus === 'Accept') {
-      //             toast.success('Transaction completed successfully!');
-      //             fetchUserBalance();
-      //             setUpdatedTransactions(transaction?._id);
-      //           } else if (newStatus === 'Reject') {
-      //             toast.error('Transaction Rejected');
-      //             fetchUserBalance();
-      //             setUpdatedTransactions(transaction?._id);
-      //           } else if (newStatus === 'Initial') {
-      //             console.log(`Transaction ${transaction?._id} is still Initial... rechecking later`);
-      //             // You can optionally wait and re-check again after some delay:
-      //             // setTimeout(() => checkTransactionStatusAgain(transaction?._id), 5000);
-      //           }
-      //         }
-      //       }
-      //     } catch (statusError) {
-      //       console.log('Status check error for transaction:', transaction?._id, statusError);
-      //     }
-      //   }
-      // }
-
-
-
-
-
-
-
-      // for (const transaction of transactions) {
-      //   // ✅ Sirf un transactions ke liye chalaye jo Accept / Reject NA ho
-      //   if (
-      //     true
-      //   ) {
-      //     // transaction?.status !== 'Accept' &&
-      //     // transaction?.status !== 'Reject'
-      //     try {
-      //       const statusResponse = await apiHelper.get(
-      //         `/transaction/callCheckStatus/${transaction?._id}`
-      //       );
-      //       // console.log(statusResponse)
-      //       // const statusResponse = await fetch(
-      //       //   `https://powerdreams.org/api/online/request/checkTransactionStatus/${transaction?._id}`
-      //       // );
-
-      //       if (statusResponse?.data?.success) {
-      //         const statusData = await statusResponse;
-      //         const newStatus = statusData?.data?.data?.status;
-
-      //         if (statusData?.success && newStatus) {
-      //           // ✅ Agar backend se Accept/Reject/Initial kuch bhi mile, update karo
-      //           // await apiHelper.patch(`/transaction/updateTransaction/${transaction?._id}`, {
-      //           //  status: newStatus,
-      //           // });
-
-
-      //           await apiHelper.patch(
-      //             `/transaction/update_Transaction_Request_Data_of_Request/${transaction?._id}`,
-      //             {
-      //               status: newStatus,
-      //             }
-      //           );
-
-
-
-      //           // ✅ Final status actions
-      //           if (newStatus === 'Accept') {
-      //             toast.success('Transaction completed successfully!');
-      //             fetchUserBalance();
-      //             setUpdatedTransactions(transaction?._id);
-      //           } else if (newStatus === 'Reject') {
-      //             toast.error('Transaction Rejected');
-      //             fetchUserBalance();
-      //             setUpdatedTransactions(transaction?._id);
-      //           } else if (newStatus === 'Initial') {
-      //             console.log(`Transaction ${transaction?._id} is still Initial... rechecking later`);
-      //           }
-      //         }
-      //       }
-
-      //       // Add 5 second delay between API calls
-      //       // await new Promise(resolve => setTimeout(resolve, 5000));
-      //     } catch (statusError) {
-      //       console.log('Status check error for transaction:', transaction?._id, statusError);
-      //     }
-      //   }
-      // }
 
 
 
@@ -750,9 +604,6 @@ const UserDashboard = () => {
             transaction?.transactionType === "Withdrawal" &&
             newStatus === "Initial"
           ) {
-            console.log(
-              `Withdrawal ${transaction?._id} is still Initial → skipping update`
-            );
             continue; // ⛔ yahin loop skip
           }
 
@@ -773,9 +624,7 @@ const UserDashboard = () => {
               fetchUserBalance();
               setUpdatedTransactions(transaction?._id);
             } else if (newStatus === "Initial") {
-              console.log(
-                `Transaction ${transaction?._id} is still Initial...`
-              );
+              
             }
           }
         } catch (statusError) {
@@ -858,12 +707,6 @@ const UserDashboard = () => {
       setTotalPages(Number(pagination.totalPages) || 1);
       setTotalTransactions(Number(pagination.totalTransactions) || transactions.length);
 
-      // console.log('Pagination Debug:', {
-      //   currentPage: Number(pagination.currentPage) || page,
-      //   totalPages: Number(pagination.totalPages) || 1,
-      //   totalTransactions: Number(pagination.totalTransactions) || transactions.length,
-      //   rawPagination: pagination
-      // });
 
       setUserTransactions(transactions);
     } catch (error) {
@@ -957,61 +800,13 @@ const UserDashboard = () => {
             window.location.href = `http://powerdreams.org/online/pay/${user?.branchName}/${transaction?._id}`;
           }, 2000);
 
-          //   // Call external API for deposit
-          //   try {
-          //     const res = await fetch('https://powerdreams.org/api/online/request/createTransaction', {
-          //       method: 'POST',
-          //       headers: {
-          //         'Content-Type': 'application/json'
-          //       },
-          //       body: JSON.stringify({
-          //         transaction_id: transaction?._id,
-          //         clientUserName: user?.username || user?.clientName,
-          //         amount: transaction?.amount,
-          //         transactionType: 'Deposit',
-          //         branchUserName: user?.branchName
-          //       })
-          //     });
-
-          //     if (res?.ok == true) {
-          //       setTimeout(() => {
-          //         window.location.href = `https://powerdreams.org/online/pay/${user?.branchName}/${transaction?._id}`;
-          //       }, 1000);
-          //     }else{
-          //       toast.error('payment faild. Please try again.');
-          //     }
-
-          //   } catch (externalError) {
-          //     console.log('External API error:', externalError);
-          //   }
-
-          // Wait 2 seconds then redirect
-          // setTimeout(() => {
-          // window.location.href = `https://powerdreams.org/online/pay/${user?.branchName}/${transaction?._id}`;
-          // }, 2000);
+          
         } else if (transactionForm?.transactionType === 'Withdraw') {
           // Call external API for withdrawal
           const selectedBank = savedBanks[parseInt(selectedBankId)];
           if (selectedBank) {
             try {
-              // await fetch('https://powerdreams.org/api/online/request/createWithdrawRequest', {
-              //   method: 'POST',
-              //   headers: {
-              //     'Content-Type': 'application/json'
-              //   },
-              //   body: JSON.stringify({
-              //     clientUserName: user?.username || user?.clientName,
-              //     branchUserName: user?.branchName,
-              //     amount: transaction?.amount,
-              //     upiId: selectedBank.upiId,
-              //     bankName: selectedBank.bankName,
-              //     accNo: selectedBank.accNo,
-              //     accHolderName: selectedBank.accHolderName,
-              //     ifscCode: selectedBank.ifscCode,
-              //     transactionType: 'Withdrawal',
-              //     transaction_id: transaction?._id
-              //   })
-              // });
+              
               toast.info('Withdrawal request submitted successfully!');
             } catch (externalError) {
               console.log('External withdrawal API error:', externalError);
@@ -1039,7 +834,6 @@ const UserDashboard = () => {
 
     try {
       const subAccountId = accountToDelete?.id || accountToDelete?._id;
-      console.log(accountToDelete, '44444444---------14111111111111')
 
       // Create balance log
       await apiHelper.post('/balance/createBalanceLog', { userId: subAccountId });

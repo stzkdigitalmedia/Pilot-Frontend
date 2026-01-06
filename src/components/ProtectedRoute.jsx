@@ -5,7 +5,6 @@ const ProtectedRoute = ({ children }) => {
   const { isAuthenticated, loading, user } = useAuth();
   
   // Debug logging
-  // console.log('ProtectedRoute - loading:', loading, 'isAuthenticated:', isAuthenticated, 'user:', user);
   
   if (loading) {
     return (

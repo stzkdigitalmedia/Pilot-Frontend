@@ -52,7 +52,6 @@ const PanelManagement = () => {
     setLoading(true);
     try {
       const response = await apiHelper.get(`/panel/getAllPanels?page=${page}&limit=10`);
-      // console.log('API Response:', response); // Debug log
 
       // Handle different response structures
       const panelsData = response.data?.panels || response.panels || response.data || response || [];

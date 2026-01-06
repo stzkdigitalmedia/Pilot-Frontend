@@ -78,7 +78,6 @@ const DeleteLogs = () => {
       };
 
       const response = await apiHelper.post('/deletelog/getDeleteLogs', payload);
-      console.log('API Response:', response); // Debug log
       
       setLogs(response?.data || []);
       setTotalPages(response?.totalPages || 1);

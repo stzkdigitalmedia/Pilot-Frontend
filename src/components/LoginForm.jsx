@@ -38,7 +38,6 @@ const LoginForm = () => {
 
     try {
       const response = await apiHelper.post('/auth/login', formData);
-      // console.log('LoginForm - Full API response:', response);
 
       const userData = response?.user || response?.data || response;
       const userRole = userData?.role || userData?.userType || 'User';
