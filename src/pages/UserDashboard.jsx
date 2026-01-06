@@ -1319,7 +1319,7 @@ const UserDashboard = () => {
                               : account.status === "Panding"
                                 ? t('pending')
                                 : account.status === "Reject"
-                                  ? t('rejected')
+                                  ? t('reject')
                                   : t('pending')}
                           </span>
                           <button
