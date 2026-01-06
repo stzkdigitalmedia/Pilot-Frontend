@@ -51,7 +51,7 @@ const LandingPage = () => {
   ];
 
   const handleRedirectToLogin = () => {
-    navigate('/login');
+    window.location.href = '/login';
   };
 
   return (
