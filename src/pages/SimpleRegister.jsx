@@ -213,7 +213,7 @@ const SimpleRegister = () => {
   return (
     <div className="min-h-screen flex flex-col items-center justify-start px-4 pb-10 max-w-[769px] mx-auto bg-[#0e0e0e]">
       <div className="text-center mb-6 max-w-md w-full">
-        <img src="/logoforlogin.png" alt="Logo" className="w-[120px] mt-2 sm:mt-0 sm:w-[170px] mx-auto h-auto" />
+        <img src="/logoforlogin.png" alt="Logo" className="w-[100px] mt-2 sm:mt-0 sm:w-[160px] mx-auto h-auto" />
       </div>
       <div className="bg-white rounded-2xl shadow-2xl overflow-hidden max-w-md w-full">
         <div className="p-6 md:p-8">

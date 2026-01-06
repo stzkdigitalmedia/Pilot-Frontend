@@ -122,7 +122,7 @@ const LoginForm = () => {
   return (
     <div className="min-h-screen bg-[#0e0e0e] flex flex-col max-w-[769px] mx-auto items-center justify-start p-4">
       <div className="text-center mb-6 max-w-md w-full">
-        <img src="/logoforlogin.png" alt="Logo" className="w-[140px] md:w-[190px] h-auto mx-auto" />
+        <img src="/logoforlogin.png" alt="Logo" className="w-[100px] sm:w-[160px] h-auto mx-auto" />
       </div>
 
       {!showForgotPassword && (
