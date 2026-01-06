@@ -51,7 +51,7 @@ const LandingPage = () => {
   ];
 
   const handleRedirectToLogin = () => {
-    navigate('/login');
+    window.location.href = '/login';
   };
 
   return (
@@ -152,11 +152,11 @@ const LandingPage = () => {
               <div className="flex flex-wrap justify-end gap-2">
                 <button 
                   onClick={handleRedirectToLogin}
-                  className='px-2 h-9 rounded-lg bg-[#005993] text-white font-semibold'
+                  className='px-2 h-9 rounded-lg bg-[#005993] sm:text:[16px] text-[14px] text-white font-semibold'
                 >
                   Get New Id
                 </button>
-                <div className='flex gap-6 sm:gap-2'>
+                <div className='flex gap-1 sm:gap-2'>
                   <button
                     onClick={handleRedirectToLogin}
                     className="w-9 h-9 rounded-lg bg-white/10 text-white hover:bg-white/20"
