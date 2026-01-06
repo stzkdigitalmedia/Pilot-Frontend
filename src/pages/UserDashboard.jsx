@@ -868,7 +868,7 @@ const UserDashboard = () => {
         mode: 'PowerPay'
       };
 
-       payload.branchUserName = 'Drd247D';
+      payload.branchUserName = 'Drd247D';
 
       // Add bank details for withdraw transactions
       if (transactionForm?.transactionType === 'Withdraw') {
@@ -1282,7 +1282,7 @@ const UserDashboard = () => {
                 return (
                   <div
                     key={account.id || account._id || index}
-                    className="flex-shrink-0 px-2"
+                    className="flex-shrink-0 px-2 sm:px-0.5"
                     style={{ width: window.innerWidth >= 640 ? '50%' : '100%' }}
                   >
                     {/* <div className="rounded-2xl p-5 bg-gradient-to-br from-[#101c2f] to-[#0b1324] border border-white/10 text-white"> */}
@@ -1395,67 +1395,69 @@ const UserDashboard = () => {
 
                       {/* Rejection Reason */}
                       {account.status === "Reject" && account.remarks && (
-                        <div className="mb-4 p-3 bg-red-900/30 border border-red-700/50 rounded-lg">
+                        <div className="mb-4 p-3 bg-red-100 border border-red-700/50 rounded-lg">
                           <div className="flex items-start gap-2">
                             <div className="w-4 h-4 bg-red-600 rounded-full flex items-center justify-center flex-shrink-0 mt-0.5">
                               <span className="text-xs text-white">!</span>
                             </div>
                             <div>
-                              <p className="text-xs font-medium text-red-300 mb-1">Rejection Reason:</p>
-                              <p className="text-xs text-red-200">{account.remarks}</p>
+                              <p className="text-xs font-medium text-red-700 mb-1">Rejection Reason:</p>
+                              <p className="text-xs text-red-700">{account.remarks}</p>
                             </div>
                           </div>
                         </div>
                       )}
 
                       {/* Action Buttons */}
-                      <div className="flex gap-2 sm:gap-3 flex-wrap">
-                        <button
-                          onClick={() => {
-                            setSelectedSubUser(account);
-                            setShowSubUserDeposit(true);
-                          }}
-                          disabled={account.status !== "Accept"}
-                          className={`flex-1 py-2 px-2 sm:px-4 rounded-lg flex items-center justify-center gap-1 sm:gap-2 transition-colors ${account.status === "Accept"
-                            ? 'bg-green-600 hover:bg-green-700 cursor-pointer'
-                            : 'bg-gray-500 cursor-not-allowed opacity-50'
-                            }`}
-                        >
-                          <ArrowUp className="w-3 h-3 sm:w-4 sm:h-4" />
-                          <span className="text-xs sm:text-sm font-medium">{t('deposit')}</span>
-                        </button>
-                        <button
-                          onClick={async () => {
-                            setSelectedSubUser(account);
-                            await createBalanceLog(account?.id || account?._id);
-                            setShowSubUserWithdraw(true);
-                            fetchSubUserBalance(account?.id || account?._id);
-                          }}
-                          disabled={account.status !== "Accept"}
-                          className={`flex-1 py-2 px-2 sm:px-4 rounded-lg flex items-center justify-center gap-1 sm:gap-2 transition-colors ${account.status === "Accept"
-                            ? 'bg-red-600 hover:bg-red-700 cursor-pointer'
-                            : 'bg-gray-500 cursor-not-allowed opacity-50'
-                            }`}
-                        >
-                          <ArrowDown className="w-3 h-3 sm:w-4 sm:h-4" />
-                          <span className="text-xs sm:text-sm font-medium">{t('withdraw')}</span>
-                        </button>
-                        <button
-                          onClick={() => {
-                            setSelectedSubUser(account);
-                            setShowResetPassword(true);
-                          }}
-                          disabled={account.status !== "Accept"}
-                          className={`flex-1 py-2 px-2 sm:px-4 rounded-lg flex items-center justify-center gap-1 sm:gap-2 transition-colors ${account.status === "Accept"
-                            ? 'cursor-pointer'
-                            : 'cursor-not-allowed opacity-50'
-                            }`}
-                          style={{ backgroundColor: account.status === "Accept" ? '#1477b0' : '#6b7280' }}
-                          title="Reset Password"
-                        >
-                          <span className="text-xs sm:text-sm font-medium">{t('resetPassword')}</span>
-                        </button>
-                      </div>
+                      {account.status !== "Reject" &&(
+                        <div className="flex gap-2 sm:gap-3 flex-wrap">
+                          <button
+                            onClick={() => {
+                              setSelectedSubUser(account);
+                              setShowSubUserDeposit(true);
+                            }}
+                            disabled={account.status !== "Accept"}
+                            className={`flex-1 py-2 px-2 sm:px-4 rounded-lg flex items-center justify-center gap-1 sm:gap-2 transition-colors ${account.status === "Accept"
+                              ? 'bg-green-600 hover:bg-green-700 cursor-pointer'
+                              : 'bg-gray-500 cursor-not-allowed opacity-50'
+                              }`}
+                          >
+                            <ArrowUp className="w-3 h-3 sm:w-4 sm:h-4" />
+                            <span className="text-xs sm:text-sm font-medium">{t('deposit')}</span>
+                          </button>
+                          <button
+                            onClick={async () => {
+                              setSelectedSubUser(account);
+                              await createBalanceLog(account?.id || account?._id);
+                              setShowSubUserWithdraw(true);
+                              fetchSubUserBalance(account?.id || account?._id);
+                            }}
+                            disabled={account.status !== "Accept"}
+                            className={`flex-1 py-2 px-2 sm:px-4 rounded-lg flex items-center justify-center gap-1 sm:gap-2 transition-colors ${account.status === "Accept"
+                              ? 'bg-red-600 hover:bg-red-700 cursor-pointer'
+                              : 'bg-gray-500 cursor-not-allowed opacity-50'
+                              }`}
+                          >
+                            <ArrowDown className="w-3 h-3 sm:w-4 sm:h-4" />
+                            <span className="text-xs sm:text-sm font-medium">{t('withdraw')}</span>
+                          </button>
+                          <button
+                            onClick={() => {
+                              setSelectedSubUser(account);
+                              setShowResetPassword(true);
+                            }}
+                            disabled={account.status !== "Accept"}
+                            className={`flex-1 py-2 px-2 sm:px-4 rounded-lg flex items-center justify-center gap-1 sm:gap-2 transition-colors ${account.status === "Accept"
+                              ? 'cursor-pointer'
+                              : 'cursor-not-allowed opacity-50'
+                              }`}
+                            style={{ backgroundColor: account.status === "Accept" ? '#1477b0' : '#6b7280' }}
+                            title="Reset Password"
+                          >
+                            <span className="text-xs sm:text-sm font-medium">{t('resetPassword')}</span>
+                          </button>
+                        </div>
+                      )}
                     </div>
                   </div>
                 );
