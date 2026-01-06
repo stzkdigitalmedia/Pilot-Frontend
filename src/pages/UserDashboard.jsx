@@ -297,38 +297,86 @@ const UserDashboard = () => {
     }
   };
 
+  // const handleResetPassword = async (e) => {
+  //   e.preventDefault();
+  //   setResetPasswordLoading(true);
+
+  //   try {
+  //     if (resetPasswordForm.newPassword.includes(' ')) {
+  //       toast.error('Password cannot contain spaces');
+  //       setResetPasswordLoading(false);
+  //       return;
+  //     }
+
+  //     if (!validatePassword(resetPasswordForm.newPassword)) {
+  //       toast.error('Password must contain 8+ characters with 1 uppercase, 1 lowercase, 1 number, 1 special character. Avoid common passwords and sequential patterns');
+  //       setResetPasswordLoading(false);
+  //       return;
+  //     }
+
+  //     const payload = {
+  //       subUserId: selectedSubUser?.id || selectedSubUser?._id,
+  //       clientName: selectedSubUser?.clientName,
+  //       newPassword: resetPasswordForm.newPassword
+  //     };
+
+  //     await apiHelper.post('/password/create-password-change-log', payload);
+  //     toast.success('Password reset request submitted successfully!');
+  //     setResetPasswordLoading(false);
+  //     setShowResetPassword(false);
+  //     setResetPasswordForm({ newPassword: '' });
+  //     setSelectedSubUser(null);
+  //     checkPasswordResetStatus(selectedSubUser?.clientName);
+  //   } catch (error) {
+  //     toast.error('Failed to reset password: ' + error.message);
+  //     setResetPasswordLoading(false);
+  //   }
+  // };
+
+
   const handleResetPassword = async (e) => {
     e.preventDefault();
     setResetPasswordLoading(true);
 
     try {
-      if (resetPasswordForm.newPassword.includes(' ')) {
-        toast.error('Password cannot contain spaces');
-        setResetPasswordLoading(false);
-        return;
-      }
+      let finalPassword = resetPasswordForm.newPassword;
 
-      if (!validatePassword(resetPasswordForm.newPassword)) {
-        toast.error('Password must contain 8+ characters with 1 uppercase, 1 lowercase, 1 number, 1 special character. Avoid common passwords and sequential patterns');
-        setResetPasswordLoading(false);
-        return;
+      // ✅ LOTUSBOOK default password
+      if (selectedSubUser?.gameName === 'LOTUSBOOK') {
+        finalPassword = 'Lotu@1255';
+      } else {
+        if (finalPassword.includes(' ')) {
+          toast.error('Password cannot contain spaces');
+          setResetPasswordLoading(false);
+          return;
+        }
+
+        if (!validatePassword(finalPassword)) {
+          toast.error(
+            'Password must contain 8+ characters with 1 uppercase, 1 lowercase, 1 number, 1 special character'
+          );
+          setResetPasswordLoading(false);
+          return;
+        }
       }
 
       const payload = {
         subUserId: selectedSubUser?.id || selectedSubUser?._id,
         clientName: selectedSubUser?.clientName,
-        newPassword: resetPasswordForm.newPassword
+        newPassword: finalPassword,
       };
 
       await apiHelper.post('/password/create-password-change-log', payload);
+
       toast.success('Password reset request submitted successfully!');
-      setResetPasswordLoading(false);
       setShowResetPassword(false);
       setResetPasswordForm({ newPassword: '' });
       setSelectedSubUser(null);
+
       checkPasswordResetStatus(selectedSubUser?.clientName);
     } catch (error) {
       toast.error('Failed to reset password: ' + error.message);
+    } finally {
       setResetPasswordLoading(false);
     }
   };
@@ -1231,7 +1279,7 @@ const UserDashboard = () => {
               <h2 className="text-xl font-semibold text-white">
                 {t('myIds')} ({subAccounts.length})
               </h2>
-              <p className="text-sm text-blue-200">
+              <p className="text-[12px] text-blue-200">
                 {t('manageAccounts')}
               </p>
             </div>
@@ -1239,11 +1287,11 @@ const UserDashboard = () => {
             {subAccounts.length > 1 && (
               <div className="flex flex-wrap justify-end gap-2">
                 <Link to={'/my-ids'}>
-                  <button className='px-2 h-9 rounded-lg bg-[#005993] text-white   font-semibold'>
+                  <button className='px-2 h-9 rounded-lg bg-[#005993] text-white text-[14px] sm:text-[16px] font-semibold'>
                     Get New Id
                   </button>
                 </Link>
-                <div className='flex gap-6 sm:gap-2'>
+                <div className='flex gap-1 sm:gap-2'>
                   <button
                     onClick={() => {
                       const step = window.innerWidth >= 640 ? 2 : 1;
@@ -1278,258 +1326,248 @@ const UserDashboard = () => {
               }}
             >
               {subAccounts.map((account, index) => {
-  const game = account.gameId?.name;
-  const isRejected = account.status === "Reject";
+                const game = account.gameId?.name;
+                const isRejected = account.status === "Reject";
 
-  return (
-    <div
-      key={account.id || account._id || index}
-      className="flex-shrink-0 px-2 sm:px-0.5"
-      style={{ width: window.innerWidth >= 640 ? '50%' : '100%' }}
-    >
-      <div className="rounded-2xl p-5 bg-[#3f3f3f] text-white">
+                return (
+                  <div
+                    key={account.id || account._id || index}
+                    className="flex-shrink-0 px-2 sm:px-0.5"
+                    style={{ width: window.innerWidth >= 640 ? '50%' : '100%' }}
+                  >
+                    <div className="rounded-2xl p-5 bg-[#3f3f3f] text-white">
 
-        {/* Header */}
-        <div className="flex items-center justify-between mb-4">
-          <div className="flex items-center gap-2 sm:gap-3">
-            <div className="w-12 h-12 overflow-hidden rounded-full bg-black flex items-center justify-center">
-              <img
-                src={account.gameId?.image}
-                alt={account.gameId?.name}
-                className="w-6 h-6 sm:w-full m-auto sm:h-8 rounded"
-              />
-            </div>
-            <div>
-              <h3 className="font-bold text-sm sm:text-lg notranslate">
-                {game || 'Game'}
-              </h3>
-            </div>
-          </div>
+                      {/* Header */}
+                      <div className="flex items-center justify-between mb-4">
+                        <div className="flex items-center gap-2 sm:gap-3">
+                          <div className="w-12 h-12 overflow-hidden rounded-full bg-black flex items-center justify-center">
+                            <img
+                              src={account.gameId?.image}
+                              alt={account.gameId?.name}
+                              className="w-6 h-6 sm:w-full m-auto sm:h-8 rounded"
+                            />
+                          </div>
+                          <div>
+                            <h3 className="font-bold text-sm sm:text-lg notranslate">
+                              {game || 'Game'}
+                            </h3>
+                          </div>
+                        </div>
 
-          <div className="flex gap-2">
-            <span
-              className={`inline-flex items-center px-3 py-1 rounded-full text-xs font-medium ${
-                account.status === "Accept"
-                  ? "bg-green-100 text-green-800"
-                  : account.status === "Panding"
-                  ? "bg-yellow-100 text-yellow-800"
-                  : account.status === "Reject"
-                  ? "bg-red-100 text-red-800"
-                  : "bg-gray-100 text-gray-800"
-              }`}
-            >
-              {account.status === "Accept"
-                ? t('active')
-                : account.status === "Panding"
-                ? t('pending')
-                : account.status === "Reject"
-                ? t('reject')
-                : t('pending')}
-            </span>
+                        <div className="flex gap-2">
+                          <span
+                            className={`inline-flex items-center px-3 py-1 rounded-full text-xs font-medium ${account.status === "Accept"
+                              ? "bg-green-100 text-green-800"
+                              : account.status === "Panding"
+                                ? "bg-yellow-100 text-yellow-800"
+                                : account.status === "Reject"
+                                  ? "bg-red-100 text-red-800"
+                                  : "bg-gray-100 text-gray-800"
+                              }`}
+                          >
+                            {account.status === "Accept"
+                              ? t('active')
+                              : account.status === "Panding"
+                                ? t('pending')
+                                : account.status === "Reject"
+                                  ? t('reject')
+                                  : t('pending')}
+                          </span>
 
-            <button
-              onClick={() => handleDeleteSubAccount(account)}
-              className="p-1 -mr-0.5 text-red-600 bg-red-50 rounded-lg transition-colors"
-              title="Delete Account"
-            >
-              <Trash2 className="w-4 h-4" />
-            </button>
-          </div>
-        </div>
+                          <button
+                            onClick={() => handleDeleteSubAccount(account)}
+                            className="p-1 -mr-0.5 text-red-600 bg-red-50 rounded-lg transition-colors"
+                            title="Delete Account"
+                          >
+                            <Trash2 className="w-4 h-4" />
+                          </button>
+                        </div>
+                      </div>
 
-        {/* Account Details */}
-        <div className="space-y-2 sm:space-y-3 mb-4 sm:mb-6">
+                      {/* Account Details */}
+                      <div className="space-y-2 sm:space-y-3 mb-4 sm:mb-6">
 
-          {/* ID */}
-          <div className="flex items-center gap-2">
-            <div className="w-3 h-3 sm:w-4 sm:h-4 bg-gray-600 rounded flex items-center justify-center">
-              <span className="text-xs">👤</span>
-            </div>
-            <span className="text-xs sm:text-sm notranslate">ID:</span>
+                        {/* ID */}
+                        <div className="flex items-center gap-2">
+                          <div className="w-3 h-3 sm:w-4 sm:h-4 bg-gray-600 rounded flex items-center justify-center">
+                            <span className="text-xs">👤</span>
+                          </div>
+                          <span className="text-xs sm:text-sm notranslate">ID:</span>
 
-            <span
-              className={`text-xs sm:text-sm font-mono truncate notranslate ${
-                isRejected ? "blur-[2px] select-none" : ""
-              }`}
-            >
-              {account?.clientName || 'N/A'}
-            </span>
+                          <span
+                            className={`text-xs sm:text-sm font-mono truncate notranslate ${isRejected ? "blur-[2px] select-none" : ""
+                              }`}
+                          >
+                            {account?.clientName || 'N/A'}
+                          </span>
 
-            <button
-              onClick={() => {
-                if (isRejected) return;
-                navigator.clipboard.writeText(account?.clientName || '');
-                toast.success('ID copied to clipboard!');
-              }}
-              disabled={isRejected}
-              className={`ml-auto p-1 rounded ${
-                isRejected
-                  ? "opacity-40 cursor-not-allowed"
-                  : "hover:bg-gray-800"
-              }`}
-            >
-              <Copy className="w-3 h-3" />
-            </button>
-          </div>
+                          <button
+                            onClick={() => {
+                              if (isRejected) return;
+                              navigator.clipboard.writeText(account?.clientName || '');
+                              toast.success('ID copied to clipboard!');
+                            }}
+                            disabled={isRejected}
+                            className={`ml-auto p-1 rounded ${isRejected
+                              ? "opacity-40 cursor-not-allowed"
+                              : "hover:bg-gray-800"
+                              }`}
+                          >
+                            <Copy className="w-3 h-3" />
+                          </button>
+                        </div>
 
-          {/* Password */}
-          <div className="flex items-center gap-2">
-            <div className="w-3 h-3 sm:w-4 sm:h-4 bg-gray-600 rounded flex items-center justify-center">
-              <span className="text-xs">🔒</span>
-            </div>
-            <span className="text-xs sm:text-sm notranslate">
-              {t('password')}:
-            </span>
+                        {/* Password */}
+                        <div className="flex items-center gap-2">
+                          <div className="w-3 h-3 sm:w-4 sm:h-4 bg-gray-600 rounded flex items-center justify-center">
+                            <span className="text-xs">🔒</span>
+                          </div>
+                          <span className="text-xs sm:text-sm notranslate">
+                            {t('password')}:
+                          </span>
 
-            <span
-              className={`text-xs sm:text-sm font-mono truncate flex-1 notranslate ${
-                isRejected ? "blur-[2px] select-none" : ""
-              }`}
-            >
-              {account?.password || 'N/A'}
-            </span>
+                          <span
+                            className={`text-xs sm:text-sm font-mono truncate flex-1 notranslate ${isRejected ? "blur-[2px] select-none" : ""
+                              }`}
+                          >
+                            {account?.password || 'N/A'}
+                          </span>
 
-            <button
-              onClick={() => {
-                if (isRejected) return;
-                navigator.clipboard.writeText(account?.password || '');
-                toast.success('Password copied to clipboard!');
-              }}
-              disabled={isRejected}
-              className={`p-1 rounded ${
-                isRejected
-                  ? "opacity-40 cursor-not-allowed"
-                  : "hover:bg-gray-800"
-              }`}
-            >
-              <Copy className="w-3 h-3" />
-            </button>
-          </div>
+                          <button
+                            onClick={() => {
+                              if (isRejected) return;
+                              navigator.clipboard.writeText(account?.password || '');
+                              toast.success('Password copied to clipboard!');
+                            }}
+                            disabled={isRejected}
+                            className={`p-1 rounded ${isRejected
+                              ? "opacity-40 cursor-not-allowed"
+                              : "hover:bg-gray-800"
+                              }`}
+                          >
+                            <Copy className="w-3 h-3" />
+                          </button>
+                        </div>
 
-          {/* Platform */}
-          <div className="flex items-center gap-2">
-            <div className="w-3 h-3 sm:w-4 sm:h-4 bg-gray-600 rounded flex items-center justify-center">
-              <span className="text-xs">🌐</span>
-            </div>
-            <span className="text-xs sm:text-sm notranslate">
-              {t('platform')}:
-            </span>
+                        {/* Platform */}
+                        <div className="flex items-center gap-2">
+                          <div className="w-3 h-3 sm:w-4 sm:h-4 bg-gray-600 rounded flex items-center justify-center">
+                            <span className="text-xs">🌐</span>
+                          </div>
+                          <span className="text-xs sm:text-sm notranslate">
+                            {t('platform')}:
+                          </span>
 
-            <span
-              className={`text-xs sm:text-sm font-mono truncate ${
-                isRejected ? "blur-[2px] select-none" : ""
-              }`}
-            >
-              {account?.gameId?.gameUrl || 'N/A'}
-            </span>
+                          <span
+                            className={`text-xs sm:text-sm font-mono truncate ${isRejected ? "blur-[2px] select-none" : ""
+                              }`}
+                          >
+                            {account?.gameId?.gameUrl || 'N/A'}
+                          </span>
 
-            <button
-              onClick={() => {
-                if (isRejected) return;
-                if (account?.gameId?.gameUrl) {
-                  window.open(account.gameId.gameUrl, '_blank');
-                } else {
-                  toast.error('Platform URL not available');
-                }
-              }}
-              disabled={isRejected}
-              className={`ml-auto p-1 rounded ${
-                isRejected
-                  ? "opacity-40 cursor-not-allowed"
-                  : "hover:bg-gray-800"
-              }`}
-            >
-              <LinkIcon className="w-3 h-3" />
-            </button>
-          </div>
-        </div>
+                          <button
+                            onClick={() => {
+                              if (isRejected) return;
+                              if (account?.gameId?.gameUrl) {
+                                window.open(account.gameId.gameUrl, '_blank');
+                              } else {
+                                toast.error('Platform URL not available');
+                              }
+                            }}
+                            disabled={isRejected}
+                            className={`ml-auto p-1 rounded ${isRejected
+                              ? "opacity-40 cursor-not-allowed"
+                              : "hover:bg-gray-800"
+                              }`}
+                          >
+                            <LinkIcon className="w-3 h-3" />
+                          </button>
+                        </div>
+                      </div>
 
-        {/* Rejection Reason */}
-        {account.status === "Reject" && account.remarks && (
-          <div className="mb-4 p-3 bg-red-100 border border-red-700/50 rounded-lg">
-            <div className="flex items-start gap-2">
-              <div className="w-4 h-4 bg-red-600 rounded-full flex items-center justify-center flex-shrink-0 mt-0.5">
-                <span className="text-xs text-white">!</span>
-              </div>
-              <div>
-                <p className="text-xs font-medium text-red-700 mb-1">
-                  Rejection Reason:
-                </p>
-                <p className="text-xs text-red-700">
-                  {account.remarks}
-                </p>
-              </div>
-            </div>
-          </div>
-        )}
+                      {/* Rejection Reason */}
+                      {account.status === "Reject" && account.remarks && (
+                        <div className="mb-4 p-3 bg-red-100 border border-red-700/50 rounded-lg">
+                          <div className="flex items-start gap-2">
+                            <div className="w-4 h-4 bg-red-600 rounded-full flex items-center justify-center flex-shrink-0 mt-0.5">
+                              <span className="text-xs text-white">!</span>
+                            </div>
+                            <div>
+                              <p className="text-xs font-medium text-red-700 mb-1">
+                                Rejection Reason:
+                              </p>
+                              <p className="text-xs text-red-700">
+                                {account.remarks}
+                              </p>
+                            </div>
+                          </div>
+                        </div>
+                      )}
 
-        {/* Action Buttons */}
-        {account.status !== "Reject" && (
-          <div className="flex gap-2 sm:gap-3 flex-wrap">
-            <button
-              onClick={() => {
-                setSelectedSubUser(account);
-                setShowSubUserDeposit(true);
-              }}
-              disabled={account.status !== "Accept"}
-              className={`flex-1 py-2 px-2 sm:px-4 rounded-lg flex items-center justify-center gap-1 sm:gap-2 transition-colors ${
-                account.status === "Accept"
-                  ? 'bg-green-600 hover:bg-green-700 cursor-pointer'
-                  : 'bg-gray-500 cursor-not-allowed opacity-50'
-              }`}
-            >
-              <ArrowUp className="w-3 h-3 sm:w-4 sm:h-4" />
-              <span className="text-xs sm:text-sm font-medium">
-                {t('deposit')}
-              </span>
-            </button>
+                      {/* Action Buttons */}
+                      {account.status !== "Reject" && (
+                        <div className="flex gap-2 sm:gap-3 flex-wrap">
+                          <button
+                            onClick={() => {
+                              setSelectedSubUser(account);
+                              setShowSubUserDeposit(true);
+                            }}
+                            disabled={account.status !== "Accept"}
+                            className={`flex-1 py-2 px-2 sm:px-4 rounded-lg flex items-center justify-center gap-1 sm:gap-2 transition-colors ${account.status === "Accept"
+                              ? 'bg-green-600 hover:bg-green-700 cursor-pointer'
+                              : 'bg-gray-500 cursor-not-allowed opacity-50'
+                              }`}
+                          >
+                            <ArrowUp className="w-3 h-3 sm:w-4 sm:h-4" />
+                            <span className="text-xs sm:text-sm font-medium">
+                              {t('deposit')}
+                            </span>
+                          </button>
 
-            <button
-              onClick={async () => {
-                setSelectedSubUser(account);
-                await createBalanceLog(account?.id || account?._id);
-                setShowSubUserWithdraw(true);
-                fetchSubUserBalance(account?.id || account?._id);
-              }}
-              disabled={account.status !== "Accept"}
-              className={`flex-1 py-2 px-2 sm:px-4 rounded-lg flex items-center justify-center gap-1 sm:gap-2 transition-colors ${
-                account.status === "Accept"
-                  ? 'bg-red-600 hover:bg-red-700 cursor-pointer'
-                  : 'bg-gray-500 cursor-not-allowed opacity-50'
-              }`}
-            >
-              <ArrowDown className="w-3 h-3 sm:w-4 sm:h-4" />
-              <span className="text-xs sm:text-sm font-medium">
-                {t('withdraw')}
-              </span>
-            </button>
+                          <button
+                            onClick={async () => {
+                              setSelectedSubUser(account);
+                              await createBalanceLog(account?.id || account?._id);
+                              setShowSubUserWithdraw(true);
+                              fetchSubUserBalance(account?.id || account?._id);
+                            }}
+                            disabled={account.status !== "Accept"}
+                            className={`flex-1 py-2 px-2 sm:px-4 rounded-lg flex items-center justify-center gap-1 sm:gap-2 transition-colors ${account.status === "Accept"
+                              ? 'bg-red-600 hover:bg-red-700 cursor-pointer'
+                              : 'bg-gray-500 cursor-not-allowed opacity-50'
+                              }`}
+                          >
+                            <ArrowDown className="w-3 h-3 sm:w-4 sm:h-4" />
+                            <span className="text-xs sm:text-sm font-medium">
+                              {t('withdraw')}
+                            </span>
+                          </button>
 
-            <button
-              onClick={() => {
-                setSelectedSubUser(account);
-                setShowResetPassword(true);
-              }}
-              disabled={account.status !== "Accept"}
-              className={`flex-1 py-2 px-2 sm:px-4 rounded-lg flex items-center justify-center gap-1 sm:gap-2 transition-colors ${
-                account.status === "Accept"
-                  ? 'cursor-pointer'
-                  : 'cursor-not-allowed opacity-50'
-              }`}
-              style={{
-                backgroundColor:
-                  account.status === "Accept" ? '#1477b0' : '#6b7280'
-              }}
-            >
-              <span className="text-xs sm:text-sm font-medium">
-                {t('resetPassword')}
-              </span>
-            </button>
-          </div>
-        )}
-      </div>
-    </div>
-  );
-})}
+                          <button
+                            onClick={() => {
+                              setSelectedSubUser(account);
+                              setShowResetPassword(true);
+                            }}
+                            disabled={account.status !== "Accept"}
+                            className={`flex-1 py-2 px-2 sm:px-4 rounded-lg flex items-center justify-center gap-1 sm:gap-2 transition-colors ${account.status === "Accept"
+                              ? 'cursor-pointer'
+                              : 'cursor-not-allowed opacity-50'
+                              }`}
+                            style={{
+                              backgroundColor:
+                                account.status === "Accept" ? '#1477b0' : '#6b7280'
+                            }}
+                          >
+                            <span className="text-xs sm:text-sm font-medium">
+                              {t('resetPassword')}
+                            </span>
+                          </button>
+                        </div>
+                      )}
+                    </div>
+                  </div>
+                );
+              })}
 
             </div>
           </div>
@@ -2242,7 +2280,7 @@ const UserDashboard = () => {
         )}
 
         {/* Reset Password Modal */}
-        {showResetPassword && (
+        {/* {showResetPassword && (
           <div className="fixed inset-0 modal-overlay flex items-center justify-center p-4 z-[100]">
             <div className="gaming-card p-4 sm:p-6 max-w-md w-full mx-4">
               <div className="flex justify-between items-center mb-6">
@@ -2296,7 +2334,111 @@ const UserDashboard = () => {
               )}
             </div>
           </div>
+        )} */}
+
+
+        {showResetPassword && (
+          <div className="fixed inset-0 modal-overlay flex items-center justify-center p-4 z-[100]">
+            <div className="gaming-card p-4 sm:p-6 max-w-md w-full mx-4">
+
+              {/* Header */}
+              <div className="flex justify-between items-center mb-6">
+                <div>
+                  <h2 className="text-xl font-semibold text-gray-900">
+                    {t('resetPassword')}
+                  </h2>
+                  <p className="text-gray-600 text-sm mt-1">
+                    ID: {selectedSubUser?.clientName || 'N/A'}
+                  </p>
+                </div>
+                <button
+                  onClick={() => {
+                    setShowResetPassword(false);
+                    setResetPasswordForm({ newPassword: '' });
+                    setSelectedSubUser(null);
+                  }}
+                  className="text-gray-400 hover:text-gray-600"
+                >
+                  <X className="w-5 h-5" />
+                </button>
+              </div>
+
+              {resetPasswordLoading ? (
+                <div className="text-center py-8">
+                  <div
+                    className="loading-spinner mx-auto mb-4"
+                    style={{ width: '32px', height: '32px' }}
+                  ></div>
+                  <p className="text-lg font-semibold text-gray-900 mb-2">
+                    {t('processing')}...
+                  </p>
+                  <p className="text-sm text-gray-600">
+                    Please wait while we process your password reset
+                  </p>
+                </div>
+              ) : (
+                <form onSubmit={handleResetPassword} className="space-y-4">
+
+                  {/* ✅ LOTUSBOOK special case */}
+                  {selectedSubUser?.gameName === 'LOTUSBOOK' ? (
+                    <div className="p-4 rounded-xl bg-yellow-50 border border-yellow-200">
+                      <h3 className="text-sm font-semibold text-yellow-800 mb-1">
+                        Confirm Password Reset
+                      </h3>
+                      <p className="text-sm text-yellow-700">
+                        This user belongs to <b>LOTUSBOOK</b>.
+                        Are you sure you want to reset the password to the default password?
+                      </p>
+                    </div>
+                  ) : (
+                    <div className="form-group">
+                      <label className="form-label">{t('newPassword')}</label>
+                      <PasswordInput
+                        name="newPassword"
+                        placeholder="Example@1256"
+                        value={resetPasswordForm.newPassword}
+                        onChange={(e) =>
+                          setResetPasswordForm({
+                            ...resetPasswordForm,
+                            newPassword: e.target.value,
+                          })
+                        }
+                        className="gaming-input"
+                        required
+                      />
+                      <p className="text-xs text-gray-500 mt-1">
+                        Must contain 8+ characters with 1 uppercase, 1 lowercase,
+                        1 number, 1 special character.
+                      </p>
+                    </div>
+                  )}
+
+                  {/* Buttons */}
+                  <div className="flex flex-col sm:flex-row gap-3 pt-4">
+                    <button type="submit" className="w-full sm:flex-1 gaming-btn">
+                      {selectedSubUser?.gameName === 'LOTUSBOOK'
+                        ? 'Yes, Reset Password'
+                        : t('resetPassword')}
+                    </button>
+
+                    <button
+                      type="button"
+                      onClick={() => {
+                        setShowResetPassword(false);
+                        setResetPasswordForm({ newPassword: '' });
+                        setSelectedSubUser(null);
+                      }}
+                      className="w-full sm:flex-1 btn-secondary"
+                    >
+                      {t('cancel')}
+                    </button>
+                  </div>
+                </form>
+              )}
+            </div>
+          </div>
         )}
+
       </div>
 
       {/* Delete Confirmation Modal */}

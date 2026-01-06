@@ -163,41 +163,90 @@ const MyIDs = ({
     }
   };
 
+  // const handleResetPassword = async (e) => {
+  //   e.preventDefault();
+  //   setResetPasswordLoading(true);
+
+  //   try {
+  //     if (resetPasswordForm.newPassword.includes(' ')) {
+  //       toast.error('Password cannot contain spaces');
+  //       setResetPasswordLoading(false);
+  //       return;
+  //     }
+
+  //     if (!validatePassword(resetPasswordForm.newPassword)) {
+  //       toast.error('Password must contain 8+ characters with 1 uppercase, 1 lowercase, 1 number, 1 special character. Avoid common passwords and sequential patterns');
+  //       setResetPasswordLoading(false);
+  //       return;
+  //     }
+
+  //     const payload = {
+  //       subUserId: selectedSubUser?.id || selectedSubUser?._id,
+  //       clientName: selectedSubUser?.clientName,
+  //       newPassword: resetPasswordForm.newPassword
+  //     };
+
+  //     await apiHelper.post('/password/create-password-change-log', payload);
+  //     toast.success('Password reset request submitted successfully!');
+  //     setResetPasswordLoading(false);
+  //     setShowResetPassword(false);
+  //     setResetPasswordForm({ newPassword: '' });
+  //     setSelectedSubUser(null);
+  //     checkPasswordResetStatus(selectedSubUser?.clientName);
+  //   } catch (error) {
+  //     toast.error('Failed to reset password: ' + error.message);
+  //     setResetPasswordLoading(false);
+  //   }
+  // };
+
+
   const handleResetPassword = async (e) => {
     e.preventDefault();
     setResetPasswordLoading(true);
 
     try {
-      if (resetPasswordForm.newPassword.includes(' ')) {
-        toast.error('Password cannot contain spaces');
-        setResetPasswordLoading(false);
-        return;
-      }
+      let finalPassword = resetPasswordForm.newPassword;
 
-      if (!validatePassword(resetPasswordForm.newPassword)) {
-        toast.error('Password must contain 8+ characters with 1 uppercase, 1 lowercase, 1 number, 1 special character. Avoid common passwords and sequential patterns');
-        setResetPasswordLoading(false);
-        return;
+      // ✅ LOTUSBOOK default password
+      if (selectedSubUser?.gameName === 'LOTUSBOOK') {
+        finalPassword = 'Lotu@1255';
+      } else {
+        if (finalPassword.includes(' ')) {
+          toast.error('Password cannot contain spaces');
+          setResetPasswordLoading(false);
+          return;
+        }
+
+        if (!validatePassword(finalPassword)) {
+          toast.error(
+            'Password must contain 8+ characters with 1 uppercase, 1 lowercase, 1 number, 1 special character'
+          );
+          setResetPasswordLoading(false);
+          return;
+        }
       }
 
       const payload = {
         subUserId: selectedSubUser?.id || selectedSubUser?._id,
         clientName: selectedSubUser?.clientName,
-        newPassword: resetPasswordForm.newPassword
+        newPassword: finalPassword,
       };
 
       await apiHelper.post('/password/create-password-change-log', payload);
+
       toast.success('Password reset request submitted successfully!');
-      setResetPasswordLoading(false);
       setShowResetPassword(false);
       setResetPasswordForm({ newPassword: '' });
       setSelectedSubUser(null);
+
       checkPasswordResetStatus(selectedSubUser?.clientName);
     } catch (error) {
       toast.error('Failed to reset password: ' + error.message);
+    } finally {
       setResetPasswordLoading(false);
     }
   };
+
 
   const fetchSubAccounts = async () => {
     setSubAccountsLoading(true);
@@ -385,7 +434,9 @@ const MyIDs = ({
                       {game.name}
                     </p>
                     <p className="text-xs text-gray-400">
-                      {game.gameUrl}
+                      {game.gameUrl && game.gameUrl.length > 21
+                        ? `${game.gameUrl.substring(0, 21)}...`
+                        : game.gameUrl}
                     </p>
 
                     {game.trending && (
@@ -430,7 +481,7 @@ const MyIDs = ({
               {(localSubAccounts.length > 0 ? localSubAccounts : subAccounts).map((acc) => (
                 <div
                   key={acc.id || acc._id}
-                  className="flex justify-between flex-wrap items-center align-middle rounded-xl p-4 cursor-pointer
+                  className="flex justify-between items-center align-middle rounded-xl p-4 cursor-pointer
                   shadow-[0_4px_20px_rgba(0,0,0,0.6)]"
                   onClick={() => {
                     const subAccId = acc.id || acc._id;
@@ -444,7 +495,9 @@ const MyIDs = ({
                       </div>
                       <div className="text-wrap">
                         <p className="text-xs text-gray-300 text-wrap underline">
-                          {acc.gameId?.gameUrl}
+                          {acc.gameId?.gameUrl && acc.gameId.gameUrl.length > 20
+                            ? `${acc.gameId.gameUrl.substring(0, 20)}...`
+                            : acc.gameId?.gameUrl}
                         </p>
                         <p className="text-xs text-gray-300">
                           {acc?.clientName}
@@ -619,7 +672,7 @@ const MyIDs = ({
           </div>
         </div>
       )}
-
+      {/* transection model*/}
       {showSubUserDeposit && (
         <div className="fixed inset-0 modal-overlay flex items-center justify-center p-4 z-[100]">
           <div className="gaming-card p-4 sm:p-6 max-w-md w-full mx-4">
@@ -667,55 +720,101 @@ const MyIDs = ({
           </div>
         </div>
       )}
-
+      {/* Reset Password Modal */}
       {showResetPassword && (
         <div className="fixed inset-0 modal-overlay flex items-center justify-center p-4 z-[100]">
           <div className="gaming-card p-4 sm:p-6 max-w-md w-full mx-4">
+
+            {/* Header */}
             <div className="flex justify-between items-center mb-6">
               <div>
-                <h2 className="text-xl font-semibold text-gray-900">Reset Password</h2>
-                <p className="text-gray-600 text-sm mt-1">ID: {selectedSubUser?.clientName || 'N/A'}</p>
+                <h2 className="text-xl font-semibold text-gray-900">
+                  {t('resetPassword')}
+                </h2>
+                <p className="text-gray-600 text-sm mt-1">
+                  ID: {selectedSubUser?.clientName || 'N/A'}
+                </p>
               </div>
-              <button onClick={() => {
-                setShowResetPassword(false);
-                setResetPasswordForm({ newPassword: '' });
-                setSelectedSubUser(null);
-              }} className="text-gray-400 hover:text-gray-600">
+              <button
+                onClick={() => {
+                  setShowResetPassword(false);
+                  setResetPasswordForm({ newPassword: '' });
+                  setSelectedSubUser(null);
+                }}
+                className="text-gray-400 hover:text-gray-600"
+              >
                 <X className="w-5 h-5" />
               </button>
             </div>
 
             {resetPasswordLoading ? (
               <div className="text-center py-8">
-                <div className="loading-spinner mx-auto mb-4" style={{ width: '32px', height: '32px' }}></div>
-                <p className="text-lg font-semibold text-gray-900 mb-2">Processing...</p>
-                <p className="text-sm text-gray-600">Please wait while we process your password reset</p>
+                <div
+                  className="loading-spinner mx-auto mb-4"
+                  style={{ width: '32px', height: '32px' }}
+                ></div>
+                <p className="text-lg font-semibold text-gray-900 mb-2">
+                  {t('processing')}...
+                </p>
+                <p className="text-sm text-gray-600">
+                  Please wait while we process your password reset
+                </p>
               </div>
             ) : (
               <form onSubmit={handleResetPassword} className="space-y-4">
-                <div className="form-group">
-                  <label className="form-label">New Password</label>
-                  <PasswordInput
-                    name="newPassword"
-                    placeholder="Example@1256"
-                    value={resetPasswordForm.newPassword}
-                    onChange={(e) => setResetPasswordForm({ ...resetPasswordForm, newPassword: e.target.value })}
-                    className="gaming-input"
-                    required
-                  />
-                  <p className="text-xs text-gray-500 mt-1">Must contain 8+ characters with 1 uppercase, 1 lowercase, 1 number, 1 special character. Avoid common passwords and sequential patterns</p>
-                </div>
 
+                {/* ✅ LOTUSBOOK special case */}
+                {selectedSubUser?.gameName === 'LOTUSBOOK' ? (
+                  <div className="p-4 rounded-xl bg-yellow-50 border border-yellow-200">
+                    <h3 className="text-sm font-semibold text-yellow-800 mb-1">
+                      Confirm Password Reset
+                    </h3>
+                    <p className="text-sm text-yellow-700">
+                      This user belongs to <b>LOTUSBOOK</b>.
+                      Are you sure you want to reset the password to the default password?
+                    </p>
+                  </div>
+                ) : (
+                  <div className="form-group">
+                    <label className="form-label">{t('newPassword')}</label>
+                    <PasswordInput
+                      name="newPassword"
+                      placeholder="Example@1256"
+                      value={resetPasswordForm.newPassword}
+                      onChange={(e) =>
+                        setResetPasswordForm({
+                          ...resetPasswordForm,
+                          newPassword: e.target.value,
+                        })
+                      }
+                      className="gaming-input"
+                      required
+                    />
+                    <p className="text-xs text-gray-500 mt-1">
+                      Must contain 8+ characters with 1 uppercase, 1 lowercase,
+                      1 number, 1 special character.
+                    </p>
+                  </div>
+                )}
+
+                {/* Buttons */}
                 <div className="flex flex-col sm:flex-row gap-3 pt-4">
                   <button type="submit" className="w-full sm:flex-1 gaming-btn">
-                    Reset Password
+                    {selectedSubUser?.gameName === 'LOTUSBOOK'
+                      ? 'Yes, Reset Password'
+                      : t('resetPassword')}
                   </button>
-                  <button type="button" onClick={() => {
-                    setShowResetPassword(false);
-                    setResetPasswordForm({ newPassword: '' });
-                    setSelectedSubUser(null);
-                  }} className="w-full sm:flex-1 btn-secondary">
-                    Cancel
+
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setShowResetPassword(false);
+                      setResetPasswordForm({ newPassword: '' });
+                      setSelectedSubUser(null);
+                    }}
+                    className="w-full sm:flex-1 btn-secondary"
+                  >
+                    {t('cancel')}
                   </button>
                 </div>
               </form>
@@ -723,6 +822,7 @@ const MyIDs = ({
           </div>
         </div>
       )}
+
 
       <BottomNavigation activePage="ids" />
     </div>
