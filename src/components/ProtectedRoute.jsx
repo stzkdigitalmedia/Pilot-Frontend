@@ -8,10 +8,10 @@ const ProtectedRoute = ({ children }) => {
   
   if (loading) {
     return (
-      <div className="min-h-screen gaming-bg flex items-center justify-center">
+      <div className="h-screen bg-[#0e0e0e] max-w-[769px] mx-auto flex items-center justify-center">
         <div className="text-center">
-          <div className="loading-spinner mb-4 mx-auto" style={{width: '40px', height: '40px'}}></div>
-          <p className="text-xl gaming-title">Loading...</p>
+          <div className="loading-spinner mx-auto mb-4" style={{ width: '40px', height: '40px' }}></div>
+          <p className="text-gray-600 text-lg">loading...</p>
         </div>
       </div>
     );
