@@ -1278,190 +1278,259 @@ const UserDashboard = () => {
               }}
             >
               {subAccounts.map((account, index) => {
-                const game = account.gameId?.name;
-                return (
-                  <div
-                    key={account.id || account._id || index}
-                    className="flex-shrink-0 px-2 sm:px-0.5"
-                    style={{ width: window.innerWidth >= 640 ? '50%' : '100%' }}
-                  >
-                    {/* <div className="rounded-2xl p-5 bg-gradient-to-br from-[#101c2f] to-[#0b1324] border border-white/10 text-white"> */}
-                    <div className="rounded-2xl p-5 bg-[#3f3f3f] text-white">
+  const game = account.gameId?.name;
+  const isRejected = account.status === "Reject";
 
-                      {/* Header */}
-                      <div className="flex items-center justify-between mb-4">
-                        <div className="flex items-center gap-2 sm:gap-3">
-                          <div className="w-12 h-12 overflow-hidden rounded-full bg-black flex items-center justify-center">
-                            {/* {game?.image ? ( */}
-                            {console.log(game)}
-                            <img src={account.gameId?.image} alt={account.gameId?.name} className="w-6 h-6 sm:w-full m-auto sm:h-8 rounded" />
-                            {/* ) : (
-                              <Gamepad2 className="w-4 h-4 sm:w-5 sm:h-5 text-white" />
-                            )} */}
-                          </div>
-                          <div>
-                            <h3 className="font-bold text-sm sm:text-lg notranslate">{game || 'Game'}</h3>
-                          </div>
-                        </div>
-                        <div className='flex gap-2'>
-                          <span
-                            className={`inline-flex items-center px-3 py-1 rounded-full text-xs font-medium ${account.status === "Accept"
-                              ? "bg-green-100 text-green-800"
-                              : account.status === "Panding"
-                                ? "bg-yellow-100 text-yellow-800"
-                                : account.status === "Reject"
-                                  ? "bg-red-100 text-red-800"
-                                  : "bg-gray-100 text-gray-800"
-                              }`}
-                          >
-                            {account.status === "Accept"
-                              ? t('active')
-                              : account.status === "Panding"
-                                ? t('pending')
-                                : account.status === "Reject"
-                                  ? t('reject')
-                                  : t('pending')}
-                          </span>
-                          <button
-                            onClick={() => handleDeleteSubAccount(account)}
-                            className="p-1 -mr-0.5 text-red-600 bg-red-50 rounded-lg transition-colors"
-                            title="Delete Account"
-                          >
-                            <Trash2 className="w-4 h-4" />
-                          </button>
-                        </div>
-                      </div>
+  return (
+    <div
+      key={account.id || account._id || index}
+      className="flex-shrink-0 px-2 sm:px-0.5"
+      style={{ width: window.innerWidth >= 640 ? '50%' : '100%' }}
+    >
+      <div className="rounded-2xl p-5 bg-[#3f3f3f] text-white">
 
-                      {/* Account Details */}
-                      <div className="space-y-2 sm:space-y-3 mb-4 sm:mb-6">
-                        <div className="flex items-center gap-2">
-                          <div className="w-3 h-3 sm:w-4 sm:h-4 bg-gray-600 rounded flex items-center justify-center">
-                            <span className="text-xs">👤</span>
-                          </div>
-                          <span className="text-xs sm:text-sm notranslate">ID:</span>
-                          <span className="text-xs sm:text-sm font-mono truncate notranslate">{account?.clientName || 'N/A'}</span>
-                          <button
-                            onClick={() => {
-                              navigator.clipboard.writeText(account?.clientName || '');
-                              toast.success('ID copied to clipboard!');
-                            }}
-                            className="ml-auto p-1 hover:bg-gray-800 rounded"
-                          >
-                            <Copy className="w-3 h-3" />
-                          </button>
-                        </div>
+        {/* Header */}
+        <div className="flex items-center justify-between mb-4">
+          <div className="flex items-center gap-2 sm:gap-3">
+            <div className="w-12 h-12 overflow-hidden rounded-full bg-black flex items-center justify-center">
+              <img
+                src={account.gameId?.image}
+                alt={account.gameId?.name}
+                className="w-6 h-6 sm:w-full m-auto sm:h-8 rounded"
+              />
+            </div>
+            <div>
+              <h3 className="font-bold text-sm sm:text-lg notranslate">
+                {game || 'Game'}
+              </h3>
+            </div>
+          </div>
 
-                        <div className="flex items-center gap-2">
-                          <div className="w-3 h-3 sm:w-4 sm:h-4 bg-gray-600 rounded flex items-center justify-center">
-                            <span className="text-xs">🔒</span>
-                          </div>
-                          <span className="text-xs sm:text-sm notranslate">{t('password')}:</span>
-                          <span className="text-xs sm:text-sm font-mono truncate flex-1 notranslate">{account?.password || 'N/A'}</span>
-                          <button
-                            onClick={() => {
-                              navigator.clipboard.writeText(account?.password || '');
-                              toast.success('Password copied to clipboard!');
-                            }}
-                            className="p-1 hover:bg-gray-800 rounded"
-                            title="Copy Password"
-                          >
-                            <Copy className="w-3 h-3" />
-                          </button>
-                        </div>
+          <div className="flex gap-2">
+            <span
+              className={`inline-flex items-center px-3 py-1 rounded-full text-xs font-medium ${
+                account.status === "Accept"
+                  ? "bg-green-100 text-green-800"
+                  : account.status === "Panding"
+                  ? "bg-yellow-100 text-yellow-800"
+                  : account.status === "Reject"
+                  ? "bg-red-100 text-red-800"
+                  : "bg-gray-100 text-gray-800"
+              }`}
+            >
+              {account.status === "Accept"
+                ? t('active')
+                : account.status === "Panding"
+                ? t('pending')
+                : account.status === "Reject"
+                ? t('reject')
+                : t('pending')}
+            </span>
 
-                        <div className="flex items-center gap-2">
-                          <div className="w-3 h-3 sm:w-4 sm:h-4 bg-gray-600 rounded flex items-center justify-center">
-                            <span className="text-xs">🌐</span>
-                          </div>
-                          <span className="text-xs sm:text-sm notranslate">{t('platform')}:</span>
-                          <span className="text-xs sm:text-sm font-mono truncate">
-                            <a href={account?.gameId?.gameUrl} target='_blank'>{account?.gameId?.gameUrl || 'N/A'}</a>
-                          </span>
-                          <button
-                            onClick={() => {
-                              if (account?.gameId?.gameUrl) {
-                                window.open(account.gameId.gameUrl, '_blank');
-                              } else {
-                                toast.error('Platform URL not available');
-                              }
-                            }}
-                            className="ml-auto p-1 hover:bg-gray-800 rounded"
-                            title="Open Platform"
-                          >
-                            <LinkIcon className="w-3 h-3" />
-                          </button>
-                        </div>
-                      </div>
+            <button
+              onClick={() => handleDeleteSubAccount(account)}
+              className="p-1 -mr-0.5 text-red-600 bg-red-50 rounded-lg transition-colors"
+              title="Delete Account"
+            >
+              <Trash2 className="w-4 h-4" />
+            </button>
+          </div>
+        </div>
 
-                      {/* Rejection Reason */}
-                      {account.status === "Reject" && account.remarks && (
-                        <div className="mb-4 p-3 bg-red-100 border border-red-700/50 rounded-lg">
-                          <div className="flex items-start gap-2">
-                            <div className="w-4 h-4 bg-red-600 rounded-full flex items-center justify-center flex-shrink-0 mt-0.5">
-                              <span className="text-xs text-white">!</span>
-                            </div>
-                            <div>
-                              <p className="text-xs font-medium text-red-700 mb-1">Rejection Reason:</p>
-                              <p className="text-xs text-red-700">{account.remarks}</p>
-                            </div>
-                          </div>
-                        </div>
-                      )}
+        {/* Account Details */}
+        <div className="space-y-2 sm:space-y-3 mb-4 sm:mb-6">
 
-                      {/* Action Buttons */}
-                      {account.status !== "Reject" &&(
-                        <div className="flex gap-2 sm:gap-3 flex-wrap">
-                          <button
-                            onClick={() => {
-                              setSelectedSubUser(account);
-                              setShowSubUserDeposit(true);
-                            }}
-                            disabled={account.status !== "Accept"}
-                            className={`flex-1 py-2 px-2 sm:px-4 rounded-lg flex items-center justify-center gap-1 sm:gap-2 transition-colors ${account.status === "Accept"
-                              ? 'bg-green-600 hover:bg-green-700 cursor-pointer'
-                              : 'bg-gray-500 cursor-not-allowed opacity-50'
-                              }`}
-                          >
-                            <ArrowUp className="w-3 h-3 sm:w-4 sm:h-4" />
-                            <span className="text-xs sm:text-sm font-medium">{t('deposit')}</span>
-                          </button>
-                          <button
-                            onClick={async () => {
-                              setSelectedSubUser(account);
-                              await createBalanceLog(account?.id || account?._id);
-                              setShowSubUserWithdraw(true);
-                              fetchSubUserBalance(account?.id || account?._id);
-                            }}
-                            disabled={account.status !== "Accept"}
-                            className={`flex-1 py-2 px-2 sm:px-4 rounded-lg flex items-center justify-center gap-1 sm:gap-2 transition-colors ${account.status === "Accept"
-                              ? 'bg-red-600 hover:bg-red-700 cursor-pointer'
-                              : 'bg-gray-500 cursor-not-allowed opacity-50'
-                              }`}
-                          >
-                            <ArrowDown className="w-3 h-3 sm:w-4 sm:h-4" />
-                            <span className="text-xs sm:text-sm font-medium">{t('withdraw')}</span>
-                          </button>
-                          <button
-                            onClick={() => {
-                              setSelectedSubUser(account);
-                              setShowResetPassword(true);
-                            }}
-                            disabled={account.status !== "Accept"}
-                            className={`flex-1 py-2 px-2 sm:px-4 rounded-lg flex items-center justify-center gap-1 sm:gap-2 transition-colors ${account.status === "Accept"
-                              ? 'cursor-pointer'
-                              : 'cursor-not-allowed opacity-50'
-                              }`}
-                            style={{ backgroundColor: account.status === "Accept" ? '#1477b0' : '#6b7280' }}
-                            title="Reset Password"
-                          >
-                            <span className="text-xs sm:text-sm font-medium">{t('resetPassword')}</span>
-                          </button>
-                        </div>
-                      )}
-                    </div>
-                  </div>
-                );
-              })}
+          {/* ID */}
+          <div className="flex items-center gap-2">
+            <div className="w-3 h-3 sm:w-4 sm:h-4 bg-gray-600 rounded flex items-center justify-center">
+              <span className="text-xs">👤</span>
+            </div>
+            <span className="text-xs sm:text-sm notranslate">ID:</span>
+
+            <span
+              className={`text-xs sm:text-sm font-mono truncate notranslate ${
+                isRejected ? "blur-[2px] select-none" : ""
+              }`}
+            >
+              {account?.clientName || 'N/A'}
+            </span>
+
+            <button
+              onClick={() => {
+                if (isRejected) return;
+                navigator.clipboard.writeText(account?.clientName || '');
+                toast.success('ID copied to clipboard!');
+              }}
+              disabled={isRejected}
+              className={`ml-auto p-1 rounded ${
+                isRejected
+                  ? "opacity-40 cursor-not-allowed"
+                  : "hover:bg-gray-800"
+              }`}
+            >
+              <Copy className="w-3 h-3" />
+            </button>
+          </div>
+
+          {/* Password */}
+          <div className="flex items-center gap-2">
+            <div className="w-3 h-3 sm:w-4 sm:h-4 bg-gray-600 rounded flex items-center justify-center">
+              <span className="text-xs">🔒</span>
+            </div>
+            <span className="text-xs sm:text-sm notranslate">
+              {t('password')}:
+            </span>
+
+            <span
+              className={`text-xs sm:text-sm font-mono truncate flex-1 notranslate ${
+                isRejected ? "blur-[2px] select-none" : ""
+              }`}
+            >
+              {account?.password || 'N/A'}
+            </span>
+
+            <button
+              onClick={() => {
+                if (isRejected) return;
+                navigator.clipboard.writeText(account?.password || '');
+                toast.success('Password copied to clipboard!');
+              }}
+              disabled={isRejected}
+              className={`p-1 rounded ${
+                isRejected
+                  ? "opacity-40 cursor-not-allowed"
+                  : "hover:bg-gray-800"
+              }`}
+            >
+              <Copy className="w-3 h-3" />
+            </button>
+          </div>
+
+          {/* Platform */}
+          <div className="flex items-center gap-2">
+            <div className="w-3 h-3 sm:w-4 sm:h-4 bg-gray-600 rounded flex items-center justify-center">
+              <span className="text-xs">🌐</span>
+            </div>
+            <span className="text-xs sm:text-sm notranslate">
+              {t('platform')}:
+            </span>
+
+            <span
+              className={`text-xs sm:text-sm font-mono truncate ${
+                isRejected ? "blur-[2px] select-none" : ""
+              }`}
+            >
+              {account?.gameId?.gameUrl || 'N/A'}
+            </span>
+
+            <button
+              onClick={() => {
+                if (isRejected) return;
+                if (account?.gameId?.gameUrl) {
+                  window.open(account.gameId.gameUrl, '_blank');
+                } else {
+                  toast.error('Platform URL not available');
+                }
+              }}
+              disabled={isRejected}
+              className={`ml-auto p-1 rounded ${
+                isRejected
+                  ? "opacity-40 cursor-not-allowed"
+                  : "hover:bg-gray-800"
+              }`}
+            >
+              <LinkIcon className="w-3 h-3" />
+            </button>
+          </div>
+        </div>
+
+        {/* Rejection Reason */}
+        {account.status === "Reject" && account.remarks && (
+          <div className="mb-4 p-3 bg-red-100 border border-red-700/50 rounded-lg">
+            <div className="flex items-start gap-2">
+              <div className="w-4 h-4 bg-red-600 rounded-full flex items-center justify-center flex-shrink-0 mt-0.5">
+                <span className="text-xs text-white">!</span>
+              </div>
+              <div>
+                <p className="text-xs font-medium text-red-700 mb-1">
+                  Rejection Reason:
+                </p>
+                <p className="text-xs text-red-700">
+                  {account.remarks}
+                </p>
+              </div>
+            </div>
+          </div>
+        )}
+
+        {/* Action Buttons */}
+        {account.status !== "Reject" && (
+          <div className="flex gap-2 sm:gap-3 flex-wrap">
+            <button
+              onClick={() => {
+                setSelectedSubUser(account);
+                setShowSubUserDeposit(true);
+              }}
+              disabled={account.status !== "Accept"}
+              className={`flex-1 py-2 px-2 sm:px-4 rounded-lg flex items-center justify-center gap-1 sm:gap-2 transition-colors ${
+                account.status === "Accept"
+                  ? 'bg-green-600 hover:bg-green-700 cursor-pointer'
+                  : 'bg-gray-500 cursor-not-allowed opacity-50'
+              }`}
+            >
+              <ArrowUp className="w-3 h-3 sm:w-4 sm:h-4" />
+              <span className="text-xs sm:text-sm font-medium">
+                {t('deposit')}
+              </span>
+            </button>
+
+            <button
+              onClick={async () => {
+                setSelectedSubUser(account);
+                await createBalanceLog(account?.id || account?._id);
+                setShowSubUserWithdraw(true);
+                fetchSubUserBalance(account?.id || account?._id);
+              }}
+              disabled={account.status !== "Accept"}
+              className={`flex-1 py-2 px-2 sm:px-4 rounded-lg flex items-center justify-center gap-1 sm:gap-2 transition-colors ${
+                account.status === "Accept"
+                  ? 'bg-red-600 hover:bg-red-700 cursor-pointer'
+                  : 'bg-gray-500 cursor-not-allowed opacity-50'
+              }`}
+            >
+              <ArrowDown className="w-3 h-3 sm:w-4 sm:h-4" />
+              <span className="text-xs sm:text-sm font-medium">
+                {t('withdraw')}
+              </span>
+            </button>
+
+            <button
+              onClick={() => {
+                setSelectedSubUser(account);
+                setShowResetPassword(true);
+              }}
+              disabled={account.status !== "Accept"}
+              className={`flex-1 py-2 px-2 sm:px-4 rounded-lg flex items-center justify-center gap-1 sm:gap-2 transition-colors ${
+                account.status === "Accept"
+                  ? 'cursor-pointer'
+                  : 'cursor-not-allowed opacity-50'
+              }`}
+              style={{
+                backgroundColor:
+                  account.status === "Accept" ? '#1477b0' : '#6b7280'
+              }}
+            >
+              <span className="text-xs sm:text-sm font-medium">
+                {t('resetPassword')}
+              </span>
+            </button>
+          </div>
+        )}
+      </div>
+    </div>
+  );
+})}
+
             </div>
           </div>
         </div>
