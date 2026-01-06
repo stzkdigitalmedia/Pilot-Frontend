@@ -143,7 +143,7 @@ const LandingPage = () => {
               <h2 className="text-xl font-semibold text-white">
                 {t('myIds')} ({dummySubAccounts.length})
               </h2>
-              <p className="text-sm text-blue-200">
+              <p className="text-sm text-nowrap text-blue-200">
                 {t('manageAccounts')}
               </p>
             </div>
