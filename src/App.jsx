@@ -10,6 +10,7 @@ import UserDashboard from './pages/UserDashboard';
 import SubAccounts from './pages/SubAccounts';
 import MyIDs from './pages/MyIDs';
 import IDDetails from './pages/IDDetails';
+import LandingPage from './pages/LandingPage';
 
 import ProtectedRoute from './components/ProtectedRoute';
 import SuperAdminRoute from './components/SuperAdminRoute';
@@ -50,8 +51,8 @@ export const useToastContext = () => {
 
 function AppContent() {
   const toast = useToast();
-  const { user } = useAuth(true);
   const location = useLocation();
+  const { user } = location.pathname === '/' ? { user: null } : useAuth(true);
   const hideOnRoutes = ['/my-ids', '/passbook', '/profile', '/id-details'];
 
   return (
@@ -185,7 +186,7 @@ function AppContent() {
             <SubAccounts />
           </ProtectedRoute>
         } />
-        <Route path="/" element={<Navigate to="/login" replace />} />
+        <Route path="/" element={<LandingPage />} />
       </Routes>
       <ToastContainer toasts={toast.toasts} removeToast={toast.removeToast} />
       {
