@@ -478,6 +478,17 @@ const UsersList = ({ onUserDeleted, onUsersCountChange, onBalanceSumChange }) =>
       if (onUsersCountChange) onUsersCountChange(response?.pagination?.totalUsers || usersList?.length || 0);
       if (onBalanceSumChange) onBalanceSumChange(response?.balanceSum || 0);
       
+      // Fetch balances for all users
+      // const balances = {};
+      // for (const user of usersList) {
+      //   try {
+      //     const balanceResponse = await apiHelper.get(`/transaction/get_MainUserBalance/${user?.id || user?._id}`);
+      //     balances[user?.id || user?._id] = balanceResponse?.balance || 0;
+      //   } catch (error) {
+      //     balances[user?.id || user?._id] = 0;
+      //   }
+      // }
+      // setUserBalances(balances);
     } catch (error) {
       console.error('Failed to fetch users:', error);
     } finally {
