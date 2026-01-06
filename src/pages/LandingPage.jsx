@@ -14,7 +14,7 @@ const LandingPage = () => {
   const dummyUser = {
     clientName: 'DemoUser',
     fullName: 'Demo User',
-    balance: 25000,
+    balance: 0,
     branchName: 'Demo Branch'
   };
 
