@@ -9,6 +9,42 @@ import PasswordInput from '../components/PasswordInput';
 import Header from "../components/Header";
 import BottomNavigation from "../components/BottomNavigation";
 
+// Safe localStorage for mobile compatibility
+const safeLocalStorage = {
+  setItem: (key, value) => {
+    try {
+      if (typeof Storage !== 'undefined' && window.localStorage) {
+        localStorage.setItem(key, value);
+        return true;
+      }
+    } catch (error) {
+      console.warn('localStorage not available:', error);
+    }
+    return false;
+  },
+  getItem: (key) => {
+    try {
+      if (typeof Storage !== 'undefined' && window.localStorage) {
+        return localStorage.getItem(key);
+      }
+    } catch (error) {
+      console.warn('localStorage not available:', error);
+    }
+    return null;
+  },
+  removeItem: (key) => {
+    try {
+      if (typeof Storage !== 'undefined' && window.localStorage) {
+        localStorage.removeItem(key);
+        return true;
+      }
+    } catch (error) {
+      console.warn('localStorage not available:', error);
+    }
+    return false;
+  }
+};
+
 const MyIDs = ({
   games = [],
   subAccounts = [],
@@ -376,7 +412,7 @@ const MyIDs = ({
     fetchSubAccounts();
     
     // Check localStorage for active tab
-    const savedTab = localStorage.getItem('myIdsActiveTab');
+    const savedTab = safeLocalStorage.getItem('myIdsActiveTab');
     if (savedTab === 'myIds') {
       setActiveTab('myIds');
     }
@@ -400,7 +436,7 @@ const MyIDs = ({
 
         <button
           onClick={() => {
-            localStorage.removeItem('myIdsActiveTab');
+            safeLocalStorage.removeItem('myIdsActiveTab');
             setActiveTab("createId");
           }}
           className={`flex-1 py-2 sm:py-3 text-sm font-semibold rounded-xl transition ${activeTab === "createId"
@@ -495,7 +531,7 @@ const MyIDs = ({
                   className="flex justify-between items-center align-middle rounded-xl p-4 cursor-pointer
                   shadow-[0_4px_20px_rgba(0,0,0,0.6)]"
                   onClick={() => {
-                    localStorage.setItem('myIdsActiveTab', 'myIds');
+                    safeLocalStorage.setItem('myIdsActiveTab', 'myIds');
                     const subAccId = acc.id || acc._id;
                     navigate(`/id-details/${subAccId}`);
                   }}
