@@ -198,7 +198,7 @@ const LandingPage = () => {
                       <div className="flex items-center justify-between mb-4">
                         <div className="flex items-center gap-2 sm:gap-3">
                           <div className="w-12 h-12 overflow-hidden rounded-full bg-black flex items-center justify-center">
-                            <img src={account.gameId?.image} alt={account.gameId?.name} className="w-6 h-6 sm:w-full m-auto sm:h-8 rounded" />
+                            <img src={account.gameId?.image} alt={account.gameId?.name} className="w-full h-full m-auto rounded" />
                           </div>
                           <div>
                             <h3 className="font-bold text-sm sm:text-lg notranslate">{game || 'Game'}</h3>
