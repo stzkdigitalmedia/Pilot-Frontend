@@ -33,7 +33,7 @@ const LandingPage = () => {
       status: 'Accept',
       gameId: { 
         name: 'LOTUSBOOK', 
-        image: '/logoforlogin.png',
+        image: '/Lotus247.png',
         gameUrl: 'https://****'
       }
     },
@@ -44,7 +44,7 @@ const LandingPage = () => {
       status: 'Accept',
       gameId: { 
         name: 'LOTUSBOOK247', 
-        image: '/logoforlogin.png',
+        image: '/Lotus247.png',
         gameUrl: 'https://****'
       }
     }
