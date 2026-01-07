@@ -1101,7 +1101,7 @@ const UserDashboard = () => {
                             <img
                               src={account.gameId?.image}
                               alt={account.gameId?.name}
-                              className="w-6 h-6 sm:w-full m-auto sm:h-8 rounded"
+                              className="w-full m-auto h-full rounded"
                             />
                           </div>
                           <div>
