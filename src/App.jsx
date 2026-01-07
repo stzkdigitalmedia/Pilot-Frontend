@@ -1,4 +1,5 @@
 import { BrowserRouter as Router, Routes, Route, Navigate, useLocation } from 'react-router-dom';
+import { useEffect } from 'react';
 import Login from './pages/Login';
 import AdminLogin from './pages/AdminLogin';
 import SimpleRegister from './pages/SimpleRegister';
@@ -54,6 +55,11 @@ function AppContent() {
   const location = useLocation();
   const { user } = location.pathname === '/' ? { user: null } : useAuth(true);
   const hideOnRoutes = ['/my-ids', '/passbook', '/profile', '/id-details'];
+
+  // Scroll to top on route change
+  useEffect(() => {
+    window.scrollTo(0, 0);
+  }, [location.pathname]);
 
   return (
     <ToastContext.Provider value={toast}>
