@@ -92,6 +92,38 @@ const UserDashboard = () => {
   });
   const toast = useToastContext();
 
+  // Touch handlers for swipe functionality
+  const handleTouchStart = (e) => {
+    setTouchStart(e.targetTouches[0].clientX);
+  };
+
+  const handleTouchMove = (e) => {
+    setTouchEnd(e.targetTouches[0].clientX);
+  };
+
+  const handleTouchEnd = () => {
+    if (!touchStart || !touchEnd) return;
+    
+    const distance = touchStart - touchEnd;
+    const isLeftSwipe = distance > 50;
+    const isRightSwipe = distance < -50;
+    
+    if (isLeftSwipe) {
+      // Swipe left - go to next slide
+      const step = window.innerWidth >= 640 ? 2 : 1;
+      const maxSlide = window.innerWidth >= 640
+        ? Math.max(0, subAccounts.length - 2)
+        : subAccounts.length - 1;
+      setCurrentSlide(Math.min(maxSlide, currentSlide + step));
+    }
+    
+    if (isRightSwipe) {
+      // Swipe right - go to previous slide
+      const step = window.innerWidth >= 640 ? 2 : 1;
+      setCurrentSlide(Math.max(0, currentSlide - step));
+    }
+  };
+
   const fetchBanks = async () => {
     setBanksLoading(true);
     try {
@@ -1046,6 +1078,9 @@ const UserDashboard = () => {
               style={{
                 transform: `translateX(-${currentSlide * (100 / (window.innerWidth >= 640 ? 2 : 1))}%)`,
               }}
+              onTouchStart={handleTouchStart}
+              onTouchMove={handleTouchMove}
+              onTouchEnd={handleTouchEnd}
             >
               {subAccounts.map((account, index) => {
                 const game = account.gameId?.name;
