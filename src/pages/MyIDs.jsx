@@ -1,4 +1,5 @@
 import { useState, useEffect } from "react";
+import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../hooks/useAuth';
 import { apiHelper } from '../utils/apiHelper';
 import { useToastContext } from '../App';
@@ -42,6 +43,7 @@ const MyIDs = ({
   const { user } = useAuth();
   const toast = useToastContext();
   const { t } = useTranslation();
+  const navigate = useNavigate();
 
   const createBalanceLog = async (userId) => {
     try {
@@ -372,6 +374,12 @@ const MyIDs = ({
   useEffect(() => {
     fetchGames();
     fetchSubAccounts();
+    
+    // Check localStorage for active tab
+    const savedTab = localStorage.getItem('myIdsActiveTab');
+    if (savedTab === 'myIds') {
+      setActiveTab('myIds');
+    }
   }, []);
 
   return (<>
@@ -391,7 +399,10 @@ const MyIDs = ({
         </button>
 
         <button
-          onClick={() => setActiveTab("createId")}
+          onClick={() => {
+            localStorage.removeItem('myIdsActiveTab');
+            setActiveTab("createId");
+          }}
           className={`flex-1 py-2 sm:py-3 text-sm font-semibold rounded-xl transition ${activeTab === "createId"
             ? "bg-[#1f1f1f] border-b-2 border-[#005993]"
             : "text-gray-400 bg-[#161616]"
@@ -484,8 +495,9 @@ const MyIDs = ({
                   className="flex justify-between items-center align-middle rounded-xl p-4 cursor-pointer
                   shadow-[0_4px_20px_rgba(0,0,0,0.6)]"
                   onClick={() => {
+                    localStorage.setItem('myIdsActiveTab', 'myIds');
                     const subAccId = acc.id || acc._id;
-                    window.location.href = `/id-details/${subAccId}`;
+                    navigate(`/id-details/${subAccId}`);
                   }}
                 >
                   <div className="flex justify-between items-center">

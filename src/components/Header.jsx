@@ -170,7 +170,7 @@ const Header = () => {
 
                 {/* RIGHT */}
                 <div className="ml-auto flex items-center gap-2">
-                    <p className='text-[12px] text-white'>{user?.balance} Bal</p>
+                    <p className='text-[12px] text-white'>{user?.balance.toLocaleString()} Bal</p>
                     <button
                         onClick={() => {
                             setTransactionForm({ amount: '', transactionType: 'Deposit' });
