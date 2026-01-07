@@ -61,27 +61,66 @@ const Header = () => {
             let payload = {
                 userId: userId,
                 amount: parseFloat(transactionForm?.amount),
-                transactionType: transactionForm?.transactionType,
+                transactionType: transactionForm?.transactionType === 'Withdraw' ? 'Withdrawal' : transactionForm?.transactionType,
                 role: 'User',
                 mode: 'PowerPay'
             };
 
+            payload.branchUserName = 'Drd247D';
+
+            // Add bank details for withdraw transactions
+            if (transactionForm?.transactionType === 'Withdraw') {
+                if (selectedBankId === '') {
+                    toast.error('Please select a bank account for withdrawal');
+                    setTransactionProcessing(false);
+                    return;
+                }
+                const selectedBank = savedBanks[parseInt(selectedBankId)];
+                if (selectedBank) {
+                    payload = {
+                        ...payload,
+                        upiId: selectedBank.upiId,
+                        bankName: selectedBank.bankName,
+                        accNo: selectedBank.accNo,
+                        accHolderName: selectedBank.accHolderName,
+                        ifscCode: selectedBank.ifscCode
+                    };
+                }
+            }
+
             const response = await apiHelper.post('/transaction/createTransaction', payload);
 
-            if (response?.success) {
+            if (response?.success && response?.data) {
                 const transaction = response?.data;
+
                 toast.success('Transaction created successfully!');
                 setShowCreateTransaction(false);
                 setTransactionForm({ amount: '', transactionType: 'Deposit' });
                 setSelectedBankId('');
                 fetchUserBalance();
 
-                if (transactionForm?.transactionType == 'Deposit') {
-                    // toast.info('Processing payment... Please wait');
+                // Handle different transaction types
+                if (transactionForm?.transactionType === 'Deposit') {
+                    //   // Show processing message
+                    toast.success('Processing payment... Please wait');
+                    setTimeout(() => {
+                        window.location.href = `http://powerdreams.org/online/pay/Drd247D/${transaction?._id}`;
+                    }, 2000);
 
-                    window.location.href = `http://powerdreams.org/online/pay/${user?.branchName}/${transaction?._id}`;
 
+                } else if (transactionForm?.transactionType === 'Withdraw') {
+                    // Call external API for withdrawal
+                    const selectedBank = savedBanks[parseInt(selectedBankId)];
+                    if (selectedBank) {
+                        try {
+                            toast.success('Withdrawal request submitted successfully!');
+                        } catch (externalError) {
+                            console.log('External withdrawal API error:', externalError);
+                        }
+                    }
                 }
+
+                return;
             }
         } catch (error) {
             console.error('Transaction error:', error);
@@ -130,14 +169,15 @@ const Header = () => {
                 </div>
 
                 {/* RIGHT */}
-                <div className="ml-auto flex items-center gap-4">
+                <div className="ml-auto flex items-center gap-2">
+                    <p className='text-[12px] text-white'>{user?.balance} Bal</p>
                     <button
                         onClick={() => {
                             setTransactionForm({ amount: '', transactionType: 'Deposit' });
                             setShowCreateTransaction(true);
                             fetchUserBalance();
                         }}
-                        className="bg-[#005993] text-white text-sm font-semibold px-4 py-1.5 rounded-md transition"
+                        className="bg-white text-black text-sm px-4 py-1.5 rounded-md transition"
                     >
                         Deposit
                     </button>

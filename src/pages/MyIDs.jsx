@@ -379,12 +379,12 @@ const MyIDs = ({
     <div className="min-h-screen bg-[#0e0e0e] p-3 sm:p-5 max-w-[769px] mx-auto text-white">
 
       {/* ================= TOP TABS ================= */}
-      <div className="flex bg-[#161616] rounded-xl overflow-hidden mb-4">
+      <div className="flex bg-[#0e0e0e] gap-2 rounded-xl overflow-hidden mb-4">
         <button
           onClick={() => setActiveTab("myIds")}
-          className={`flex-1 py-3 text-sm font-semibold transition ${activeTab === "myIds"
+          className={`flex-1 py-2 sm:py-3 text-sm font-semibold rounded-xl transition ${activeTab === "myIds"
             ? "bg-[#1f1f1f] border-b-2 border-[#005993]"
-            : "text-gray-400"
+            : "text-gray-400 bg-[#161616]"
             }`}
         >
           MY IDs ({(localSubAccounts.length > 0 ? localSubAccounts : subAccounts).length})
@@ -392,9 +392,9 @@ const MyIDs = ({
 
         <button
           onClick={() => setActiveTab("createId")}
-          className={`flex-1 py-3 text-sm font-semibold transition ${activeTab === "createId"
+          className={`flex-1 py-2 sm:py-3 text-sm font-semibold rounded-xl transition ${activeTab === "createId"
             ? "bg-[#1f1f1f] border-b-2 border-[#005993]"
-            : "text-gray-400"
+            : "text-gray-400 bg-[#161616]"
             }`}
         >
           CREATE ID
