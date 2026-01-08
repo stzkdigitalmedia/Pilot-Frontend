@@ -8,7 +8,7 @@ const Login = () => {
   return (
     <>
       {loading && (
-        <div className="min-h-screen gaming-bg flex items-center justify-center">
+        <div className="min-h-screen flex items-center justify-center">
           <div className="text-center">
             <div className="loading-spinner mb-4 mx-auto" style={{width: '40px', height: '40px'}}></div>
             <p className="text-xl gaming-title">Loading...</p>

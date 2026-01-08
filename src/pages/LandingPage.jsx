@@ -55,7 +55,7 @@ const LandingPage = () => {
   };
 
   return (
-    <Link to={'/login'}>
+    <Link onClick={handleRedirectToLogin}>
       <div className="min-h-screen bg-[#0e0e0e] max-w-[769px] mx-auto">
 
         {/* Main Content */}
