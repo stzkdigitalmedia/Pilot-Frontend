@@ -425,7 +425,7 @@ const MyIDs = ({
     </div>
 
     {/* Fixed Top Tabs */}
-    <div className="fixed top-[60px] left-0 right-0 z-40 bg-[#0e0e0e] px-3 sm:px-5 py-3 text-white">
+    <div className="fixed top-[55px] mx-auto max-w-[769px] left-0 right-0 z-40 bg-[#0e0e0e] px-3 sm:px-5 py-3 text-white">
       <div className="max-w-[769px] mx-auto">
         <div className="flex bg-[#0e0e0e] gap-2 rounded-xl overflow-hidden">
         <button
@@ -455,7 +455,7 @@ const MyIDs = ({
     </div>
 
     {/* Scrollable Content */}
-    <div className="pt-[120px] pb-20 min-h-screen bg-[#0e0e0e] p-3 sm:p-5 max-w-[769px] mx-auto text-white">
+    <div className="pt-[120px] sm:pt-[125px] pb-20 min-h-screen bg-[#0e0e0e] p-3 sm:px-5 max-w-[769px] mx-auto text-white">
       {/* ================= CREATE ID ================= */}
       {activeTab === "createId" && (
         <>
@@ -536,7 +536,7 @@ const MyIDs = ({
               {(localSubAccounts.length > 0 ? localSubAccounts : subAccounts).map((acc) => (
                 <div
                   key={acc.id || acc._id}
-                  className="flex justify-between items-center align-middle rounded-xl p-4 cursor-pointer
+                  className="flex justify-between items-center bg-[#1b1b1b] align-middle rounded-xl p-4 cursor-pointer
                   shadow-[0_4px_20px_rgba(0,0,0,0.6)]"
                   onClick={() => {
                     safeLocalStorage.setItem('myIdsActiveTab', 'myIds');
