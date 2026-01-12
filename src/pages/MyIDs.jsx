@@ -419,11 +419,15 @@ const MyIDs = ({
   }, []);
 
   return (<>
-    <Header />
-    <div className="min-h-screen bg-[#0e0e0e] p-3 sm:p-5 max-w-[769px] mx-auto text-white">
+    {/* Fixed Header */}
+    <div className="fixed top-0 left-0 right-0 z-50">
+      <Header />
+    </div>
 
-      {/* ================= TOP TABS ================= */}
-      <div className="flex bg-[#0e0e0e] gap-2 rounded-xl overflow-hidden mb-4">
+    {/* Fixed Top Tabs */}
+    <div className="fixed top-[60px] left-0 right-0 z-40 bg-[#0e0e0e] px-3 sm:px-5 py-3 text-white">
+      <div className="max-w-[769px] mx-auto">
+        <div className="flex bg-[#0e0e0e] gap-2 rounded-xl overflow-hidden">
         <button
           onClick={() => setActiveTab("myIds")}
           className={`flex-1 py-2 sm:py-3 text-sm font-semibold rounded-xl transition ${activeTab === "myIds"
@@ -446,8 +450,12 @@ const MyIDs = ({
         >
           CREATE ID
         </button>
+        </div>
       </div>
+    </div>
 
+    {/* Scrollable Content */}
+    <div className="pt-[120px] pb-20 min-h-screen bg-[#0e0e0e] p-3 sm:p-5 max-w-[769px] mx-auto text-white">
       {/* ================= CREATE ID ================= */}
       {activeTab === "createId" && (
         <>
@@ -500,7 +508,7 @@ const MyIDs = ({
                     setLocalFormData({ ...localFormData, gameId: game.id || game._id });
                     setShowCreateIdLocal(true);
                   }}
-                  className="px-5 py-2 rounded-full
+                  className="px-5 py-1.5 rounded-xl
                   bg-[#005993]
                   text-sm font-semibold transition"
                 >
@@ -872,8 +880,9 @@ const MyIDs = ({
       )}
 
 
-      <BottomNavigation activePage="ids" />
     </div>
+    
+    <BottomNavigation activePage="ids" />
   </>
   );
 };

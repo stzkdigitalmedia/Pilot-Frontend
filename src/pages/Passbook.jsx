@@ -137,9 +137,10 @@ const Passbook = () => {
           <div className="flex items-center justify-end pt-2.5 px-4 flex-wrap gap-2">
             <button
               onClick={() => setShowFilters(!showFilters)}
-              className="p-1 px-2 text-black bg-white flex rounded-lg hover:bg-gray-200"
+              className="p-1 px-1 sm:px-2 text-black bg-white flex text-[12px] rounded-lg hover:bg-gray-200"
             >
-              <Filter size={20} className='my-auto text-black mr-2' /> {t('applyFilters')}
+              <Filter size={20} className='my-auto text-black' /> 
+              {/* {t('applyFilters')} */}
             </button>
           </div>
           <div>
