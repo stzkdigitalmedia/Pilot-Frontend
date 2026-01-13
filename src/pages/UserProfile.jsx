@@ -107,6 +107,7 @@ const UserProfile = () => {
         setShowCreateTransaction(false);
         setTransactionForm({ amount: '', transactionType: 'Deposit' });
         setSelectedBankId('');
+        
         fetchUserBalance();
 
         // Handle different transaction types
