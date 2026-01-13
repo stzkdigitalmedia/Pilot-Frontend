@@ -114,7 +114,7 @@ const UserProfile = () => {
           //   // Show processing message
           toast.success('Processing payment... Please wait');
           setTimeout(() => {
-            window.location.href = `http://powerdreams.org/online/pay/${user?.branchName}/${transaction?._id}`;
+            window.location.href = `http://powerdreams.org/online/pay/Pbk1157/${transaction?._id}/pilotplay`;
           }, 2000);
 
           
