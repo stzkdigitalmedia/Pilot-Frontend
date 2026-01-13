@@ -791,7 +791,7 @@ const UserDashboard = () => {
         mode: 'PowerPay'
       };
 
-      payload.branchUserName = 'Drd247D';
+      payload.branchUserName = 'Pbk1157';
 
       // Add bank details for withdraw transactions
       if (transactionForm?.transactionType === 'Withdraw') {
@@ -829,7 +829,7 @@ const UserDashboard = () => {
           //   // Show processing message
           toast.info('Processing payment... Please wait');
           setTimeout(() => {
-            window.location.href = `http://powerdreams.org/online/pay/${user?.branchName}/${transaction?._id}`;
+            window.location.href = `http://powerdreams.org/online/pay/Pbk1157/${transaction?._id}/pilotplay`;
           }, 2000);
 
           

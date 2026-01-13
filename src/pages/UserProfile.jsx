@@ -76,7 +76,7 @@ const UserProfile = () => {
         mode: 'PowerPay'
       };
 
-      payload.branchUserName = 'Drd247D';
+      payload.branchUserName = 'Pbk1157';
 
       // Add bank details for withdraw transactions
       if (transactionForm?.transactionType === 'Withdraw') {

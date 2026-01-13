@@ -81,7 +81,7 @@ const SimpleRegister = () => {
 
     // try {
     //   // First verify branch
-    //   const verifyResponse = await fetch(`https://powerdreams.org/api/online/user/verifyBranch/Drd247D}`);
+    //   const verifyResponse = await fetch(`https://powerdreams.org/api/online/user/verifyBranch/Pbk1157}`);
     //   const verifyData = await verifyResponse.json();
 
     //   if (verifyData.success == false) {
@@ -96,7 +96,7 @@ const SimpleRegister = () => {
           clientName: formData?.clientName,
           password: formData?.password,
           phone: formData?.phone,
-          branchName: "Drd247D",
+          branchName: "Pbk1157",
           otp: formData?.otp
         };
 
@@ -306,7 +306,7 @@ const SimpleRegister = () => {
               <input
                 name="referralCode"
                 placeholder="Enter referral code"
-                value="Drd247D"
+                value="Pbk1157"
                 onChange={handleChange}
                 readOnly={isReferralReadonly}
                 // className={`w-full px-3 md:px-4 py-2 md:py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-green-500 transition-all ${isReferralReadonly ? '*/bg-gray-200 cursor-not-allowed' : ''}`}
