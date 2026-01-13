@@ -368,7 +368,7 @@ const Passbook = () => {
 
                         <div className="flex justify-between">
                           <span className="text-gray-300">{t('remark')}:</span>
-                          <span className="font-medium">{transaction.remark || '-'}</span>
+                          <span className="font-medium">{transaction.remarks || '-'}</span>
                         </div>
 
                         <div className="flex justify-between">
