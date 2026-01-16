@@ -41,7 +41,7 @@ const Passbook = () => {
     try {
       const payload = {
         page: currentPage,
-        limit: 100,
+        limit: 15,
         ...currentFilters
       };
 
@@ -53,10 +53,10 @@ const Passbook = () => {
 
       const response = await apiHelper.post(`/transaction/getUserTransactions/${user?._id}`, payload);
       const data = response?.data?.transactions || [];
-      const pagination = response?.data?.pagination || {};
+      const totalPagesFromAPI = response?.data?.totalPages || 1;
 
       setTransactions(data);
-      setTotalPages(pagination.totalPages || 1);
+      setTotalPages(totalPagesFromAPI);
     } catch (error) {
       toast.error('Failed to fetch transactions: ' + error.message);
     } finally {
@@ -421,7 +421,46 @@ const Passbook = () => {
               )}
             </div>
 
-
+            {/* Pagination */}
+            {!loading && transactions.length > 0 && (
+              <div className="flex items-center justify-center gap-3 py-6 px-4">
+                <button
+                  onClick={() => setPage(prev => Math.max(1, prev - 1))}
+                  disabled={page === 1}
+                  className={`flex items-center gap-2 px-4 py-2.5 rounded-xl font-medium transition-all ${
+                    page === 1
+                      ? 'bg-[#1b1b1b] text-gray-600 cursor-not-allowed'
+                      : 'bg-[#005993] text-white hover:bg-[#004a7a] shadow-lg'
+                  }`}
+                >
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <path d="M15 18L9 12L15 6" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+                  </svg>
+                  <span className="hidden sm:inline">Previous</span>
+                </button>
+                
+                <div className="flex items-center gap-2 px-4 py-2.5 bg-[#1b1b1b] rounded-xl">
+                  <span className="text-white font-semibold">{page}</span>
+                  <span className="text-gray-500">/</span>
+                  <span className="text-gray-400">{totalPages}</span>
+                </div>
+                
+                <button
+                  onClick={() => setPage(prev => Math.min(totalPages, prev + 1))}
+                  disabled={page === totalPages}
+                  className={`flex items-center gap-2 px-4 py-2.5 rounded-xl font-medium transition-all ${
+                    page === totalPages
+                      ? 'bg-[#1b1b1b] text-gray-600 cursor-not-allowed'
+                      : 'bg-[#005993] text-white hover:bg-[#004a7a] shadow-lg'
+                  }`}
+                >
+                  <span className="hidden sm:inline">Next</span>
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <path d="M9 18L15 12L9 6" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+                  </svg>
+                </button>
+              </div>
+            )}
 
           </div>
         </div>
