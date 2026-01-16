@@ -489,8 +489,8 @@ const MyIDs = ({
                       {game.name}
                     </p>
                     <p className="text-xs text-gray-400">
-                      {game.gameUrl && game.gameUrl.length > 21
-                        ? `${game.gameUrl.substring(0, 21)}...`
+                      {game.gameUrl && game.gameUrl.length > 17
+                        ? `${game.gameUrl.substring(0, 17)}...`
                         : game.gameUrl}
                     </p>
 
@@ -551,8 +551,8 @@ const MyIDs = ({
                       </div>
                       <div className="text-wrap">
                         <p className="text-xs text-gray-300 text-wrap underline">
-                          {acc.gameId?.gameUrl && acc.gameId.gameUrl.length > 20
-                            ? `${acc.gameId.gameUrl.substring(0, 20)}...`
+                          {acc.gameId?.gameUrl && acc.gameId.gameUrl.length > 17
+                            ? `${acc.gameId.gameUrl.substring(0, 17)}...`
                             : acc.gameId?.gameUrl}
                         </p>
                         <p className="text-xs text-gray-300">
