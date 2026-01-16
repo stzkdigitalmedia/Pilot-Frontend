@@ -278,7 +278,7 @@ const Passbook = () => {
                     >
                       {/* ICON */}
                       <div
-                        className={`w-14 h-14 rounded-xl flex items-center justify-center ${icon.bg}`}
+                        className={`w-11 h-11 sm:w-12 sm:h-12 rounded-xl flex items-center justify-center ${icon.bg}`}
                       >
                         {transaction.transactionType === 'Deposit' ? (
                           // <ArrowDown className={`w-7 h-7 ${icon.icon}`} />
@@ -309,7 +309,7 @@ const Passbook = () => {
 
                       {/* MAIN INFO */}
                       <div className="flex-1">
-                        <p className="text-base font-semibold text-gray-300">
+                        <p className="text-base text-[14px] font-semibold text-gray-300">
                           {transaction.transactionType}
                         </p>
 
@@ -327,7 +327,7 @@ const Passbook = () => {
                       {/* AMOUNT + STATUS */}
                       <div className="text-right">
                         <p
-                          className={`text-lg font-bold ${transaction.transactionType === 'Deposit'
+                          className={`text-[14px] font-bold ${transaction.transactionType === 'Deposit'
                             ? 'text-green-600'
                             : 'text-red-600'
                             }`}
@@ -336,7 +336,7 @@ const Passbook = () => {
                         </p>
 
                         <span
-                          className={`inline-block mt-1 px-3 py-1 rounded-full text-xs font-medium ${getStatusPill(
+                          className={`inline-block mt-1 px-1 py-0 sm:px-3 sm:py-1 rounded-full sm:text-xs text-[12px] font-medium ${getStatusPill(
                             transaction.status
                           )}`}
                         >
@@ -422,7 +422,7 @@ const Passbook = () => {
             </div>
 
             {/* Pagination */}
-            {!loading && transactions.length > 0 && (
+            {!loading && totalPages > 1 && (
               <div className="flex items-center justify-center gap-3 py-6 px-4">
                 <button
                   onClick={() => setPage(prev => Math.max(1, prev - 1))}

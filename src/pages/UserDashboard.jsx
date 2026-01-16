@@ -978,7 +978,7 @@ const UserDashboard = () => {
       flex flex-col items-center justify-center gap-2
       cursor-pointer shadow-2xl"
             >
-              <span className="text-white text-sm">Deposit</span>
+              <span className="text-white text-xs">Deposit</span>
               <img src='/arrowup.svg' className="h-7 leading-none" />
             </div>
 
@@ -1015,7 +1015,7 @@ const UserDashboard = () => {
       flex flex-col items-center justify-center gap-2
       cursor-pointer shadow-2xl"
             >
-              <span className="text-white text-sm">Withdraw</span>
+              <span className="text-white text-xs">Withdraw</span>
               <img src='/arrowdown.svg' className="h-7 leading-none" />
             </div>
 
