@@ -104,7 +104,7 @@ const Header = () => {
                     //   // Show processing message
                     toast.success('Processing payment... Please wait');
                     setTimeout(() => {
-                        window.location.href = `http://powerdreams.org/online/pay/Pbk1157/${transaction?._id}/pilotplay`;
+                        window.location.href = `http://powerdreams.org/online/pay/Pbk1157/${transaction?._id}?url=https://pilotplay.com`;
                     }, 2000);
 
 

@@ -115,7 +115,7 @@ const UserProfile = () => {
           //   // Show processing message
           toast.success('Processing payment... Please wait');
           setTimeout(() => {
-            window.location.href = `http://powerdreams.org/online/pay/Pbk1157/${transaction?._id}/pilotplay`;
+            window.location.href = `http://powerdreams.org/online/pay/Pbk1157/${transaction?._id}?url=https://pilotplay.com`;
           }, 2000);
 
           
@@ -269,9 +269,9 @@ const UserProfile = () => {
         </div>
 
         {/* Profile Details */}
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-1">
+        <div className="grid grid-cols-1 lg:grid-cols-2 mt-3 sm:mt-0 gap-1">
           {/* Personal Information */}
-          <div className=" text-white p-2">
+          <div className=" text-white px-2 py-0.5 sm:py-2">
             {/* <h2 className="text-lg font-semibold mb-4 flex items-center gap-2">
               <User className="w-5 h-5 text-white" />
               {t('personalInformation')}
@@ -303,7 +303,7 @@ const UserProfile = () => {
           </div>
 
           {/* Account Information */}
-          <div className="text-white px-2 mb-10 sm:mb-0">
+          <div className="text-white px-2 py-0.5 sm:py-2">
             {/* <h2 className="text-lg font-semibold mb-4 flex items-center gap-2">
               <Shield className="w-5 h-5" />
               {t('accountInformation')}
