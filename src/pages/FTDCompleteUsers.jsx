@@ -15,6 +15,9 @@ const FTDCompleteUsers = () => {
   const navigate = useNavigate();
   const [users, setUsers] = useState([]);
   const [loading, setLoading] = useState(false);
+  const [page, setPage] = useState(1);
+  const [totalPages, setTotalPages] = useState(1);
+  const [totalRecords, setTotalRecords] = useState(0);
   const [dateRange, setDateRange] = useState([
     {
       startDate: new Date(),
@@ -45,21 +48,31 @@ const FTDCompleteUsers = () => {
     }
   };
 
-  const fetchFTDCompleteUsers = async (date = dateRange[0].startDate) => {
+  const fetchFTDCompleteUsers = async (startDate = dateRange[0].startDate, endDate = dateRange[0].endDate, currentPage = page) => {
     setLoading(true);
     try {
-      const dateStr = date.getFullYear() + '-' + 
-        String(date.getMonth() + 1).padStart(2, '0') + '-' + 
-        String(date.getDate()).padStart(2, '0');
-      
+      const startDateStr = startDate.getFullYear() + '-' +
+        String(startDate.getMonth() + 1).padStart(2, '0') + '-' +
+        String(startDate.getDate()).padStart(2, '0');
+
+      const endDateStr = endDate.getFullYear() + '-' +
+        String(endDate.getMonth() + 1).padStart(2, '0') + '-' +
+        String(endDate.getDate()).padStart(2, '0');
+
       const payload = {
-        startDate: dateStr,
-        endDate: dateStr
+        startDate: startDateStr,
+        endDate: endDateStr,
+        page: currentPage,
+        limit: 50
       };
-      
+
       const response = await apiHelper.post('/transaction/getToday_creatAt_and_today_first_transaction', payload);
       const usersData = response?.data?.transactions || response?.transactions || [];
+      const pagination = response?.data?.pagination || {};
+
       setUsers(Array.isArray(usersData) ? usersData : []);
+      setTotalPages(pagination.totalPages || 1);
+      setTotalRecords(pagination.totalRecords || 0);
     } catch (error) {
       toast.error('Failed to fetch FTD complete users');
       setUsers([]);
@@ -74,7 +87,13 @@ const FTDCompleteUsers = () => {
 
   const applyDateFilter = () => {
     setShowDatePicker(false);
-    fetchFTDCompleteUsers(dateRange[0].startDate);
+    setPage(1);
+    fetchFTDCompleteUsers(dateRange[0].startDate, dateRange[0].endDate, 1);
+  };
+
+  const handlePageChange = (newPage) => {
+    setPage(newPage);
+    fetchFTDCompleteUsers(dateRange[0].startDate, dateRange[0].endDate, newPage);
   };
 
   useEffect(() => {
@@ -84,13 +103,13 @@ const FTDCompleteUsers = () => {
   return (
     <div className="min-h-screen bg-gray-50 flex">
       <Sidebar activeTab="dashboard" setActiveTab={handleNavigation} onLogout={handleLogout} />
-      
+
       <div className="flex-1 lg:ml-64">
-        <AdminHeader 
-          title="FTD Complete Users" 
-          subtitle="Users who completed their first transaction today" 
+        <AdminHeader
+          title="FTD Complete Users"
+          subtitle="Users who completed their first transaction today"
         />
-        
+
         <div className="p-4 sm:p-6 lg:p-8">
           <div className="mb-6 flex justify-between items-center">
             <button
@@ -100,7 +119,7 @@ const FTDCompleteUsers = () => {
               <ArrowLeft className="w-4 h-4" />
               Back to Dashboard
             </button>
-            
+
             <div className="flex items-center gap-2">
               <div className="relative">
                 <button
@@ -108,7 +127,10 @@ const FTDCompleteUsers = () => {
                   className="flex items-center gap-2 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700"
                 >
                   <Calendar className="w-4 h-4" />
-                  {dateRange[0].startDate.toDateString()}
+                  {dateRange[0].startDate.toDateString() === dateRange[0].endDate.toDateString()
+                    ? dateRange[0].startDate.toDateString()
+                    : `${dateRange[0].startDate.toDateString()} - ${dateRange[0].endDate.toDateString()}`
+                  }
                 </button>
                 {showDatePicker && (
                   <div className="absolute right-0 top-12 z-50 bg-white shadow-lg rounded-lg border">
@@ -146,9 +168,13 @@ const FTDCompleteUsers = () => {
                 <div className="flex items-center gap-2">
                   <Users className="w-5 h-5 text-gray-600" />
                   <h3 className="text-lg font-semibold text-gray-900">FTD Complete Users</h3>
+                  <span className="text-sm text-gray-500">({totalRecords} total)</span>
                 </div>
                 <p className="text-sm text-gray-500">
-                  Date: {dateRange[0].startDate.toLocaleDateString()}
+                  {dateRange[0].startDate.toDateString() === dateRange[0].endDate.toDateString()
+                    ? `Date: ${dateRange[0].startDate.toLocaleDateString()}`
+                    : `Date Range: ${dateRange[0].startDate.toLocaleDateString()} - ${dateRange[0].endDate.toLocaleDateString()}`
+                  }
                 </p>
               </div>
             </div>
@@ -164,7 +190,12 @@ const FTDCompleteUsers = () => {
               <div className="text-center py-12">
                 <Users className="w-16 h-16 text-gray-300 mx-auto mb-4" />
                 <h3 className="text-lg font-semibold text-gray-900 mb-2">No Users Found</h3>
-                <p className="text-gray-500">No users completed their first transaction on {dateRange[0].startDate.toLocaleDateString()}</p>
+                <p className="text-gray-500">
+                  No users completed their first transaction {dateRange[0].startDate.toDateString() === dateRange[0].endDate.toDateString()
+                    ? `on ${dateRange[0].startDate.toLocaleDateString()}`
+                    : `between ${dateRange[0].startDate.toLocaleDateString()} - ${dateRange[0].endDate.toLocaleDateString()}`
+                  }
+                </p>
               </div>
             ) : (
               <div className="overflow-x-auto">
@@ -173,20 +204,18 @@ const FTDCompleteUsers = () => {
                     <tr>
                       <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">#</th>
                       <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Client Name</th>
+                      <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Amount</th>
                       <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Registration Date</th>
-                      <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">First Transaction Date</th>
                     </tr>
                   </thead>
                   <tbody className="bg-white divide-y divide-gray-200">
                     {Array.isArray(users) && users.map((user, index) => (
                       <tr key={user._id || index} className="hover:bg-gray-50">
-                        <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{index + 1}</td>
+                        <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{(page - 1) * 50 + index + 1}</td>
                         <td className="px-6 py-4 whitespace-nowrap">
                           <div className="text-sm font-medium text-gray-900">{user.clientName}</div>
                         </td>
-                        <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                          {new Date(user.createdAt).toLocaleDateString()}
-                        </td>
+                        <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">₹{user?.amount}</td>
                         <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
                           {new Date(user.createdAt).toLocaleDateString()}
                         </td>
@@ -194,6 +223,36 @@ const FTDCompleteUsers = () => {
                     ))}
                   </tbody>
                 </table>
+              </div>
+            )}
+
+            {/* Pagination */}
+            {totalPages > 1 && (
+              <div className="px-6 py-4 border-t border-gray-200">
+                <div className="flex items-center justify-between">
+                  <div className="text-sm text-gray-700">
+                    Showing {(page - 1) * 50 + 1} to {Math.min(page * 50, totalRecords)} of {totalRecords} results
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <button
+                      onClick={() => handlePageChange(page - 1)}
+                      disabled={page === 1}
+                      className="px-3 py-1 text-sm bg-gray-100 text-gray-700 rounded hover:bg-gray-200 disabled:opacity-50 disabled:cursor-not-allowed"
+                    >
+                      Previous
+                    </button>
+                    <span className="text-sm text-gray-700">
+                      Page {page} of {totalPages}
+                    </span>
+                    <button
+                      onClick={() => handlePageChange(page + 1)}
+                      disabled={page === totalPages}
+                      className="px-3 py-1 text-sm bg-gray-100 text-gray-700 rounded hover:bg-gray-200 disabled:opacity-50 disabled:cursor-not-allowed"
+                    >
+                      Next
+                    </button>
+                  </div>
+                </div>
               </div>
             )}
           </div>
