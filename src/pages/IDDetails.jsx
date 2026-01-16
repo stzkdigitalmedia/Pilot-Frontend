@@ -147,7 +147,10 @@ const IDDetails = () => {
                   onClick={() =>
                     window.open(idDetails.gameId?.gameUrl, '_blank')
                   }>
-                  {idDetails.gameId?.gameUrl}
+                    {idDetails.gameId?.gameUrl && idDetails.gameId?.gameUrl.length > 20
+                            ? `${idDetails.gameId?.gameUrl.substring(0, 20)}...`
+                            :idDetails.gameId?.gameUrl}
+                  {/* {idDetails.gameId?.gameUrl} */}
                 </p>
               </div>
             </div>
