@@ -489,8 +489,8 @@ const MyIDs = ({
                       {game.name}
                     </p>
                     <p className="text-xs text-gray-400">
-                      {game.gameUrl && game.gameUrl.length > 17
-                        ? `${game.gameUrl.substring(0, 17)}...`
+                      {game.gameUrl && game.gameUrl.length > 21
+                        ? `${game.gameUrl.substring(0, 21)}...`
                         : game.gameUrl}
                     </p>
 
