@@ -234,7 +234,7 @@ const DashboardStats = () => {
             
             <div
               className="gaming-card p-4 cursor-pointer hover:shadow-lg transition-shadow"
-            // onClick={() => navigate('/no-transaction-users')}
+            onClick={() => navigate('/ftd-complete-users')}
             >
               <h3 className="text-sm font-medium text-gray-500">FTD Complete User</h3>
               <p className="text-2xl font-bold text-orange-600">{dashSummary?.userRegistrationsCount - dashSummary?.userRegistrationsNoTransactionCount || 0}</p>

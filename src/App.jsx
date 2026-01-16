@@ -39,6 +39,7 @@ import TelegramOTP from './pages/TelegramOTP';
 import Passbook from './pages/Passbook';
 import WhatsAppButton from './components/WhatsAppButton';
 import { useAuth } from './hooks/useAuth';
+import FTDCompleteUsers from './pages/FTDCompleteUsers';
 
 const ToastContext = createContext();
 
@@ -166,6 +167,11 @@ function AppContent() {
         <Route path="/telegram-otp" element={
           <SuperAdminRoute>
             <TelegramOTP />
+          </SuperAdminRoute>
+        } />
+        <Route path="/ftd-complete-users" element={
+          <SuperAdminRoute>
+            <FTDCompleteUsers />
           </SuperAdminRoute>
         } />
         <Route path="/user-dashboard" element={
