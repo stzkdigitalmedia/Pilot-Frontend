@@ -365,17 +365,28 @@ const UserProfile = () => {
 
             <form onSubmit={handleCreateTransaction} className="space-y-4">
               <div className="form-group">
-                <label className="form-label">{t('amount')} ({t('minimumAmount')})</label>
-                <input
-                  type="number"
-                  placeholder={t('enterAmount')}
-                  value={transactionForm.amount}
-                  onChange={(e) => setTransactionForm({ ...transactionForm, amount: e.target.value })}
-                  onWheel={(e) => e.target.blur()}
-                  className="gaming-input"
-                  required
-                  min="100"
-                />
+                 <label className="form-label">
+                    {transactionForm?.transactionType === 'Withdraw'
+                      ? 'Amount (Minimum ₹500)'
+                      : `${t('amount')} (${t('minimumAmount')})`
+                    }
+                  </label>
+                  <input
+                    type="number"
+                    placeholder={
+                      transactionForm?.transactionType === 'Withdraw'
+                        ? 'Enter amount (min 500)'
+                        : t('enterAmount')
+                    }
+                    value={transactionForm.amount}
+                    onChange={(e) => setTransactionForm({ ...transactionForm, amount: e.target.value })}
+                    onWheel={(e) => e.target.blur()}
+                    className="gaming-input"
+                    required
+                    min={transactionForm?.transactionType === 'Withdraw'
+                      ? "500"
+                      : "100"}
+                  />
               </div>
 
               {transactionForm?.transactionType === 'Withdraw' && (

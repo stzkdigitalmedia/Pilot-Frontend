@@ -702,15 +702,15 @@ const MyIDs = ({
             ) : (
               <form onSubmit={handleSubUserWithdraw} className="space-y-4">
                 <div className="form-group">
-                  <label className="form-label">Amount (Minimum Amount)</label>
+                  <label className="form-label">Amount (Minimum Amount 500)</label>
                   <input
                     type="number"
-                    placeholder="Enter Amount"
+                    placeholder="Enter Amount(min 500)"
                     value={subUserWithdrawForm.amount}
                     onChange={(e) => setSubUserWithdrawForm({ ...subUserWithdrawForm, amount: e.target.value })}
                     className="gaming-input"
                     required
-                    min="100"
+                    min="500"
                   />
                 </div>
 
@@ -751,10 +751,10 @@ const MyIDs = ({
             ) : (
               <form onSubmit={handleSubUserDeposit} className="space-y-4">
                 <div className="form-group">
-                  <label className="form-label">Amount (Minimum Amount)</label>
+                  <label className="form-label">Amount (Minimum Amount 100)</label>
                   <input
                     type="number"
-                    placeholder="Enter Amount"
+                    placeholder="Enter Amount (Min 100)"
                     value={subUserDepositForm.amount}
                     onChange={(e) => setSubUserDepositForm({ ...subUserDepositForm, amount: e.target.value })}
                     className="gaming-input"

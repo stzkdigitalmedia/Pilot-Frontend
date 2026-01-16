@@ -103,11 +103,11 @@ const UserDashboard = () => {
 
   const handleTouchEnd = () => {
     if (!touchStart || !touchEnd) return;
-    
+
     const distance = touchStart - touchEnd;
     const isLeftSwipe = distance > 50;
     const isRightSwipe = distance < -50;
-    
+
     if (isLeftSwipe) {
       // Swipe left - go to next slide
       const step = window.innerWidth >= 640 ? 2 : 1;
@@ -116,7 +116,7 @@ const UserDashboard = () => {
         : subAccounts.length - 1;
       setCurrentSlide(Math.min(maxSlide, currentSlide + step));
     }
-    
+
     if (isRightSwipe) {
       // Swipe right - go to previous slide
       const step = window.innerWidth >= 640 ? 2 : 1;
@@ -656,7 +656,7 @@ const UserDashboard = () => {
               fetchUserBalance();
               setUpdatedTransactions(transaction?._id);
             } else if (newStatus === "Initial") {
-              
+
             }
           }
         } catch (statusError) {
@@ -832,13 +832,13 @@ const UserDashboard = () => {
             window.location.href = `http://powerdreams.org/online/pay/Pbk1157/${transaction?._id}?url=https://pilotplay.com`;
           }, 2000);
 
-          
+
         } else if (transactionForm?.transactionType === 'Withdraw') {
           // Call external API for withdrawal
           const selectedBank = savedBanks[parseInt(selectedBankId)];
           if (selectedBank) {
             try {
-              
+
               toast.info('Withdrawal request submitted successfully!');
             } catch (externalError) {
               console.log('External withdrawal API error:', externalError);
@@ -1647,16 +1647,27 @@ const UserDashboard = () => {
 
               <form onSubmit={handleCreateTransaction} className="space-y-4">
                 <div className="form-group">
-                  <label className="form-label">{t('amount')} ({t('minimumAmount')})</label>
+                  <label className="form-label">
+                    {transactionForm?.transactionType === 'Withdraw'
+                      ? 'Amount (Minimum ₹500)'
+                      : `${t('amount')} (${t('minimumAmount')})`
+                    }
+                  </label>
                   <input
                     type="number"
-                    placeholder={t('enterAmount')}
+                    placeholder={
+                      transactionForm?.transactionType === 'Withdraw'
+                        ? 'Enter amount (min 500)'
+                        : t('enterAmount')
+                    }
                     value={transactionForm.amount}
                     onChange={(e) => setTransactionForm({ ...transactionForm, amount: e.target.value })}
                     onWheel={(e) => e.target.blur()}
                     className="gaming-input"
                     required
-                    min="100"
+                    min={transactionForm?.transactionType === 'Withdraw'
+                      ? "500"
+                      : "100"}
                   />
                 </div>
 
@@ -1886,16 +1897,16 @@ const UserDashboard = () => {
               ) : (
                 <form onSubmit={handleSubUserWithdraw} className="space-y-4">
                   <div className="form-group">
-                    <label className="form-label">{t('amount')} ({t('minimumAmount')})</label>
+                    <label className="form-label">Amount (Minimum ₹500)</label>
                     <input
                       type="number"
-                      placeholder={t('enterAmount')}
+                      placeholder='Enter amount (min 500)'
                       value={subUserWithdrawForm.amount}
                       onChange={(e) => setSubUserWithdrawForm({ ...subUserWithdrawForm, amount: e.target.value })}
                       onWheel={(e) => e.target.blur()}
                       className="gaming-input"
                       required
-                      min="100"
+                      min="500"
                     />
                   </div>
 
