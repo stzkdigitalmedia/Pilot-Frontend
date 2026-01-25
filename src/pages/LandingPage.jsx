@@ -65,8 +65,8 @@ const LandingPage = () => {
           <div
             className="relative w-full pt-10 pb-8 flex justify-center items-center"
             style={{
-              background: 'url(/bghero.svg)',
-              backgroundSize: '400px'
+              background: 'url(/bghero.png)',
+              backgroundSize: '800px'
             }}
           >
 
@@ -74,7 +74,7 @@ const LandingPage = () => {
               onClick={handleRedirectToLogin}
               className="absolute top-0 left-4 cursor-pointer"
             >
-              <div className="w-7 h-7 sm:w-9 sm:h-9 border-1 border-white mt-3 bg-gray-800 rounded-full flex items-center justify-center">
+              <div className="w-7 h-7 p-4 sm:w-9 sm:h-9 border-1 border-white mt-3 bg-gray-800 rounded-full flex items-center justify-center">
                 <span className="text-white font-semibold text-md sm:text-md">
                   {dummyUser?.clientName?.charAt(0)?.toUpperCase() || 'D'}
                 </span>

@@ -947,13 +947,13 @@ const UserDashboard = () => {
         <div
           className="relative w-full pt-10 pb-8 flex justify-center items-center"
           style={{
-            background: 'url(/bghero.svg)',
-            backgroundSize: '400px'
+            background: 'url(/bghero.png)',
+            backgroundSize: '800px'
           }}
         >
 
           <Link to="/profile" className=" absolute top-0 left-4">
-            <div className="w-7 h-7 sm:w-9 sm:h-9 border-1 border-white mt-3 bg-gray-800 rounded-full flex items-center justify-center cursor-pointer">
+            <div className="w-7 h-7 sm:w-9 p-4 sm:h-9 border-1 border-white mt-3 bg-gray-800 rounded-full flex items-center justify-center cursor-pointer">
               <span className="text-white font-semibold text-md sm:text-md">
                 {user?.clientName?.charAt(0)?.toUpperCase() || 'U'}
               </span>

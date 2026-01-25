@@ -54,8 +54,8 @@ export const useToastContext = () => {
 function AppContent() {
   const toast = useToast();
   const location = useLocation();
-  // const { user } = location.pathname === '/' ? { user: null } : useAuth(true);
-  const { user } = useAuth(true);
+  const { user } = location.pathname === '/' ? { user: null } : useAuth(true);
+  // const { user } = useAuth(true);
   const hideOnRoutes = ['/my-ids', '/passbook', '/profile', '/id-details'];
 
   // Scroll to top on route change
@@ -199,8 +199,8 @@ function AppContent() {
             <SubAccounts />
           </ProtectedRoute>
         } />
-        {/* <Route path="/" element={<LandingPage />} /> */}
-        <Route path="/" element={<Navigate to="/login" replace />} />
+        <Route path="/" element={<LandingPage />} />
+        {/* <Route path="/" element={<Navigate to="/login" replace />} /> */}
       </Routes>
       <ToastContainer toasts={toast.toasts} removeToast={toast.removeToast} />
       {
