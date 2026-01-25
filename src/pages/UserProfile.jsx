@@ -219,7 +219,7 @@ const UserProfile = () => {
         <div className="bg-[#1b1b1b] p-4 mb-1">
           <div className='flex justify-between items-centers align-middle'>
             <div className="flex flex-row items-center gap-3">
-              <div className="w-12 h-12 rounded-full flex items-center mx-auto justify-center text-white font-bold text-lg" style={{ backgroundColor: '#1477b0' }}>
+              <div className="w-12 h-12 rounded-full flex items-center mx-auto justify-center text-white font-bold text-lg bg-gray-800">
                 {user?.clientName?.charAt(0).toUpperCase() || user?.fullName?.charAt(0).toUpperCase() || 'U'}
               </div>
               <div className="text-center sm:text-left">
@@ -233,7 +233,7 @@ const UserProfile = () => {
               </div>
             </div>
             <div className="flex items-center">
-              <button className='bg-[#005b96] text-white px-3 py-1 sm:px-4 sm:py-2 rounded-lg hidden sm:block' onClick={handleLogout}>
+              <button className='bg-white text-black px-3 py-1 sm:px-4 sm:py-2 rounded-lg hidden sm:block' onClick={handleLogout}>
                 Logout
               </button>
             </div>
@@ -249,7 +249,7 @@ const UserProfile = () => {
                     setShowCreateTransaction(true);
                     fetchUserBalance();
                   }}
-                  className='bg-[#005993] px-4 py-1 rounded-lg text-white'
+                  className='bg-white px-4 py-1 rounded-lg text-black'
                 >
                   Deposit
                 </button>
@@ -259,7 +259,7 @@ const UserProfile = () => {
                     setShowCreateTransaction(true);
                     fetchUserBalance();
                   }}
-                  className='bg-[#005993] px-4 py-1 rounded-lg text-white'
+                  className='bg-white px-4 py-1 rounded-lg text-black'
                 >
                   Withdraw
                 </button>

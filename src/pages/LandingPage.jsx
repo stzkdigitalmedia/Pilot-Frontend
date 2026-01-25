@@ -81,7 +81,10 @@ const LandingPage = () => {
               </div>
             </div>
 
-            <div className='absolute top-0 right-0'>
+            <div className='absolute top-0 right-0 flex'>
+              <button className=' text-[10px] sm:text-[12px] h-5 sm:h-7 bg-white px-2 mt-5 sm:mt-4 boeder border-1 rounded-lg border-black'>
+                Login | Signup
+              </button>
               <LanguageSelector />
             </div>
 
