@@ -249,7 +249,7 @@ const UserProfile = () => {
                     setShowCreateTransaction(true);
                     fetchUserBalance();
                   }}
-                  className='bg-white px-4 py-1 rounded-lg text-black'
+                  className='bg-green-600 px-4 py-1 rounded-lg text-white'
                 >
                   Deposit
                 </button>
@@ -259,7 +259,7 @@ const UserProfile = () => {
                     setShowCreateTransaction(true);
                     fetchUserBalance();
                   }}
-                  className='bg-white px-4 py-1 rounded-lg text-black'
+                  className='bg-red-600 px-4 py-1 rounded-lg text-white'
                 >
                   Withdraw
                 </button>
@@ -570,7 +570,7 @@ const UserProfile = () => {
         <div className="max-w-[769px] mx-auto">
           <button
             onClick={handleLogout}
-            className="w-full bg-[#005b96] text-white py-1.5 rounded-lg text-[16px] font-semibold transition-colors"
+            className="w-full bg-white text-black py-1.5 rounded-lg text-[16px] font-semibold transition-colors"
           >
             Logout
           </button>
