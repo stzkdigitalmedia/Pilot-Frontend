@@ -82,7 +82,7 @@ const LandingPage = () => {
             </div>
 
             <div className='absolute top-0 right-0 flex'>
-              <button className=' text-[10px] sm:text-[12px] h-5 sm:h-7 bg-white px-2 mt-5 sm:mt-4 boeder border-1 rounded-lg border-black'>
+              <button className=' text-[10px] sm:text-[12px] h-5 sm:h-7 bg-black text-white mr-1 sm:mr-1.5 px-2 mt-5 sm:mt-4 boeder border-1 rounded-lg border-black'>
                 Login | Signup
               </button>
               <LanguageSelector />
