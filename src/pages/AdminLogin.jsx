@@ -43,11 +43,13 @@ const AdminLogin = () => {
         // Save user role to localStorage
         localStorage.setItem('userRole', userRole);
         
-        login(response);
+        // Call login and wait for state update
+        login(userData);
         toast.success('Admin login successful!');
-        navigate('/dashboard');
+        
+        // Navigate after a short delay to ensure state is updated
         setTimeout(() => {
-          window.location.reload();
+          navigate('/dashboard');
         }, 100);
       }
     } catch (error) {
