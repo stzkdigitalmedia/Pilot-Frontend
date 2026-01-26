@@ -2026,7 +2026,7 @@ const UserDashboard = () => {
                       onWheel={(e) => e.target.blur()}
                       className="gaming-input"
                       required
-                      min="100"
+                      min="500"
                     />
                   </div>
 

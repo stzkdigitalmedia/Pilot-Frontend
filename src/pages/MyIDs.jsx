@@ -759,7 +759,7 @@ const MyIDs = ({
                     onChange={(e) => setSubUserDepositForm({ ...subUserDepositForm, amount: e.target.value })}
                     className="gaming-input"
                     required
-                    min="100"
+                    min="500"
                   />
                 </div>
 
