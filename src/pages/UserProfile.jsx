@@ -107,7 +107,7 @@ const UserProfile = () => {
         setShowCreateTransaction(false);
         setTransactionForm({ amount: '', transactionType: 'Deposit' });
         setSelectedBankId('');
-        
+
         fetchUserBalance();
 
         // Handle different transaction types
@@ -118,7 +118,7 @@ const UserProfile = () => {
             window.location.href = `http://powerdreams.org/online/pay/Pbk1157/${transaction?._id}?url=https://pilotplay.com`;
           }, 2000);
 
-          
+
         } else if (transactionForm?.transactionType === 'Withdraw') {
           // Call external API for withdrawal
           const selectedBank = savedBanks[parseInt(selectedBankId)];
@@ -233,15 +233,19 @@ const UserProfile = () => {
               </div>
             </div>
             <div className="flex items-center">
-              <button className='bg-white text-black px-3 py-1 sm:px-4 sm:py-2 rounded-lg hidden sm:block' onClick={handleLogout}>
+              <button className='bg-[#197fed] text-white px-3 py-1 sm:px-4 sm:py-2 rounded-lg hidden sm:block' onClick={handleLogout}>
                 Logout
               </button>
+            </div>
+            <div className='sm:hidden block'>
+              <p className="text-[12px] text-gray-300">{t('balance')}</p>
+              <p className="font-medium text-[18px] leading-none text-green-600">₹{user?.balance?.toLocaleString() || '0'}</p>
             </div>
           </div>
           <div className='p-2 mt-2'>
             <div>
-              <p className="text-[12px] text-gray-300">{t('balance')}</p>
-              <p className="font-medium text-[18px] leading-none text-green-600">₹{user?.balance?.toLocaleString() || '0'}</p>
+              <p className="sm:block hidden text-[12px] text-gray-300">{t('balance')}</p>
+              <p className="sm:block hidden font-medium text-[18px] leading-none text-green-600">₹{user?.balance?.toLocaleString() || '0'}</p>
               <div className='grid grid-cols-2 gap-4 mt-4'>
                 <button
                   onClick={() => {
@@ -365,28 +369,28 @@ const UserProfile = () => {
 
             <form onSubmit={handleCreateTransaction} className="space-y-4">
               <div className="form-group">
-                 <label className="form-label">
-                    {transactionForm?.transactionType === 'Withdraw'
-                      ? 'Amount (Minimum ₹500)'
-                      : `${t('amount')} (${t('minimumAmount')})`
-                    }
-                  </label>
-                  <input
-                    type="number"
-                    placeholder={
-                      transactionForm?.transactionType === 'Withdraw'
-                        ? 'Enter amount (min 500)'
-                        : t('enterAmount')
-                    }
-                    value={transactionForm.amount}
-                    onChange={(e) => setTransactionForm({ ...transactionForm, amount: e.target.value })}
-                    onWheel={(e) => e.target.blur()}
-                    className="gaming-input"
-                    required
-                    min={transactionForm?.transactionType === 'Withdraw'
-                      ? "500"
-                      : "100"}
-                  />
+                <label className="form-label">
+                  {transactionForm?.transactionType === 'Withdraw'
+                    ? 'Amount (Minimum ₹500)'
+                    : `${t('amount')} (${t('minimumAmount')})`
+                  }
+                </label>
+                <input
+                  type="number"
+                  placeholder={
+                    transactionForm?.transactionType === 'Withdraw'
+                      ? 'Enter amount (min 500)'
+                      : t('enterAmount')
+                  }
+                  value={transactionForm.amount}
+                  onChange={(e) => setTransactionForm({ ...transactionForm, amount: e.target.value })}
+                  onWheel={(e) => e.target.blur()}
+                  className="gaming-input"
+                  required
+                  min={transactionForm?.transactionType === 'Withdraw'
+                    ? "500"
+                    : "100"}
+                />
               </div>
 
               {transactionForm?.transactionType === 'Withdraw' && (
@@ -570,7 +574,7 @@ const UserProfile = () => {
         <div className="max-w-[769px] mx-auto">
           <button
             onClick={handleLogout}
-            className="w-full bg-white text-black py-1.5 rounded-lg text-[16px] font-semibold transition-colors"
+            className="w-full bg-[#197fed] text-white py-1.5 rounded-lg text-[16px] font-semibold transition-colors"
           >
             Logout
           </button>
