@@ -78,7 +78,7 @@ const StatusDetails = () => {
         startDate: formatDate(start),
         endDate: formatDate(end),
         status: status,
-        platefrom: "PilotPay"
+        platefrom: "ABC_PAY"
       };
 
       const response = await axios.post('https://powerdreams.org/api/online/transaction/get_Transaction__Status_Breakdown_RRPay', payload);

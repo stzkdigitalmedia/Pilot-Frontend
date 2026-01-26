@@ -76,7 +76,7 @@ const WithdrawalTransactions = () => {
         endDate: formatDate(end),
         status: 'Accept',
         transactionType: 'Withdrawal',
-        platefrom: "PilotPay"
+        platefrom: "ABC_PAY"
       };
 
       const response = await axios.post('https://powerdreams.org/api/online/transaction/getDeposit_WithdrawalTransaction_RRPay', payload);

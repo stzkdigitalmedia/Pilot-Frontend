@@ -61,15 +61,16 @@ const DashboardStats = () => {
       const payload = {
         startDate: formatDate(start),
         endDate: formatDate(end),
-        platefrom: "PilotPay"
+        platefrom: "ABC_PAY"
       };
       const Mirrpayload = {
         startDate: formatDate(start),
         endDate: formatDate(end),
-        platefrom: "PilotPay"
+        platefrom: "ABC_PAY"
       };
 
       const externalResponse = await axios.post('https://powerdreams.org/api/online/transaction/getDashboardStats_RRPay', payload);
+      // const externalResponse = await apiHelper.get(`/transaction/dash-summary?startDate=${payload?.startDate}&endDate=${payload?.endDate}`);
       setExternalStats(externalResponse?.data?.data || externalResponse?.data || externalResponse);
 
       // Fetch delete IDs count

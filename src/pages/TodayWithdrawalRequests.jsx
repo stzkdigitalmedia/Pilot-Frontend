@@ -83,7 +83,7 @@ const TodayWithdrawalRequests = () => {
         endDate: formatDate(end),
         page: page.toString(),
         limit: "50",
-        platefrom: "PilotPay"
+        platefrom: "ABC_PAY"
       };
       
       const response = await axios.post('https://powerdreams.org/api/online/request/getTodayPowerPay_Withdraw_UserDetails', payload);
