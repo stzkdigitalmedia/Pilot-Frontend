@@ -19,7 +19,7 @@ const UserProfile = () => {
   const [savedBanks, setSavedBanks] = useState([]);
   const [selectedBankId, setSelectedBankId] = useState('');
   const [banksLoading, setBanksLoading] = useState(false);
-  const [showAddBankModal, setShowAddBankModal] = useState(false);
+  const [showAddBankModal, setShowAddBankModal] = useState(false);  
   const [bankForm, setBankForm] = useState({
     accountHolderName: '',
     accountNumber: '',
@@ -195,9 +195,9 @@ const UserProfile = () => {
   }, [showCreateTransaction, transactionForm?.transactionType]);
 
   const handleLogout = () => {
-    logout();
-    window.location.href = '/login';
-  };
+  logout();
+  navigate("/login", { replace: true });
+};
 
   // Show loading if user data is not available
   if (!user) {
