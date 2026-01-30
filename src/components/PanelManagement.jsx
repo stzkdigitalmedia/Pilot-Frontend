@@ -91,6 +91,44 @@ const PanelManagement = () => {
     }
   };
 
+  const handleVisibilityToggle = async (panelId, currentVisibility) => {
+    const newVisibility = !currentVisibility;
+
+    // Immediately update local state for instant UI feedback
+    setPanels(prevPanels =>
+      prevPanels.map(panel => {
+        if ((panel._id || panel.id) === panelId) {
+          return {
+            ...panel,
+            isShow: newVisibility
+          };
+        }
+        return panel;
+      })
+    );
+
+    try {
+      await apiHelper.patch(`/panel/updatePanelVisibility/${panelId}`, {
+        isShow: newVisibility
+      });
+      showToast('Panel visibility updated successfully', 'success');
+    } catch (error) {
+      // Revert the local state change if API call fails
+      setPanels(prevPanels =>
+        prevPanels.map(panel => {
+          if ((panel._id || panel.id) === panelId) {
+            return {
+              ...panel,
+              isShow: currentVisibility
+            };
+          }
+          return panel;
+        })
+      );
+      showToast(error.message || 'Failed to update panel visibility', 'error');
+    }
+  };
+
   const handleDefaultIdToggle = async (panelId, currentStatus) => {
     // Immediately update local state for instant UI feedback
     setPanels(prevPanels =>
@@ -313,6 +351,7 @@ const PanelManagement = () => {
                         <th className="text-left py-3 px-4 text-xs font-medium text-gray-500 uppercase tracking-wider">Created</th>
                         <th className="text-left py-3 px-4 text-xs font-medium text-gray-500 uppercase tracking-wider">Actions</th>
                         <th className="text-left py-3 px-4 text-xs font-medium text-gray-500 uppercase tracking-wider">default Id Create</th>
+                        <th className="text-left py-3 px-4 text-xs font-medium text-gray-500 uppercase tracking-wider">Show</th>
                       </tr>
                     </thead>
                     <tbody className="divide-y divide-gray-100">
@@ -336,6 +375,7 @@ const PanelManagement = () => {
                               {(panel.isActive !== undefined ? panel.isActive : panel.status === 'active' || panel.active) ? 'Active' : 'Inactive'}
                             </span>
                           </td>
+
                           <td className="py-3 px-4 text-sm text-gray-600">
                             {panel.createdAt ? new Date(panel.createdAt).toLocaleDateString() :
                               panel.created_at ? new Date(panel.created_at).toLocaleDateString() : 'N/A'}
@@ -369,6 +409,17 @@ const PanelManagement = () => {
                                 className="sr-only peer"
                               />
                               <div className="relative w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-green-300 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-green-600"></div>
+                            </label>
+                          </td>
+                          <td className="py-3 px-4">
+                            <label className="relative inline-flex items-center cursor-pointer">
+                              <input
+                                type="checkbox"
+                                checked={panel.isShow !== undefined ? panel.isShow : true}
+                                onChange={() => handleVisibilityToggle(panel._id || panel.id, panel.isShow)}
+                                className="sr-only peer"
+                              />
+                              <div className="relative w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-purple-300 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-purple-600"></div>
                             </label>
                           </td>
                         </tr>
